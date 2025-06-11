@@ -29,7 +29,7 @@ export default function Login() {
         window.addEventListener("resize", () => {
             setViewport(getViewportWidth())
         })
-    }, [])
+    }, [setViewport])
 
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
@@ -42,7 +42,7 @@ export default function Login() {
             <div className="w-full max-w-[560px] flex flex-col  items-start">
                 <div className="mb-8">
                     <h1 className="font-semibold text-[40px] text-[#313131]">Log In</h1>
-                    <h2 className="font-normal text-[#313131] opacity-80">Let's get you all set up so you can access your personal account.
+                    <h2 className="font-normal text-[#313131] opacity-80">{'Let\'s get you all set up so you can access your personal account'}.
                     </h2>
                 </div>
                 <div className="w-full mb-4">
