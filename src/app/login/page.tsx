@@ -20,7 +20,7 @@ export default function Login() {
         return isValidEmail(email) && password.length > 8
     }
 
-    function getViewportWidth(){
+    function getViewportWidth() {
         return window.innerWidth
     }
 
@@ -74,9 +74,15 @@ export default function Login() {
                     <a href="/password-recovery" className="font-medium text-[var(--primary-color)] text-sm">Forgot Password?</a>
                 </div>
 
-                <Button className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer mb-14 hover:opacity-0.8" disabled={!validateInputs(email, password)}>
-                    Log In
-                </Button>
+                <div className="w-full flex flex-col gap-4 mb-14">
+                    <Button className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer hover:opacity-0.8" disabled={!validateInputs(email, password)}>
+                        Log In
+                    </Button>
+                    {viewport < 640 ? <a href="/signup" className="w-full text-center font-bold text-[var(--primary-color)] text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
+                        Sign up
+                    </a> : null}
+                </div>
+
 
                 <div className="w-full flex items-center gap-4 text-sm font-normal text-[#313131] mb-14">
                     <Separator className="flex-1" /><span className="opacity-60">Or log in with</span><Separator className="flex-1" />
@@ -87,7 +93,7 @@ export default function Login() {
                     Continue with Google
                 </Button>
 
-                <Button className="h-max w-full font-semibold text-[#1A1C1E] text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-[#EFF0F6] cursor-pointer hover:bg-gray-200">
+                <Button className="h-max w-full font-semibold text-[#1A1C1E] text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-[#EFF0F6] cursor-pointer hover:bg-gray-200 mb-8">
                     <img src="/facebook.png" alt="facebook logo" />
                     Continue with Facebook
                 </Button>
