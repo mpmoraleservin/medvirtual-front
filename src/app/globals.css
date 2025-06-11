@@ -40,6 +40,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --breakpoint-xs: 36rem;
+  --breakpoint-xxs: 30rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -133,7 +135,16 @@ body {
   }
 }
 
-html, body {
+* {
+  box-sizing: border-box;
+}
+
+html {
   width: 100%;
   min-height: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
 }
