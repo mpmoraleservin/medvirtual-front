@@ -33,7 +33,7 @@ export default function InviteSignup() {
   return (
     <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
       <div className="flex items-center justify-between mb-16">
-        <img src="/logo.png" alt="company logo" className="" />
+        <img src="/logo.png" alt="company logo" className="w-56" />
       </div>
       <div className="w-full max-w-[560px] flex flex-col  items-start">
         <div className="mb-8">

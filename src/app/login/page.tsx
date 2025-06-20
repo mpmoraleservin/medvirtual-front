@@ -34,7 +34,7 @@ export default function Login() {
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
             <div className="flex items-center justify-between mb-16">
-                <img src="/logo.png" alt="company logo" className="" />
+                <img src="/logo.png" alt="company logo" className=" w-56 " />
                 {viewport < 640 ? null : <a href="/signup" className="absolute top-5 right-5 h-fit font-bold text-white text-xl leading-[100%] px-6 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer">
                     Sign up
                 </a>}

@@ -34,7 +34,7 @@ export default function AuthenticationCode() {
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center justify-center p-4">
             <div className="absolute top-0 flex items-center justify-between">
-                <img src="/logo.png" alt="company logo" className="" />
+                <img src="/logo.png" alt="company logo" className="w-56 mt-4" />
             </div>
             <div className="w-full max-w-[560px] flex flex-col  items-start mt-8">
                 <div className="mb-8">
