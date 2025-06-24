@@ -16,13 +16,6 @@ interface HireRequest {
   date: string
 }
 
-interface RecommendedTalent {
-  id: string
-  title: string
-  experience: string
-  languages: string[]
-}
-
 // --- Candidate interfaces and mock data (copied from talent pool) ---
 interface CandidateEducation {
   institution: string;
