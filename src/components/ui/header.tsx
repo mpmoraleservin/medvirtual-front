@@ -30,7 +30,7 @@ export default function Header({ userRole }: HeaderProps) {
 
   function handleReferSubmit(e: React.FormEvent) {
     e.preventDefault();
-    let error: {name?: string, email?: string} = {};
+    const error: {name?: string, email?: string} = {};
     if (!referName.trim()) error.name = "Name is required";
     if (!referEmail.trim()) error.email = "Email is required";
     else if (!validateEmail(referEmail)) error.email = "Invalid email";

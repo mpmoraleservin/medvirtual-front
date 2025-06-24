@@ -7,7 +7,6 @@ import {
   Users,
   UserCheck,
   UserPlus,
-  User,
   Ticket,
   Users2,
   PanelLeft,
