@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Sidebar from "@/components/sidebar";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -17,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Filter from "@/components/filter";
 import { Eye, SearchIcon, X } from "lucide-react";
 
 type CandidateInfo = {
@@ -102,7 +100,6 @@ export default function Home() {
 
   return (
     <div className="relative w-full flex items-start bg-[#F6F8FA]">
-      <Sidebar />
       <div className="w-full h-screen p-4 overflow-y-scroll">
         <div className="w-full flex flex-col mt-8">
           <h1 className="font-bold text-[32px] text-[#181D27] mb-7">
@@ -160,7 +157,6 @@ export default function Home() {
                 </Select>
                 per page
               </div>
-              <Filter />
             </div>
           </div>
           {filteredCandidates.length > 0 ? (
@@ -269,7 +265,7 @@ export default function Home() {
               <h1 className="w-full text-center font-bold text-[32px] text-[#181D27] mb-4">
                 No Candidates found
               </h1>
-              <p className="w-full text-center font-normal text-sm text-[#181D27]">{`We couldn’t find any candidates matching "${search}"`}</p>
+              <p className="w-full text-center font-normal text-sm text-[#181D27]">{`We couldn't find any candidates matching "${search}"`}</p>
             </div>
           )}
         </div>

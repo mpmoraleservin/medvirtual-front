@@ -20,9 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`flex justify-center ${instrumentSans.variable} antialiased`}
-      >
+      <body className={`${instrumentSans.variable} antialiased`}>
         <Toaster position="top-right" className="font-[Instrument_Sans]" />
         {children}
       </body>

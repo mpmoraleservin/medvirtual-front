@@ -1,85 +1,143 @@
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { LogOut } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-function SideButton({
-  name,
-  icon,
-  link,
-  isActive,
-}: {
-  name: string;
-  icon: string;
-  link: string;
-  isActive: boolean;
-}) {
-  return (
-    <Link
-      href={link}
-      className={`w-full flex items-center gap-3 font-medium text-[#181D27] text-sm rounded-[6px] px-3 py-2 ${
-        isActive ? "bg-gray-200" : "text-[#717680]"
-      }`}
-    >
-      <img src={icon} alt="icon" className="w-5 h-5 flex " />
-      {name}
-    </Link>
-  );
+import { Separator } from "@/components/ui/separator";
+import {
+  Home,
+  ListChecks,
+  Users,
+  UserCheck,
+  UserPlus,
+  User,
+  Ticket,
+  Users2,
+  PanelLeft,
+  ClipboardList,
+  UserCog,
+  LogOut,
+} from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import { usePathname } from "next/navigation";
+
+type UserRole = "PROSPECT" | "ACTIVE_CLIENT" | "ADMIN";
+
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  roles: UserRole[];
+};
+
+const NAV_ITEMS: NavItem[] = [
+  // Prospect
+  {
+    href: "/dashboard/prospect",
+    label: "Dashboard",
+    icon: <Home size={20} />, roles: ["PROSPECT"]
+  },
+  {
+    href: "/dashboard/prospect/hire-requests",
+    label: "My Requests",
+    icon: <ListChecks size={20} />, roles: ["PROSPECT"]
+  },
+  // Active Client
+  {
+    href: "/dashboard/client",
+    label: "Dashboard",
+    icon: <Home size={20} />, roles: ["ACTIVE_CLIENT"]
+  },
+  {
+    href: "/dashboard/client/hire-requests",
+    label: "My Hire Requests",
+    icon: <ListChecks size={20} />, roles: ["ACTIVE_CLIENT"]
+  },
+  {
+    href: "/dashboard/client/staff",
+    label: "My Hired Staff",
+    icon: <UserCheck size={20} />, roles: ["ACTIVE_CLIENT"]
+  },
+  {
+    href: "/dashboard/client/talent-pool",
+    label: "Explore Talent Pool",
+    icon: <Users2 size={20} />, roles: ["ACTIVE_CLIENT"]
+  },
+  // Admin
+  {
+    href: "/dashboard/admin",
+    label: "Dashboard",
+    icon: <Home size={20} />, roles: ["ADMIN"]
+  },
+  {
+    href: "/dashboard/admin/hire-requests",
+    label: "Hire Requests Queue",
+    icon: <ClipboardList size={20} />, roles: ["ADMIN"]
+  },
+  {
+    href: "/dashboard/admin/panels",
+    label: "Candidate Panels",
+    icon: <PanelLeft size={20} />, roles: ["ADMIN"]
+  },
+  {
+    href: "/dashboard/admin/candidates",
+    label: "All Candidates",
+    icon: <UserPlus size={20} />, roles: ["ADMIN"]
+  },
+  {
+    href: "/dashboard/admin/clients",
+    label: "All Clients",
+    icon: <Users size={20} />, roles: ["ADMIN"]
+  },
+  {
+    href: "/dashboard/admin/tickets",
+    label: "Tickets",
+    icon: <Ticket size={20} />, roles: ["ADMIN"]
+  },
+];
+
+interface SidebarProps {
+  userRole: UserRole;
+  className?: string;
 }
 
-export default function Sidebar() {
-  return (
-    <div className="w-full h-screen max-w-[256px] flex flex-col items-start justify-between gap-1 bg-white border-r-[1px] border-[#E9EAEB]">
-      <div className="p-4">
-        <img src="/logo.png" alt="company logo" className="w-32 mb-6" />
-        <SideButton name="Home" icon="/icons/home.png" link="/home" isActive />
-        <SideButton
-          name="Endorsed Candidates"
-          icon="/icons/user-star.png"
-          link="/endorsed"
-          isActive={false}
-        />
-        <SideButton
-          name="Interview log"
-          icon="/icons/message.png"
-          link="/interview-log"
-          isActive={false}
-        />
-        <SideButton
-          name="User Management"
-          icon="/icons/user-settings.png"
-          link="/management"
-          isActive={false}
-        />
-        <SideButton
-          name="Hired Staff"
-          icon="/icons/user-checked.png"
-          link="/hired"
-          isActive={false}
-        />
-        <SideButton
-          name="Tickets"
-          icon="/icons/ticket.png"
-          link="/tickets"
-          isActive={false}
-        />
-      </div>
+export default function Sidebar({ userRole, className }: SidebarProps) {
+  const navItems = NAV_ITEMS.filter((item) => item.roles.includes(userRole));
+  const pathname = usePathname();
 
+  return (
+    <aside
+      className={`hidden sm:flex fixed left-0 top-0 z-30 flex-col items-start justify-between w-64 h-screen bg-white border-r border-[#E9EAEB]${className ? ` ${className}` : ""}`}
+    >
+      <div className="p-4 w-full">
+        <img src="/logo.png" alt="company logo" className="w-32 mb-6" />
+        <nav className="flex flex-col gap-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`w-full flex items-center gap-3 font-medium text-[#181D27] text-sm rounded-[6px] px-3 py-2 transition-colors hover:bg-gray-100 ${
+                  isActive ? "bg-gray-200 text-black" : ""
+                }`}
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
       <div className="w-full flex flex-col gap-2">
         <div className="px-4">
-          <div className="flex items-center justify-start gap-3 px-3 py-2">
-            <img src="/icons/moon.jpg" alt="" />
-            <span className="mr-10 text-[#717680] text-sm font-medium">Dark mode</span>
-            <Switch className="cursor-pointer"/>
-          </div>
-          <SideButton
-            name="Settings"
-            icon="/icons/settings.jpg"
-            link="/settings"
-            isActive={false}
-          />
+          <Link
+            href="/settings"
+            className="w-full flex items-center gap-3 font-medium text-[#181D27] text-sm rounded-[6px] px-3 py-2 hover:bg-gray-100 transition-colors"
+          >
+            <UserCog size={20} />
+            Settings
+          </Link>
         </div>
-        <Separator/>
+        <Separator />
         <div className="flex items-center justify-center p-2">
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGasA3GR9lZOu0QmGpOt_lz5f1o0hOJTD_RA&s"
@@ -99,6 +157,6 @@ export default function Sidebar() {
           </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }
