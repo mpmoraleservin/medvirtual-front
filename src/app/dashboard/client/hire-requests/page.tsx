@@ -5,13 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface HireRequest {
@@ -287,12 +286,6 @@ export default function MyHireRequestsPage() {
       {/* View Details Sheet */}
       <Sheet open={modalOpen} onOpenChange={setModalOpen}>
         <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem]">
-          <SheetHeader>
-            <SheetTitle>Request Details</SheetTitle>
-            <SheetDescription>
-              Detailed information for <span className="font-semibold">{selectedRequest?.role}</span>
-            </SheetDescription>
-          </SheetHeader>
           <div className="flex flex-col gap-2 p-4">
             <div><span className="font-semibold">Role:</span> {selectedRequest?.role}</div>
             <div><span className="font-semibold">Status:</span> <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${selectedRequest ? STATUS_COLORS[selectedRequest.status] : ''}`}>{selectedRequest?.status}</span></div>
