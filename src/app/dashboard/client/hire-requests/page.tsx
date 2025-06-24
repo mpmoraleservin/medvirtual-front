@@ -31,11 +31,11 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const STATUS_COLORS: Record<HireRequest["status"], string> = {
-  "Submitted": "bg-[#009FE3] text-white border-transparent", // azul principal
-  "AM Reviewing": "bg-[#00C6F2] text-white border-transparent", // celeste
-  "Interview Scheduled": "bg-[#222] text-white border-transparent", // gris oscuro
-  "Awaiting Decision": "bg-[#FFB800] text-[#222] border-transparent", // amarillo de acento
-  "Placement Complete": "bg-white text-[#009FE3] border border-[#009FE3]", // blanco con azul
+  "Submitted": "bg-[#009FE3] text-white border-transparent",
+  "AM Reviewing": "bg-[#00C6F2] text-white border-transparent",
+  "Interview Scheduled": "bg-[#222] text-white border-transparent",
+  "Awaiting Decision": "bg-[#FFB800] text-[#222] border-transparent",
+  "Placement Complete": "bg-white text-[#009FE3] border border-[#009FE3]",
 };
 
 const hireRequests: HireRequest[] = [

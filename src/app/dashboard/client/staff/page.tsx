@@ -119,7 +119,6 @@ export default function MyHiredStaffPage() {
   }
   function handleBonusSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Aquí iría la lógica real de bonus
     setModal(null);
     setBonusAmount("");
     setBonusPreset(null);
@@ -127,7 +126,6 @@ export default function MyHiredStaffPage() {
   }
   function handleTerminateSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Aquí iría la lógica real de terminación
     setModal(null);
     setTerminateReason("");
   }
