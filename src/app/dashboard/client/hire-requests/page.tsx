@@ -1,17 +1,14 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Eye, Filter } from "lucide-react";
-import Link from "next/link";
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface HireRequest {
   id: string;
@@ -53,23 +50,6 @@ const hireRequests: HireRequest[] = [
   { id: "9", role: "Medical Biller", dateSubmitted: "2024-04-25", status: "Awaiting Decision", description: "Claims and billing.", location: "Miami, FL", department: "Billing", requestedBy: "Dr. Smith" },
   { id: "10", role: "Receptionist", dateSubmitted: "2024-04-20", status: "Placement Complete", description: "Front desk support.", location: "Orlando, FL", department: "Reception", requestedBy: "Dr. Lee" },
 ];
-
-const statusVariant = (status: HireRequest["status"]): "default" | "secondary" | "destructive" | "outline" => {
-  switch (status) {
-    case "Submitted":
-      return "default";
-    case "AM Reviewing":
-      return "secondary";
-    case "Interview Scheduled":
-      return "outline";
-    case "Awaiting Decision":
-      return "destructive";
-    case "Placement Complete":
-      return "default";
-    default:
-      return "default";
-  }
-};
 
 export default function MyHireRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<(typeof STATUS_OPTIONS)[number]>("All");

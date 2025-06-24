@@ -24,6 +24,21 @@ interface RecommendedTalent {
 }
 
 // --- Candidate interfaces and mock data (copied from talent pool) ---
+interface CandidateEducation {
+  institution: string;
+  degree: string;
+  startYear: number;
+  endYear: number;
+}
+
+interface CandidateExperience {
+  company: string;
+  role: string;
+  startYear: number;
+  endYear?: number;
+  description?: string;
+}
+
 interface Candidate {
   id: string;
   name: string;
@@ -35,8 +50,8 @@ interface Candidate {
   specializations: string[];
   skills: string[];
   about: string;
-  education: any[];
-  experience: any[];
+  education: CandidateEducation[];
+  experience: CandidateExperience[];
   experienceLevel: "Junior" | "Mid" | "Senior";
 }
 

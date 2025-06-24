@@ -5,13 +5,6 @@ import { ClipboardList, CalendarCheck, Hourglass, Ticket } from "lucide-react"
 import React from "react"
 
 // --- TypeScript interfaces ---
-interface HireRequest {
-  id: string
-  client: string
-  role: string
-  date: string
-}
-
 interface Ticket {
   id: string
   clientName: string
