@@ -64,12 +64,6 @@ const hireRequests: HireRequest[] = [
   { id: "3", role: "Lab Technician", status: "Hired", date: "2024-05-20" },
 ]
 
-const recommendedTalent: RecommendedTalent[] = [
-  { id: "1", title: "Senior Medical Assistant", experience: "5+ years experience", languages: ["English", "Spanish"] },
-  { id: "2", title: "Registered Nurse", experience: "8 years experience", languages: ["English"] },
-  { id: "3", title: "Front Desk Specialist", experience: "4 years experience", languages: ["English", "French"] },
-]
-
 const candidates: Candidate[] = [
   {
     id: "1",

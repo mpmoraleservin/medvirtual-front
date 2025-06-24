@@ -8,7 +8,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { DollarSign, XCircle, Filter, Eye } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter
@@ -74,7 +73,6 @@ export default function MyHiredStaffPage() {
       const filterHeight = 56;
       const titleHeight = 40;
       const paginacionHeight = 56;
-      const padding = 32 + 32;
       const container = tableContainerRef.current;
       if (container) {
         const available = window.innerHeight - container.getBoundingClientRect().top - paginacionHeight - 24;
