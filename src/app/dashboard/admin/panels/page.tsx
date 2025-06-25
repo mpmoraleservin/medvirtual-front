@@ -384,7 +384,7 @@ export default function CandidatePanelsPage() {
             showSearch={true}
             showFilters={false}
             pageSizeOptions={[5, 10, 20]}
-            defaultPageSize={10}
+            defaultPageSize={5}
             emptyMessage="No candidate panels found."
             className=""
           />

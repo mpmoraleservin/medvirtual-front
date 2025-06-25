@@ -691,8 +691,8 @@ export default function HireRequestsWorkflow() {
                         showSearch={false}
                         showFilters={false}
                         showPageSize={false}
-                        defaultPageSize={10}
-                        pageSizeOptions={[10]}
+                        defaultPageSize={5}
+                        pageSizeOptions={[5]}
                         emptyMessage="No AI candidates."
                         className="mt-4 h-[600px]"
                       />

@@ -1,21 +1,16 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { UserCheck, Eye, Filter, X } from "lucide-react";
-import { Dialog as FilterDialog, DialogContent as FilterDialogContent, DialogHeader as FilterDialogHeader, DialogTitle as FilterDialogTitle, DialogFooter as FilterDialogFooter } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
+import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table";
 
-// --- Candidate Types and Mock Data (copied from client/talent-pool) ---
+// --- Candidate Types and Mock Data ---
 interface CandidateEducation {
   institution: string;
   degree: string;
@@ -198,7 +193,7 @@ const candidates: Candidate[] = [
       { institution: "Miami Dade College", degree: "Radiology Tech Certificate", startYear: 2012, endYear: 2014 },
     ],
     experience: [
-      { company: "Radiology Associates", role: "X-Ray Technician", startYear: 2014 },
+      { company: "Baptist Health", role: "X-Ray Technician", startYear: 2014 },
     ],
     experienceLevel: "Mid",
   },
@@ -209,275 +204,254 @@ const candidates: Candidate[] = [
     role: "Medical Biller",
     pricePerMonth: 1400,
     currency: "USD",
-    languages: ["English"],
-    specializations: ["Claims"],
-    skills: ["Billing Software", "Data Entry", "Claims Follow-up"],
-    about: "Medical biller with a keen eye for detail and accuracy.",
+    languages: ["English", "Korean"],
+    specializations: ["Medical Billing"],
+    skills: ["CPT Coding", "ICD-10", "Claims Submission"],
+    about: "Certified medical biller with expertise in coding and claims processing.",
     education: [
-      { institution: "FIU", degree: "BSc Health Administration", startYear: 2010, endYear: 2014 },
+      { institution: "Miami Dade College", degree: "Medical Billing Certificate", startYear: 2016, endYear: 2017 },
     ],
     experience: [
-      { company: "HealthFirst", role: "Medical Biller", startYear: 2014 },
+      { company: "Medical Billing Solutions", role: "Medical Biller", startYear: 2017 },
     ],
-    experienceLevel: "Junior",
+    experienceLevel: "Mid",
   },
   {
     id: "10",
-    name: "Sara Cohen",
+    name: "Lisa Anderson",
     avatarUrl: undefined,
-    role: "Front Desk Specialist",
-    pricePerMonth: 1250,
+    role: "Registered Nurse",
+    pricePerMonth: 2400,
     currency: "USD",
-    languages: ["English", "Spanish"],
-    specializations: ["Reception"],
-    skills: ["Customer Service", "Appointment Scheduling", "Multi-line Phones"],
-    about: "Front desk specialist with a warm personality and strong organizational skills.",
+    languages: ["English"],
+    specializations: ["ICU", "Critical Care"],
+    skills: ["Ventilator Management", "Critical Care", "ACLS"],
+    about: "ICU nurse with specialized training in critical care and ventilator management.",
     education: [
-      { institution: "Miami Dade College", degree: "AA Communications", startYear: 2013, endYear: 2015 },
+      { institution: "University of Central Florida", degree: "BSN", startYear: 2015, endYear: 2019 },
     ],
     experience: [
-      { company: "Downtown Clinic", role: "Front Desk Specialist", startYear: 2015 },
+      { company: "Orlando Health", role: "ICU Nurse", startYear: 2019 },
     ],
-    experienceLevel: "Junior",
+    experienceLevel: "Mid",
   },
+  {
+    id: "11",
+    name: "Robert Wilson",
+    avatarUrl: undefined,
+    role: "Physician Assistant",
+    pricePerMonth: 3200,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Emergency Medicine"],
+    skills: ["Emergency Procedures", "Trauma Care", "Patient Stabilization"],
+    about: "Emergency medicine PA with experience in trauma and emergency procedures.",
+    education: [
+      { institution: "Nova Southeastern University", degree: "MPAS", startYear: 2013, endYear: 2017 },
+    ],
+    experience: [
+      { company: "Memorial Regional Hospital", role: "Emergency PA", startYear: 2017 },
+    ],
+    experienceLevel: "Senior",
+  },
+  {
+    id: "12",
+    name: "Jennifer Davis",
+    avatarUrl: undefined,
+    role: "Medical Assistant",
+    pricePerMonth: 1600,
+    currency: "USD",
+    languages: ["English", "French"],
+    specializations: ["Dermatology"],
+    skills: ["Skin Procedures", "Patient Prep", "Medical Records"],
+    about: "Medical assistant specializing in dermatology with experience in skin procedures.",
+    education: [
+      { institution: "Broward College", degree: "Medical Assistant Certificate", startYear: 2018, endYear: 2019 },
+    ],
+    experience: [
+      { company: "Dermatology Associates", role: "Medical Assistant", startYear: 2019 },
+    ],
+    experienceLevel: "Mid",
+  },
+  {
+    id: "13",
+    name: "Michael Johnson",
+    avatarUrl: undefined,
+    role: "Lab Technician",
+    pricePerMonth: 1900,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Molecular Biology"],
+    skills: ["PCR Testing", "DNA Analysis", "Lab Equipment"],
+    about: "Molecular biology lab tech with expertise in PCR testing and DNA analysis.",
+    education: [
+      { institution: "University of South Florida", degree: "BSc Biology", startYear: 2014, endYear: 2018 },
+    ],
+    experience: [
+      { company: "Quest Diagnostics", role: "Molecular Lab Tech", startYear: 2018 },
+    ],
+    experienceLevel: "Mid",
+  },
+  {
+    id: "14",
+    name: "Sarah Thompson",
+    avatarUrl: undefined,
+    role: "Nurse Practitioner",
+    pricePerMonth: 3800,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Cardiology"],
+    skills: ["Cardiac Assessment", "ECG Interpretation", "Patient Education"],
+    about: "Cardiology NP with specialized training in cardiac assessment and patient education.",
+    education: [
+      { institution: "University of Florida", degree: "DNP", startYear: 2009, endYear: 2013 },
+    ],
+    experience: [
+      { company: "Cardiology Associates", role: "Cardiology NP", startYear: 2013 },
+    ],
+    experienceLevel: "Senior",
+  },
+  {
+    id: "15",
+    name: "Alex Rodriguez",
+    avatarUrl: undefined,
+    role: "Receptionist",
+    pricePerMonth: 1300,
+    currency: "USD",
+    languages: ["English", "Spanish", "Portuguese"],
+    specializations: ["Multi-Specialty"],
+    skills: ["Multi-Language Support", "Insurance Verification", "Patient Scheduling"],
+    about: "Trilingual receptionist with experience in multi-specialty medical practices.",
+    education: [
+      { institution: "Miami Dade College", degree: "AA Healthcare Administration", startYear: 2016, endYear: 2018 },
+    ],
+    experience: [
+      { company: "Multi-Specialty Medical Group", role: "Receptionist", startYear: 2018 },
+    ],
+    experienceLevel: "Mid",
+  },
+];
+
+// Table columns configuration
+const columns: TableColumn<Candidate>[] = [
+  {
+    key: "name",
+    header: "Name",
+    searchable: true,
+    type: "text"
+  },
+  {
+    key: "role",
+    header: "Role",
+    searchable: true,
+    type: "text"
+  },
+  {
+    key: "specializations",
+    header: "Specializations",
+    searchable: true,
+    type: "badge",
+    badgeConfig: {
+      variant: "secondary",
+      className: "rounded-full bg-[#F9F5FF] text-[#5C3CC2] text-xs font-medium"
+    }
+  },
+  {
+    key: "skills",
+    header: "Skills",
+    searchable: true,
+    type: "badge",
+    badgeConfig: {
+      variant: "outline",
+      className: "rounded-full bg-[#175CD31A] text-[#175CD3] text-xs font-medium"
+    }
+  },
+  {
+    key: "experienceLevel",
+    header: "Experience",
+    type: "status",
+    statusColors: {
+      "Junior": "bg-blue-100 text-blue-700",
+      "Mid": "bg-yellow-100 text-yellow-700",
+      "Senior": "bg-green-100 text-green-700"
+    }
+  },
+  {
+    key: "pricePerMonth",
+    header: "Price/Month",
+    type: "currency"
+  }
+];
+
+// Filters configuration
+const filters = [
+  {
+    key: "role" as keyof Candidate,
+    label: "Role",
+    type: 'text' as const,
+    placeholder: "e.g. Nurse"
+  },
+  {
+    key: "specializations" as keyof Candidate,
+    label: "Specialization",
+    type: 'text' as const,
+    placeholder: "e.g. Pediatrics"
+  },
+  {
+    key: "languages" as keyof Candidate,
+    label: "Language",
+    type: 'text' as const,
+    placeholder: "e.g. Spanish"
+  },
+  {
+    key: "experienceLevel" as keyof Candidate,
+    label: "Experience Level",
+    type: 'select' as const,
+    options: [
+      { value: "Junior", label: "Junior" },
+      { value: "Mid", label: "Mid" },
+      { value: "Senior", label: "Senior" }
+    ]
+  },
+  {
+    key: "skills" as keyof Candidate,
+    label: "Skills",
+    type: 'text' as const,
+    placeholder: "e.g. BLS Certified"
+  }
 ];
 
 export default function CandidatesPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [search, setSearch] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [roleFilter, setRoleFilter] = useState("");
-  const [specializationFilter, setSpecializationFilter] = useState("");
-  const [languageFilter, setLanguageFilter] = useState("");
-  const [experienceLevelFilter, setExperienceLevelFilter] = useState("");
-  const [priceMin, setPriceMin] = useState("");
-  const [priceMax, setPriceMax] = useState("");
-  const [skillsFilter, setSkillsFilter] = useState("");
-  const [page, setPage] = useState(1);
-
-  React.useEffect(() => { setPage(1); }, [search, roleFilter, specializationFilter, languageFilter, page]);
 
   const handleViewProfile = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
     setProfileOpen(true);
   };
 
-  const filteredCandidates = candidates.filter((c) => {
-    const matchesSearch =
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.role.toLowerCase().includes(search.toLowerCase()) ||
-      c.specializations.some((s) => s.toLowerCase().includes(search.toLowerCase())) ||
-      c.skills.some((s) => s.toLowerCase().includes(search.toLowerCase()));
-    const matchesRole = roleFilter ? c.role.toLowerCase().includes(roleFilter.toLowerCase()) : true;
-    const matchesSpec = specializationFilter ? c.specializations.some((s) => s.toLowerCase().includes(specializationFilter.toLowerCase())) : true;
-    const matchesLang = languageFilter ? c.languages.some((l) => l.toLowerCase().includes(languageFilter.toLowerCase())) : true;
-    const matchesLevel = experienceLevelFilter && experienceLevelFilter !== "all" ? c.experienceLevel === experienceLevelFilter : true;
-    const matchesPriceMin = priceMin ? c.pricePerMonth >= Number(priceMin) : true;
-    const matchesPriceMax = priceMax ? c.pricePerMonth <= Number(priceMax) : true;
-    const matchesSkills = skillsFilter ? c.skills.some((s) => s.toLowerCase().includes(skillsFilter.toLowerCase())) : true;
-    return matchesSearch && matchesRole && matchesSpec && matchesLang && matchesLevel && matchesPriceMin && matchesPriceMax && matchesSkills;
-  });
-
-  const pageCount = Math.ceil(filteredCandidates.length / page);
-  const paginatedCandidates = useMemo(() =>
-    filteredCandidates.slice((page - 1) * page, page * page),
-    [filteredCandidates, page]
-  );
-
   return (
     <div className="min-h-screen bg-white p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <PageTitle title="All Candidates" subtitle="Browse and manage all candidates in the system" />
-        {/* Filters below the title */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div className="flex flex-1 gap-2">
-            <Input
-              type="text"
-              placeholder="Search by role..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full sm:w-64"
-            />
-            <Button variant="outline" className="gap-2" onClick={() => setFilterOpen(true)}>
-              <Filter className="w-4 h-4" />
-              Filter
-            </Button>
-          </div>
-        </div>
-        {/* Table section, no extra title */}
-        <div className="mb-8">
-          {/* Mobile: cards stacked, Desktop: table */}
-          <div className="flex flex-col gap-3 sm:hidden">
-            {paginatedCandidates.map((candidate) => (
-              <div key={candidate.id} className="rounded-lg border bg-white p-3 flex flex-col gap-2 shadow-sm">
-                <div className="flex items-center gap-3">
-                  <Avatar name={candidate.name} src={candidate.avatarUrl} />
-                  <div className="flex-1">
-                    <div className="font-semibold text-[#222] leading-tight text-sm">{candidate.name}</div>
-                    <div className="text-xs text-muted-foreground leading-tight">{candidate.role}</div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1 text-[10px] mt-1">
-                  {candidate.specializations.map((spec) => (
-                    <Badge key={spec} variant="secondary">{spec}</Badge>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-1 text-[10px] mt-1">
-                  {candidate.skills.map((skill) => (
-                    <Badge key={skill} variant="outline">{skill}</Badge>
-                  ))}
-                </div>
-                <div className="flex justify-between text-[10px] mt-1">
-                  <div><span className="font-medium">Exp:</span> {candidate.experienceLevel}</div>
-                  <div><span className="font-medium">Price:</span> {candidate.currency === "USD" ? "$" : candidate.currency}{candidate.pricePerMonth}</div>
-                </div>
-                <div className="flex justify-end gap-2 mt-2">
-                  <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" aria-label="View Profile" title="View Profile" onClick={() => handleViewProfile(candidate)}>
-                    <Eye className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-            {paginatedCandidates.length === 0 && (
-              <div className="text-center text-muted-foreground py-8 text-xs">No candidates found.</div>
-            )}
-          </div>
-          {/* Desktop table */}
-          <div className="hidden sm:block overflow-x-auto">
-            <Table className="w-full min-w-[600px]">
-              <TableHeader>
-                <TableRow className="bg-[#F6F6F7] border-b border-[#E5E7EB]">
-                  <TableHead className="font-bold text-base text-[#222] py-4">Name</TableHead>
-                  <TableHead className="font-bold text-base text-[#222] py-4">Role</TableHead>
-                  <TableHead className="font-bold text-base text-[#222] py-4">Specializations</TableHead>
-                  <TableHead className="font-bold text-base text-[#222] py-4">Skills</TableHead>
-                  <TableHead className="font-bold text-base text-[#222] py-4 text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedCandidates.map((candidate) => (
-                  <TableRow key={candidate.id} className="bg-white border-b border-[#F1F1F1] hover:bg-[#F6F6F7] transition-colors group">
-                    <TableCell className="py-4 align-middle">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={candidate.name} src={candidate.avatarUrl} />
-                        <div>
-                          <div className="font-semibold text-[#222] leading-tight">{candidate.name}</div>
-                          <div className="text-sm text-muted-foreground leading-tight">{candidate.role}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 align-middle text-[#222]">{candidate.role}</TableCell>
-                    <TableCell className="py-4 align-middle">
-                      <div className="flex flex-wrap gap-1">
-                        {candidate.specializations.map((spec) => (
-                          <Badge key={spec} variant="secondary">{spec}</Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 align-middle">
-                      <div className="flex flex-wrap gap-1">
-                        {candidate.skills.map((skill) => (
-                          <Badge key={skill} variant="outline">{skill}</Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 text-center align-middle">
-                      <div className="flex justify-center gap-2">
-                        <Button
-                          size="icon"
-                          className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                          aria-label="View Profile"
-                          title="View Profile"
-                          onClick={() => handleViewProfile(candidate)}
-                        >
-                          <Eye className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {paginatedCandidates.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      No candidates found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          {/* Pagination Controls avanzados */}
-          <div className="flex flex-wrap justify-between items-center mt-4 pt-2 border-t border-muted-foreground/10 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-            >
-              Previous
-            </Button>
-            <div className="flex gap-1">
-              {Array.from({ length: pageCount }, (_, i) => (
-                <Button
-                  key={i+1}
-                  size="sm"
-                  variant={page === i+1 ? "default" : "outline"}
-                  onClick={() => setPage(i+1)}
-                  className="px-3"
-                >
-                  {i+1}
-                </Button>
-              ))}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === pageCount || pageCount === 0}
-              onClick={() => setPage(p => Math.min(pageCount, p + 1))}
-            >
-              Next
-            </Button>
-          </div>
-          {/* Filtros avanzados en Dialog */}
-          <FilterDialog open={filterOpen} onOpenChange={setFilterOpen}>
-            <FilterDialogContent className="max-w-sm w-full">
-              <FilterDialogHeader>
-                <FilterDialogTitle>Advanced Filters</FilterDialogTitle>
-              </FilterDialogHeader>
-              <div className="flex flex-col space-y-4 py-2">
-                <Label htmlFor="role">Role</Label>
-                <Input id="role" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} placeholder="e.g. Nurse" />
-                <Label htmlFor="specialization">Specialization</Label>
-                <Input id="specialization" value={specializationFilter} onChange={e => setSpecializationFilter(e.target.value)} placeholder="e.g. Pediatrics" />
-                <Label htmlFor="language">Language</Label>
-                <Input id="language" value={languageFilter} onChange={e => setLanguageFilter(e.target.value)} placeholder="e.g. Spanish" />
-                <Label htmlFor="experienceLevel">Experience Level</Label>
-                <Select value={experienceLevelFilter} onValueChange={setExperienceLevelFilter}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="Junior">Junior</SelectItem>
-                    <SelectItem value="Mid">Mid</SelectItem>
-                    <SelectItem value="Senior">Senior</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Label htmlFor="priceMin">Price/Month Min</Label>
-                <Input id="priceMin" type="number" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="Min price" />
-                <Label htmlFor="priceMax">Price/Month Max</Label>
-                <Input id="priceMax" type="number" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="Max price" />
-                <Label htmlFor="skills">Skills</Label>
-                <Input id="skills" value={skillsFilter} onChange={e => setSkillsFilter(e.target.value)} placeholder="e.g. BLS Certified" />
-              </div>
-              <FilterDialogFooter className="flex flex-col gap-2 mt-2">
-                <Button onClick={() => { setRoleFilter(""); setSpecializationFilter(""); setLanguageFilter(""); setExperienceLevelFilter(""); setPriceMin(""); setPriceMax(""); setSkillsFilter(""); }}>Clear Filters</Button>
-                <Button onClick={() => setFilterOpen(false)} variant="default">Apply</Button>
-              </FilterDialogFooter>
-            </FilterDialogContent>
-          </FilterDialog>
-        </div>
+        
+        <AdvancedTable
+          data={candidates}
+          columns={columns}
+          title=""
+          searchPlaceholder="Search by name, role, or skills..."
+          filters={filters}
+          onViewDetails={handleViewProfile}
+          showPagination={true}
+          showPageSize={true}
+          showSearch={true}
+          showFilters={true}
+          pageSizeOptions={[5, 10, 20, 50]}
+          defaultPageSize={5}
+          emptyMessage="No candidates found."
+          className="mb-8"
+        />
+
         {/* Candidate Profile Sheet (lateral) */}
         <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
           <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
@@ -493,10 +467,7 @@ export default function CandidatesPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Button className="gap-2 bg-[#009FE3] hover:bg-[#007bbd] text-white font-semibold shadow-md" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
-                      <UserCheck className="w-4 h-4" /> Interview
-                    </Button>
-                    <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setProfileOpen(false)} className="mt-1">
-                      <X className="w-6 h-6" />
+                      Interview
                     </Button>
                   </div>
                 </div>

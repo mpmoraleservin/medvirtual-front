@@ -196,16 +196,28 @@ export function AdvancedTable<T extends { id: string }>({
       case 'action':
         return (
           <div className="flex justify-center gap-2">
-            <Link href={`/dashboard/admin/panels/${item.id}`}>
+            {onViewDetails ? (
               <Button
                 size="icon"
                 className="bg-blue-100 hover:bg-blue-200 text-blue-700"
                 aria-label="View Details"
                 title="View Details"
+                onClick={() => onViewDetails(item)}
               >
                 <Eye className="w-5 h-5" />
               </Button>
-            </Link>
+            ) : (
+              <Link href={`/dashboard/admin/panels/${item.id}`}>
+                <Button
+                  size="icon"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                  aria-label="View Details"
+                  title="View Details"
+                >
+                  <Eye className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
           </div>
         );
       case 'currency':
@@ -328,16 +340,15 @@ export function AdvancedTable<T extends { id: string }>({
                     ))}
                     {onViewDetails && (
                       <TableCell className="py-3 sm:py-4 text-center align-middle text-xs sm:text-base px-6 whitespace-nowrap">
-                        <Link href={`/dashboard/admin/panels/${item.id}`}>
-                          <Button
-                            size="icon"
-                            className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                            aria-label="View Details"
-                            title="View Details"
-                          >
-                            <Eye className="w-5 h-5" />
-                          </Button>
-                        </Link>
+                        <Button
+                          size="icon"
+                          className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                          aria-label="View Details"
+                          title="View Details"
+                          onClick={() => onViewDetails(item)}
+                        >
+                          <Eye className="w-5 h-5" />
+                        </Button>
                       </TableCell>
                     )}
                   </TableRow>
@@ -368,16 +379,15 @@ export function AdvancedTable<T extends { id: string }>({
                     ))}
                   </div>
                   {onViewDetails && (
-                    <Link href={`/dashboard/admin/panels/${item.id}`}>
-                      <Button 
-                        size="icon" 
-                        className="bg-blue-100 hover:bg-blue-200 text-blue-700" 
-                        aria-label="View Details" 
-                        title="View Details"
-                      >
-                        <Eye className="w-5 h-5" />
-                      </Button>
-                    </Link>
+                    <Button 
+                      size="icon" 
+                      className="bg-blue-100 hover:bg-blue-200 text-blue-700" 
+                      aria-label="View Details" 
+                      title="View Details"
+                      onClick={() => onViewDetails(item)}
+                    >
+                      <Eye className="w-5 h-5" />
+                    </Button>
                   )}
                 </div>
               </div>
