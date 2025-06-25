@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -54,6 +55,34 @@ function Button({
       {...props}
     />
   )
+}
+
+// Botón de edición con X de cerrar
+export function EditButtonWithClose({ onClick, onClose, className, ...props }: {
+  onClick?: () => void;
+  onClose?: () => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn("relative inline-block rounded-xl border border-gray-300 bg-gray-100 shadow", className)}>
+      <Button
+        variant="outline"
+        className="px-6 py-2 text-base font-medium"
+        onClick={onClick}
+        {...props}
+      >
+        Edit
+      </Button>
+      <button
+        type="button"
+        className="absolute top-1 right-1 p-1 text-gray-500 hover:text-gray-700"
+        aria-label="Close"
+        onClick={onClose}
+      >
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
 }
 
 export { Button, buttonVariants }

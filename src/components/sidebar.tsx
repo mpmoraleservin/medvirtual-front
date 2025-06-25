@@ -68,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: "/dashboard/admin/hire-requests",
-    label: "Hire Requests Queue",
+    label: "Hire Requests",
     icon: <ClipboardList size={20} />, roles: ["ADMIN"]
   },
   {

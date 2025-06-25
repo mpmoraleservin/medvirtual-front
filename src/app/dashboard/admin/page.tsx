@@ -1,143 +1,168 @@
 import { StatCard } from "@/components/ui/stat-card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table"
 import { Badge } from "@/components/ui/badge"
 import { ClipboardList, CalendarCheck, Hourglass, Ticket } from "lucide-react"
 import React from "react"
 
 // --- TypeScript interfaces ---
-interface Ticket {
-  id: string
-  clientName: string
-  subject: string
-  date: string
-  status: "Open" | "In Progress" | "Closed"
+interface AdminDashboardStats {
+  newHireRequests: number
+  panelsToSchedule: number
+  pendingClientDecisions: number
+  openSupportTickets: number
 }
 
-interface ActivityEvent {
+interface RecentHireRequest {
   id: string
-  type: "request" | "panel" | "decision" | "ticket"
-  message: string
+  clientName: string
+  roleRequested: string
+  status: "Pending" | "In Review" | "Scheduled" | "Completed" | "Cancelled"
   date: string
 }
 
 // --- Mock Data ---
-const actionItems = {
-  newHireRequests: 5,
-  panelsToSchedule: 2,
-  pendingDecisions: 3,
+const dashboardStats: AdminDashboardStats = {
+  newHireRequests: 8,
+  panelsToSchedule: 3,
+  pendingClientDecisions: 5,
+  openSupportTickets: 12,
 }
 
-const tickets: Ticket[] = [
-  { id: "1", clientName: "Dr. Smith", subject: "Request for more info", date: "2024-06-01", status: "Open" },
-  { id: "2", clientName: "Health Clinic", subject: "Panel reschedule", date: "2024-05-30", status: "In Progress" },
-  { id: "3", clientName: "Wellness Center", subject: "Issue with candidate", date: "2024-05-29", status: "Closed" },
+const recentHireRequests: RecentHireRequest[] = [
+  {
+    id: "1",
+    clientName: "Dr. Sarah Johnson",
+    roleRequested: "Registered Nurse",
+    status: "Pending",
+    date: "2024-06-01"
+  },
+  {
+    id: "2",
+    clientName: "Wellness Medical Center",
+    roleRequested: "Medical Assistant",
+    status: "In Review",
+    date: "2024-05-31"
+  },
+  {
+    id: "3",
+    clientName: "Dr. Michael Chen",
+    roleRequested: "Lab Technician",
+    status: "Scheduled",
+    date: "2024-05-30"
+  },
+  {
+    id: "4",
+    clientName: "Community Health Clinic",
+    roleRequested: "Receptionist",
+    status: "Completed",
+    date: "2024-05-29"
+  },
+  {
+    id: "5",
+    clientName: "Dr. Emily Rodriguez",
+    roleRequested: "Nurse Practitioner",
+    status: "Pending",
+    date: "2024-05-28"
+  },
 ]
 
-const activityFeed: ActivityEvent[] = [
-  { id: "1", type: "request", message: "New hire request submitted by Dr. Smith", date: "2024-06-01" },
-  { id: "2", type: "panel", message: "Panel interview scheduled for Health Clinic", date: "2024-05-31" },
-  { id: "3", type: "decision", message: "Pending decision for Wellness Center", date: "2024-05-30" },
-  { id: "4", type: "ticket", message: "Ticket closed for Dr. Smith", date: "2024-05-29" },
-]
+// --- Table Configuration ---
+const statusConfig = [
+  { key: "Pending", label: "Pending", color: "bg-[#009FE3] text-white border-transparent" },
+  { key: "In Review", label: "In Review", color: "bg-[#00C6F2] text-white border-transparent" },
+  { key: "Scheduled", label: "Scheduled", color: "bg-[#222] text-white border-transparent" },
+  { key: "Completed", label: "Completed", color: "bg-white text-[#009FE3] border border-[#009FE3]" },
+  { key: "Cancelled", label: "Cancelled", color: "bg-red-100 text-red-700 border-transparent" },
+];
+
+const columns: TableColumn<RecentHireRequest>[] = [
+  {
+    key: "clientName",
+    header: "Client Name",
+    searchable: true,
+    type: "text"
+  },
+  {
+    key: "roleRequested",
+    header: "Role Requested",
+    searchable: true,
+    type: "text"
+  },
+  {
+    key: "status",
+    header: "Status",
+    type: "status",
+    statusColors: {
+      "Pending": "bg-[#009FE3] text-white border-transparent",
+      "In Review": "bg-[#00C6F2] text-white border-transparent",
+      "Scheduled": "bg-[#222] text-white border-transparent",
+      "Completed": "bg-white text-[#009FE3] border border-[#009FE3]",
+      "Cancelled": "bg-red-100 text-red-700 border-transparent"
+    }
+  },
+  {
+    key: "date",
+    header: "Date",
+    type: "date"
+  }
+];
 
 export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-background flex">
-      <main className="flex-1 p-6 md:p-10 w-full">
-        <h1 className="text-3xl font-bold mb-8 text-foreground">Admin Dashboard</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Action Items */}
-          <section className="space-y-6">
-            <h2 className="text-xl font-semibold mb-2 text-foreground">Action Items</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <StatCard
-                title="New Hire Requests"
-                value={actionItems.newHireRequests}
-                icon={<ClipboardList className="h-5 w-5" />}
-                variant="primary"
-                description="Requests awaiting review"
-              />
-              <StatCard
-                title="Panels to Schedule"
-                value={actionItems.panelsToSchedule}
-                icon={<CalendarCheck className="h-5 w-5" />}
-                variant="secondary"
-                description="Panels needing scheduling"
-              />
-              <StatCard
-                title="Pending Client Decisions"
-                value={actionItems.pendingDecisions}
-                icon={<Hourglass className="h-5 w-5" />}
-                variant="warning"
-                description="Awaiting client response"
-              />
-            </div>
-          </section>
+    <div className="min-h-screen bg-white p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Admin Dashboard</h1>
+        <p className="text-muted-foreground mb-6">Overview and quick actions for the admin team</p>
+        {/* Task-Oriented Widgets */}
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-6 text-foreground">Task-Oriented Widgets</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <StatCard
+              title="New Hire Requests"
+              value={dashboardStats.newHireRequests}
+              icon={<ClipboardList className="h-5 w-5" />}
+              variant="primary"
+              description="Requests awaiting review"
+            />
+            <StatCard
+              title="Panels to Schedule"
+              value={dashboardStats.panelsToSchedule}
+              icon={<CalendarCheck className="h-5 w-5" />}
+              variant="secondary"
+              description="Panels needing scheduling"
+            />
+            <StatCard
+              title="Pending Client Decisions"
+              value={dashboardStats.pendingClientDecisions}
+              icon={<Hourglass className="h-5 w-5" />}
+              variant="warning"
+              description="Awaiting client response"
+            />
+            <StatCard
+              title="Open Support Tickets"
+              value={dashboardStats.openSupportTickets}
+              icon={<Ticket className="h-5 w-5" />}
+              variant="danger"
+              description="Tickets requiring attention"
+            />
+          </div>
+        </section>
 
-          {/* Open Tickets */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4 text-foreground flex items-center gap-2">
-              <Ticket className="h-5 w-5" /> Open Tickets
-            </h2>
-            <div className="rounded-lg border bg-card p-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client Name</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tickets.map((ticket) => (
-                    <TableRow key={ticket.id}>
-                      <TableCell>{ticket.clientName}</TableCell>
-                      <TableCell>{ticket.subject}</TableCell>
-                      <TableCell>{ticket.date}</TableCell>
-                      <TableCell>
-                        <Badge variant={
-                          ticket.status === "Open"
-                            ? "default"
-                            : ticket.status === "In Progress"
-                            ? "secondary"
-                            : "outline"
-                        }>
-                          {ticket.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </section>
-
-          {/* Recent Activity */}
-          <section className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Recent Activity</h2>
-            <div className="rounded-lg border bg-card p-4 space-y-4">
-              {activityFeed.map((event) => (
-                <div key={event.id} className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {event.type === "request" && <ClipboardList className="h-4 w-4 text-primary" />}
-                    {event.type === "panel" && <CalendarCheck className="h-4 w-4 text-secondary" />}
-                    {event.type === "decision" && <Hourglass className="h-4 w-4 text-yellow-500" />}
-                    {event.type === "ticket" && <Ticket className="h-4 w-4 text-muted-foreground" />}
-                  </div>
-                  <div>
-                    <div className="text-sm text-foreground">{event.message}</div>
-                    <div className="text-xs text-muted-foreground">{event.date}</div>
-                  </div>
-                </div>
-              ))}
-              {activityFeed.length === 0 && (
-                <div className="text-muted-foreground text-sm">No recent activity.</div>
-              )}
-            </div>
-          </section>
-        </div>
-      </main>
+        {/* Recent Hire Requests */}
+        <section>
+          <AdvancedTable
+            data={recentHireRequests}
+            columns={columns}
+            title="Recent Hire Requests"
+            statusConfig={statusConfig}
+            statusKey="status"
+            searchPlaceholder="Search by client or role..."
+            showPagination={false}
+            showPageSize={false}
+            className="mb-0"
+          />
+        </section>
+      </div>
     </div>
   )
 } 

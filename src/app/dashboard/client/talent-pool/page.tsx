@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar } from "@/components/ui/avatar";
-import { UserCheck, Star, Eye, Filter } from "lucide-react";
+import { UserCheck, Star, Eye, Filter, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Dialog as FilterDialog, DialogContent as FilterDialogContent, DialogHeader as FilterDialogHeader, DialogTitle as FilterDialogTitle, DialogFooter as FilterDialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -536,81 +536,90 @@ export default function TalentPoolPage() {
       <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
         <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
           {selectedCandidate && (
-            <div className="flex flex-col gap-6 h-full max-h-screen overflow-y-auto p-6">
-              <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
-                {/* Avatar y nombre */}
-                <div className="flex flex-col items-center md:items-start md:min-w-[120px] md:pr-4">
-                  <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-20 h-20 text-3xl mb-2" />
-                  <div className="font-bold text-2xl text-[#222] text-center md:text-left">{selectedCandidate.name}</div>
+            <div className="relative h-full flex flex-col">
+              <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
+                <div className="flex items-center gap-4">
+                  <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
+                  <div>
+                    <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
+                    <div className="text-lg text-muted-foreground font-medium">{selectedCandidate.role}</div>
+                  </div>
                 </div>
-                {/* Info principal */}
-                <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
-                  <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
-                  <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
-                    {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
-                    {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
-                    {selectedCandidate.languages.map((lang) => (
-                      <Badge key={lang} variant="outline">{lang}</Badge>
-                    ))}
-                  </div>
-                  <div className="flex gap-2 mt-4 w-full justify-center md:justify-start">
-                    <Button className="gap-2 w-full md:w-auto">
-                      <UserCheck className="w-4 h-4" /> Interview
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Button className="gap-2 bg-[#009FE3] hover:bg-[#007bbd] text-white font-semibold shadow-md" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
+                    <UserCheck className="w-4 h-4" /> Interview
+                  </Button>
+                  <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setProfileOpen(false)} className="mt-1">
+                    <X className="w-6 h-6" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="flex-1">
-                  <div className="mb-2 font-semibold text-[#222]">Specialization</div>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {selectedCandidate.specializations.map((spec) => (
-                      <Badge key={spec} variant="secondary">{spec}</Badge>
-                    ))}
-                  </div>
-                  <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {selectedCandidate.skills.map((skill) => (
-                      <Badge key={skill} variant="outline">{skill}</Badge>
-                    ))}
-                  </div>
-                  <div className="mb-2 font-semibold text-[#222]">About Me</div>
-                  <div className="text-sm text-muted-foreground mb-4">
-                    {selectedCandidate.about}
+              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
+                  {/* Info principal (sin avatar) */}
+                  <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
+                    <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
+                    <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
+                      {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
+                      {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
+                      {selectedCandidate.languages.map((lang) => (
+                        <Badge key={lang} variant="outline">{lang}</Badge>
+                      ))}
+                    </div>
                   </div>
                 </div>
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="flex-1">
+                    <div className="mb-2 font-semibold text-[#222]">Specialization</div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {selectedCandidate.specializations.map((spec) => (
+                        <Badge key={spec} variant="secondary">{spec}</Badge>
+                      ))}
+                    </div>
+                    <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {selectedCandidate.skills.map((skill) => (
+                        <Badge key={skill} variant="outline">{skill}</Badge>
+                      ))}
+                    </div>
+                    <div className="mb-2 font-semibold text-[#222]">About Me</div>
+                    <div className="text-sm text-muted-foreground mb-4">
+                      {selectedCandidate.about}
+                    </div>
+                  </div>
+                </div>
+                <Tabs defaultValue="education" className="w-full">
+                  <TabsList className="mb-2">
+                    <TabsTrigger value="education">Education</TabsTrigger>
+                    <TabsTrigger value="experience">Experience</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="education">
+                    <div className="flex flex-col gap-2">
+                      {selectedCandidate.education.map((edu, idx) => (
+                        <Card key={idx} className="p-3 flex flex-col gap-1">
+                          <div className="font-semibold">{edu.degree}</div>
+                          <div className="text-sm text-muted-foreground">{edu.institution}</div>
+                          <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="experience">
+                    <div className="flex flex-col gap-2">
+                      {selectedCandidate.experience.map((exp, idx) => (
+                        <Card key={idx} className="p-3 flex flex-col gap-1">
+                          <div className="font-semibold">{exp.role}</div>
+                          <div className="text-sm text-muted-foreground">{exp.company}</div>
+                          <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
+                          {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
-              <Tabs defaultValue="education" className="w-full">
-                <TabsList className="mb-2">
-                  <TabsTrigger value="education">Education</TabsTrigger>
-                  <TabsTrigger value="experience">Experience</TabsTrigger>
-                </TabsList>
-                <TabsContent value="education">
-                  <div className="flex flex-col gap-2">
-                    {selectedCandidate.education.map((edu, idx) => (
-                      <Card key={idx} className="p-3 flex flex-col gap-1">
-                        <div className="font-semibold">{edu.degree}</div>
-                        <div className="text-sm text-muted-foreground">{edu.institution}</div>
-                        <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="experience">
-                  <div className="flex flex-col gap-2">
-                    {selectedCandidate.experience.map((exp, idx) => (
-                      <Card key={idx} className="p-3 flex flex-col gap-1">
-                        <div className="font-semibold">{exp.role}</div>
-                        <div className="text-sm text-muted-foreground">{exp.company}</div>
-                        <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
-                        {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
             </div>
           )}
         </SheetContent>

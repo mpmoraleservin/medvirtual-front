@@ -311,6 +311,7 @@ export default function MyHiredStaffPage() {
       {/* Give Bonus Modal */}
       <Dialog open={modal === "bonus"} onOpenChange={open => { if (!open) { setModal(null); setBonusPreset(null); setBonusAmount(""); setBonusNotes(""); } }}>
         <DialogContent className="max-w-md w-full">
+          <DialogTitle className="sr-only">Staff Dialog</DialogTitle>
           <form onSubmit={handleBonusSubmit} className="flex flex-col gap-4">
             <DialogHeader>
               <DialogTitle>Give {selectedStaff?.name} a Bonus</DialogTitle>
@@ -363,6 +364,7 @@ export default function MyHiredStaffPage() {
       {/* Terminate Modal */}
       <Dialog open={modal === "terminate"} onOpenChange={open => { if (!open) { setModal(null); setTerminateReason(""); } }}>
         <DialogContent className="max-w-md w-full">
+          <DialogTitle className="sr-only">Staff Dialog</DialogTitle>
           <form onSubmit={handleTerminateSubmit} className="flex flex-col gap-4">
             <DialogHeader>
               <DialogTitle>Terminate {selectedStaff?.name}</DialogTitle>
@@ -421,9 +423,7 @@ export default function MyHiredStaffPage() {
 
       <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
         <DialogContent className="max-w-sm w-full">
-          <DialogHeader>
-            <DialogTitle>Advanced Filters</DialogTitle>
-          </DialogHeader>
+          <DialogTitle className="sr-only">Advanced Filters</DialogTitle>
           <div className="flex flex-col space-y-4 py-2">
             <Label htmlFor="role">Role</Label>
             <Input id="role" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} placeholder="e.g. Nurse" />
