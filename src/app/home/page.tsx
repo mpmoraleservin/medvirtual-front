@@ -1,22 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Eye, SearchIcon, X } from "lucide-react";
 import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table";
 
 type CandidateInfo = {

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Calendar, Clock, Users, MapPin, Building, User, Award, CheckCircle } from "lucide-react";
+import { Calendar, Clock, Users, MapPin, Building, Award, CheckCircle } from "lucide-react";
 
 // --- TypeScript interfaces ---
 export interface Candidate {
@@ -158,10 +158,10 @@ const mockPanels: Record<string, CandidatePanel> = {
 };
 
 // --- Component ---
-export default function PanelDetailsPage({ panel }: { panel?: CandidatePanel }) {
-  // Si no se pasa panel, usa el mock por defecto para desarrollo
+export default function PanelDetailsPage() {
+  // Usa el mock por defecto para desarrollo
   const fallbackPanel = mockPanels["awaiting-decision"];
-  const usedPanel = panel || fallbackPanel;
+  const usedPanel = fallbackPanel;
 
   const handleSelectWinner = (candidateId: string) => {
     console.log("Selected winner:", candidateId);
@@ -188,7 +188,7 @@ export default function PanelDetailsPage({ panel }: { panel?: CandidatePanel }) 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Panel for "{usedPanel.hireRequest.roleTitle}" Request
+            Panel for &quot;{usedPanel.hireRequest.roleTitle}&quot; Request
           </h1>
           <p className="text-muted-foreground mt-1">
             Manage candidate panel and interview details

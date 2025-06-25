@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { UserCheck, Star, Eye, Filter, X } from "lucide-react";
+import { UserCheck, Eye, Filter, X } from "lucide-react";
 import { Dialog as FilterDialog, DialogContent as FilterDialogContent, DialogHeader as FilterDialogHeader, DialogTitle as FilterDialogTitle, DialogFooter as FilterDialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -242,8 +242,6 @@ const candidates: Candidate[] = [
   },
 ];
 
-const topMatches = candidates.slice(0, 3);
-
 export default function CandidatesPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -257,9 +255,8 @@ export default function CandidatesPage() {
   const [priceMax, setPriceMax] = useState("");
   const [skillsFilter, setSkillsFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
 
-  React.useEffect(() => { setPage(1); }, [search, roleFilter, specializationFilter, languageFilter, pageSize]);
+  React.useEffect(() => { setPage(1); }, [search, roleFilter, specializationFilter, languageFilter, page]);
 
   const handleViewProfile = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
@@ -282,10 +279,10 @@ export default function CandidatesPage() {
     return matchesSearch && matchesRole && matchesSpec && matchesLang && matchesLevel && matchesPriceMin && matchesPriceMax && matchesSkills;
   });
 
-  const pageCount = Math.ceil(filteredCandidates.length / pageSize);
+  const pageCount = Math.ceil(filteredCandidates.length / page);
   const paginatedCandidates = useMemo(() =>
-    filteredCandidates.slice((page - 1) * pageSize, page * pageSize),
-    [filteredCandidates, page, pageSize]
+    filteredCandidates.slice((page - 1) * page, page * page),
+    [filteredCandidates, page]
   );
 
   return (

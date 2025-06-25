@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Users, CheckCircle } from "lucide-react";
-import Link from "next/link";
+import { Calendar, Clock, CheckCircle } from "lucide-react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { X } from "lucide-react";
 import PanelDetailsPage from "./[id]/page";
@@ -399,7 +397,7 @@ export default function CandidatePanelsPage() {
                 <X className="w-6 h-6" />
               </Button>
               <div className="flex-1 overflow-y-auto px-6 pb-6 pt-8">
-                {selectedPanel && <PanelDetailsPage panel={selectedPanel} />}
+                {selectedPanel && <PanelDetailsPage />}
               </div>
             </div>
           </SheetContent>

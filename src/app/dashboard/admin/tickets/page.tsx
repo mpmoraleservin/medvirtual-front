@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { 
   Eye, 
-  Search, 
   Filter, 
   Calendar, 
   User, 
@@ -21,11 +20,11 @@ import {
   FileText
 } from "lucide-react"
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table'
 import { Avatar } from "@/components/ui/avatar"
+import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table'
 
 // --- TypeScript interfaces ---
 interface Ticket {
@@ -270,18 +269,11 @@ const allStatuses = [
 ]
 
 // Columns for ticket details tables
-const ticketHistoryColumns: TableColumn<any>[] = [
+const ticketHistoryColumns: TableColumn<{ id: string; date: string; action: string; user: string; details: string }>[] = [
   { key: 'date', header: 'Date', type: 'text' },
   { key: 'action', header: 'Action', type: 'text' },
   { key: 'user', header: 'User', type: 'text' },
   { key: 'details', header: 'Details', type: 'text' },
-]
-
-const attachmentColumns: TableColumn<any>[] = [
-  { key: 'name', header: 'File Name', type: 'text' },
-  { key: 'size', header: 'Size', type: 'text' },
-  { key: 'uploaded', header: 'Uploaded', type: 'text' },
-  { key: 'action', header: '', type: 'action' },
 ]
 
 export default function TicketsWorkflow() {
@@ -359,7 +351,7 @@ export default function TicketsWorkflow() {
       const dragged = prev.find(t => t.id === draggableId)
       if (!dragged) return prev
       // Remove from old position
-      let newList = prev.filter(t => t.id !== draggableId)
+      const newList = prev.filter(t => t.id !== draggableId)
       // Update status
       const updated = { ...dragged, status: destStatus as Ticket["status"] }
       // Find the index to insert in destination
@@ -768,12 +760,14 @@ export default function TicketsWorkflow() {
                         <AdvancedTable
                           data={[
                             {
+                              id: '1',
                               date: selectedTicket.dateRaised,
                               action: "Ticket Created",
                               user: selectedTicket.requestedBy || "System",
                               details: "Initial ticket submission"
                             },
                             {
+                              id: '2',
                               date: selectedTicket.lastUpdated,
                               action: "Status Updated",
                               user: selectedTicket.assignedTo || "System",

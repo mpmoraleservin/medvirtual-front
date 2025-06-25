@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Calendar, Clock, Users } from "lucide-react"
+import { Calendar } from "lucide-react"
 
 // --- Mock Data ---
 interface Candidate {
@@ -172,7 +172,6 @@ export default function CreatePanelPage() {
                   <Card key={candidate.id} className="flex flex-col gap-3 p-4 hover:shadow-md transition-shadow">
                     <div className="font-semibold text-lg text-foreground">{candidate.name}</div>
                     <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <Users className="w-4 h-4" />
                       {candidate.role} &bull; {candidate.experience}
                     </div>
                     <div className="flex flex-wrap gap-2">

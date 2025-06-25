@@ -95,7 +95,7 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
 
   const onSubmit = (data: HireRequestForm) => {
     if (showClientSelection && 'clientId' in data) {
-      const selectedClient = CLIENTS.find(client => client.id === (data as any).clientId)
+      const selectedClient = CLIENTS.find(client => client.id === (data as HireRequestForm & { clientId: string }).clientId)
       alert("Request submitted!\n" + JSON.stringify({ ...data, client: selectedClient }, null, 2))
     } else {
       alert("Request submitted!\n" + JSON.stringify(data, null, 2))
@@ -110,7 +110,7 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
         {showClientSelection && (
           <div>
             <Label htmlFor="clientId">Client *</Label>
-            <Select onValueChange={v => setValue("clientId" as any, v)}>
+            <Select onValueChange={v => setValue("clientId" as keyof HireRequestForm, v)}>
               <SelectTrigger id="clientId" className="mt-1 w-full">
                 <SelectValue placeholder="Select a client" />
               </SelectTrigger>
@@ -122,8 +122,8 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
                 ))}
               </SelectContent>
             </Select>
-            {showClientSelection && (errors as any).clientId && (
-              <p className="text-destructive text-sm mt-1">{(errors as any).clientId.message}</p>
+            {showClientSelection && (errors as Record<string, { message?: string }>).clientId && (
+              <p className="text-destructive text-sm mt-1">{(errors as Record<string, { message?: string }>).clientId.message}</p>
             )}
           </div>
         )}

@@ -1,13 +1,19 @@
 "use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
@@ -81,9 +87,7 @@ export function AdvancedTable<T extends { id: string }>({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [page, setPage] = useState(1);
-  const [selectedItem, setSelectedItem] = useState<T | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [pageSize, setPageSize] = useState<number | null>(null);
+  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [manualPageSize, setManualPageSize] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
@@ -157,7 +161,7 @@ export function AdvancedTable<T extends { id: string }>({
   );
 
   // Render cell content based on column type
-  const renderCellContent = (column: TableColumn<T>, value: any, item: T) => {
+  const renderCellContent = (column: TableColumn<T>, value: T[keyof T], item: T) => {
     switch (column.type) {
       case 'status':
         const statusColors = column.statusColors || {};

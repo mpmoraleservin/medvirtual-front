@@ -8,7 +8,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Eye, Filter, Clock, Users, Calendar, CheckCircle, XCircle, X } from "lucide-react";
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
 interface HireRequest {

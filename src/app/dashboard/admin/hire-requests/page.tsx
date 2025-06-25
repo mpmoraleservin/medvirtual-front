@@ -6,14 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck } from "lucide-react";
-import Link from "next/link";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
 import { Avatar } from "@/components/ui/avatar";
+import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
 
 // Importa el componente de create-panel dinámicamente (sin SSR)
 const CreatePanel = dynamic(() => import('./[id]/create-panel/page'), { ssr: false });
@@ -24,6 +23,19 @@ interface Candidate {
   name: string;
   role: string;
   avatarUrl?: string;
+}
+
+interface AICandidate {
+  id: string;
+  rank: number;
+  name: string;
+  role: string;
+  experience: string;
+  location: string;
+  skills: string[];
+  matchScore: number;
+  availability: string;
+  certifications: string[];
 }
 
 interface HireRequest {
@@ -139,12 +151,6 @@ const allStatuses = [
   "Placement Complete",
   "Canceled"
 ];
-
-// Status colors for candidate status
-const CANDIDATE_STATUS_COLORS = {
-  Active: 'bg-green-500 text-white',
-  Inactive: 'bg-gray-400 text-white',
-};
 
 // Mock AI Top 10 candidates
 const AI_TOP_10 = [
@@ -271,13 +277,13 @@ const AI_TOP_10 = [
 ];
 
 // Columns for candidate tables
-const candidateColumns: TableColumn<any>[] = [
+const candidateColumns: TableColumn<Candidate & { action: React.ReactNode }>[] = [
   { key: 'name', header: 'Name', searchable: true, type: 'text' },
   { key: 'role', header: 'Role', searchable: true, type: 'text' },
   { key: 'action', header: '', type: 'action' },
 ];
 
-const aiTop10Columns: TableColumn<any>[] = [
+const aiTop10Columns: TableColumn<AICandidate & { action: React.ReactNode }>[] = [
   { key: 'rank', header: '#', type: 'text' },
   { key: 'name', header: 'Name', searchable: true, type: 'text' },
   { key: 'role', header: 'Role', searchable: true, type: 'text' },
@@ -309,9 +315,7 @@ export default function HireRequestsWorkflow() {
   const [showColumnDialog, setShowColumnDialog] = useState(false);
   const [panelModalOpen, setPanelModalOpen] = useState(false);
   const [panelRequestId, setPanelRequestId] = useState<string | null>(null);
-  const [candidateModal, setCandidateModal] = useState<{ open: boolean, candidate: any | null }>({ open: false, candidate: null });
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [candidateModal, setCandidateModal] = useState<{ open: boolean, candidate: (Candidate | AICandidate) | null }>({ open: false, candidate: null });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -367,7 +371,7 @@ export default function HireRequestsWorkflow() {
       const dragged = prev.find(r => r.id === draggableId);
       if (!dragged) return prev;
       // Remove from old position
-      let newList = prev.filter(r => r.id !== draggableId);
+      const newList = prev.filter(r => r.id !== draggableId);
       // Update status
       const updated = { ...dragged, status: destStatus as HireRequest["status"] };
       // Find the index to insert in destination
@@ -380,11 +384,6 @@ export default function HireRequestsWorkflow() {
       ];
     });
   }
-
-  const handleStatusChange = (requestId: string, newStatus: HireRequest["status"]) => {
-    // In a real app, this would update the backend
-    console.log(`Moving request ${requestId} to ${newStatus}`);
-  };
 
   const getDaysSinceSubmitted = (dateSubmitted: string) => {
     const submitted = new Date(dateSubmitted);
@@ -700,7 +699,7 @@ export default function HireRequestsWorkflow() {
                     </TabsContent>
                     <TabsContent value="panel">
                       <AdvancedTable
-                        data={(selectedRequest.candidates || []).map((c, idx) => ({ ...c, action: <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
+                        data={(selectedRequest.candidates || []).map((c) => ({ ...c, action: <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
                         columns={candidateColumns}
                         title={undefined}
                         statusKey={undefined}
@@ -733,7 +732,9 @@ export default function HireRequestsWorkflow() {
             <div className="flex flex-col gap-2 mt-2">
               <div><span className="font-semibold">Name:</span> {candidateModal.candidate.name}</div>
               <div><span className="font-semibold">Role:</span> {candidateModal.candidate.role}</div>
-              {candidateModal.candidate.rank && (<div><span className="font-semibold">Ranking:</span> {candidateModal.candidate.rank}</div>)}
+              {'rank' in candidateModal.candidate && candidateModal.candidate.rank && (
+                <div><span className="font-semibold">Ranking:</span> {candidateModal.candidate.rank}</div>
+              )}
             </div>
           </DialogContent>
         </Dialog>

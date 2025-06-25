@@ -1,6 +1,5 @@
 import { StatCard } from "@/components/ui/stat-card"
 import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table"
-import { Badge } from "@/components/ui/badge"
 import { ClipboardList, CalendarCheck, Hourglass, Ticket } from "lucide-react"
 import React from "react"
 

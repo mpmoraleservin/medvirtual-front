@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -133,14 +132,6 @@ export default function AdminClientsPage() {
     setEditData(null);
     setIsEditing(false);
     setProfileOpen(true);
-  };
-
-  const handleEdit = () => {
-    setEditData(selectedClient);
-    setIsEditing(true);
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
   };
 
   const handleEditChange = (field: keyof Client, value: string) => {
@@ -388,7 +379,7 @@ export default function AdminClientsPage() {
                         <select
                           className="text-sm border rounded px-2 py-1 w-full"
                           value={editData?.status || "Active"}
-                          onChange={e => handleEditChange("status", e.target.value as any)}
+                          onChange={e => handleEditChange("status", e.target.value as "Active" | "Inactive")}
                         >
                           <option value="Active">Active</option>
                           <option value="Inactive">Inactive</option>
