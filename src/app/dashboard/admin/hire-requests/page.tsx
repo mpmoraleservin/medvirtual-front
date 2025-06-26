@@ -613,7 +613,7 @@ export default function HireRequestsWorkflow() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="gap-2 bg-[#009FE3] hover:bg-[#007bbd] text-white font-semibold shadow-md" onClick={() => alert(`Request interview with ${selectedRequest.clientName}`)}>
+                    <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedRequest.clientName}`)}>
                       <UserCheck className="w-4 h-4" /> Interview
                     </Button>
                     <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setModalOpen(false)} className="mt-1">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react"
+import React, { useState, useImperativeHandle, forwardRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
@@ -52,9 +52,11 @@ const CLIENTS = [
 
 interface SubmitHireRequestFormProps {
   showClientSelection?: boolean;
+  hideSubmitButton?: boolean;
+  onSubmit?: (data: unknown) => void;
 }
 
-export default function SubmitHireRequestForm({ showClientSelection = false }: SubmitHireRequestFormProps) {
+const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showClientSelection = false, hideSubmitButton = false, onSubmit }: SubmitHireRequestFormProps, ref) {
   const [skillInput, setSkillInput] = useState("")
   
   const schema = createHireRequestSchema(showClientSelection)
@@ -73,6 +75,16 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
       requiredSkills: [],
     },
   })
+
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      if (formRef.current) {
+        formRef.current.requestSubmit();
+      }
+    }
+  }));
 
   const handleAddSkill = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && skillInput.trim()) {
@@ -93,18 +105,22 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
     )
   }
 
-  const onSubmit = (data: HireRequestForm) => {
-    if (showClientSelection && 'clientId' in data) {
-      const selectedClient = CLIENTS.find(client => client.id === (data as HireRequestForm & { clientId: string }).clientId)
-      alert("Request submitted!\n" + JSON.stringify({ ...data, client: selectedClient }, null, 2))
+  const handleFormSubmit = (data: HireRequestForm) => {
+    if (onSubmit) {
+      onSubmit(data);
     } else {
-      alert("Request submitted!\n" + JSON.stringify(data, null, 2))
+      if (showClientSelection && 'clientId' in data) {
+        const selectedClient = CLIENTS.find(client => client.id === (data as HireRequestForm & { clientId: string }).clientId)
+        alert("Request submitted!\n" + JSON.stringify({ ...data, client: selectedClient }, null, 2))
+      } else {
+        alert("Request submitted!\n" + JSON.stringify(data, null, 2))
+      }
     }
     reset()
   }
 
   return (
-    <form className="max-w-2xl mx-auto w-full" onSubmit={handleSubmit(onSubmit)}>
+    <form ref={formRef} className="max-w-2xl mx-auto w-full" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Fila 1: Client | Role Title */}
         {showClientSelection && (
@@ -203,12 +219,16 @@ export default function SubmitHireRequestForm({ showClientSelection = false }: S
           )}
         </div>
         {/* Fila 5: Botón (col-span-2, centrado) */}
-        <div className="md:col-span-2 flex justify-center">
-          <Button type="submit" size="lg" className="w-full md:w-auto mt-4 md:mt-0">
-            Submit Request
-          </Button>
-        </div>
+        {!hideSubmitButton && (
+          <div className="md:col-span-2 flex justify-center">
+            <Button type="submit" size="lg" className="w-full md:w-auto mt-4 md:mt-0">
+              Submit Request
+            </Button>
+          </div>
+        )}
       </div>
     </form>
   )
-} 
+});
+
+export default SubmitHireRequestForm; 

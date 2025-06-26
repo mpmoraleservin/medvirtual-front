@@ -466,7 +466,7 @@ export default function CandidatesPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="gap-2 bg-[#009FE3] hover:bg-[#007bbd] text-white font-semibold shadow-md" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
+                    <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
                       Interview
                     </Button>
                   </div>

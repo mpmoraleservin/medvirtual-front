@@ -6,8 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar } from "@/components/ui/avatar";
-import { UserCheck, Star, Eye, Filter, X } from "lucide-react";
+import { UserCheck, Star, Eye, Filter, X, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Dialog as FilterDialog, DialogContent as FilterDialogContent, DialogHeader as FilterDialogHeader, DialogTitle as FilterDialogTitle, DialogFooter as FilterDialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -45,6 +44,7 @@ interface Candidate {
   experienceLevel: "Junior" | "Mid" | "Senior";
 }
 
+// Same mock data as client page
 const candidates: Candidate[] = [
   {
     id: "1",
@@ -242,7 +242,18 @@ const candidates: Candidate[] = [
 
 const topMatches = candidates.slice(0, 3);
 
-export default function TalentPoolPage() {
+// Helper function to convert name to initials
+const getInitials = (name: string): string => {
+  return name
+    .split(' ')
+    .map(word => word.charAt(0))
+    .join('. ') + '.';
+};
+
+// Color palette from prospect dashboard
+const blue = "#009FE3";
+
+export default function ProspectTalentPoolPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [search, setSearch] = useState("");
@@ -259,6 +270,10 @@ export default function TalentPoolPage() {
   const handleViewProfile = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
     setProfileOpen(true);
+  };
+
+  const handleContactAccountManager = () => {
+    alert("Contacting account manager... Please check your email for the PandaDoc service agreement.");
   };
 
   const filteredCandidates = candidates.filter((c) => {
@@ -308,9 +323,15 @@ export default function TalentPoolPage() {
               </Button>
               {/* Avatar y datos */}
               <div className="flex flex-row items-center gap-3 w-full sm:flex-col sm:items-center sm:gap-2 sm:mt-6 sm:mb-4">
-                <Avatar name={candidate.name} src={candidate.avatarUrl} className="w-10 h-10 sm:w-12 sm:h-12 text-lg sm:text-xl" />
+                {/* Generic avatar for prospects */}
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" />
+                </div>
                 <div className="flex-1 flex flex-col items-start sm:items-center">
-                  <div className="font-bold text-sm sm:text-base text-[#222] text-left sm:text-center">{candidate.name}</div>
+                  {/* Anonymized name */}
+                  <div className="font-bold text-sm sm:text-base text-[#222] text-left sm:text-center">
+                    {getInitials(candidate.name)}
+                  </div>
                   <div className="text-muted-foreground text-xs sm:text-sm text-left sm:text-center">{candidate.role}</div>
                   <div className="flex flex-wrap gap-1 mt-1 justify-start sm:justify-center">
                     {candidate.specializations.map((spec) => (
@@ -329,15 +350,15 @@ export default function TalentPoolPage() {
               <div className="w-full mt-2 sm:mt-auto pt-1 sm:pt-2">
                 <Button
                   className="w-full py-2 text-xs sm:hidden" variant="accent"
-                  onClick={() => alert(`Request interview with ${candidate.name}`)}
+                  onClick={() => handleViewProfile(candidate)}
                 >
                   <UserCheck className="w-5 h-5" />
                 </Button>
                 <Button
                   className="w-full gap-2 text-base hidden sm:inline-flex py-3" variant="accent"
-                  onClick={() => alert(`Request interview with ${candidate.name}`)}
+                  onClick={() => handleViewProfile(candidate)}
                 >
-                  <UserCheck className="w-4 h-4" /> Request Interview
+                  <UserCheck className="w-4 h-4" /> View Profile
                 </Button>
               </div>
             </Card>
@@ -381,9 +402,13 @@ export default function TalentPoolPage() {
           {paginatedCandidates.map((candidate) => (
             <div key={candidate.id} className="rounded-lg border bg-white p-3 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center gap-3">
-                <Avatar name={candidate.name} src={candidate.avatarUrl} />
+                {/* Generic avatar for prospects */}
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="w-5 h-5 text-gray-600" />
+                </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-[#222] leading-tight text-sm">{candidate.name}</div>
+                  {/* Anonymized name */}
+                  <div className="font-semibold text-[#222] leading-tight text-sm">{getInitials(candidate.name)}</div>
                   <div className="text-xs text-muted-foreground leading-tight">{candidate.role}</div>
                 </div>
               </div>
@@ -429,9 +454,13 @@ export default function TalentPoolPage() {
                 <TableRow key={candidate.id} className="bg-white border-b border-[#F1F1F1] hover:bg-[#F6F6F7] transition-colors group">
                   <TableCell className="py-4 align-middle">
                     <div className="flex items-center gap-3">
-                      <Avatar name={candidate.name} src={candidate.avatarUrl} />
+                      {/* Generic avatar for prospects */}
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <User className="w-5 h-5 text-gray-600" />
+                      </div>
                       <div>
-                        <div className="font-semibold text-[#222] leading-tight">{candidate.name}</div>
+                        {/* Anonymized name */}
+                        <div className="font-semibold text-[#222] leading-tight">{getInitials(candidate.name)}</div>
                         <div className="text-sm text-muted-foreground leading-tight">{candidate.role}</div>
                       </div>
                     </div>
@@ -530,93 +559,112 @@ export default function TalentPoolPage() {
         </FilterDialog>
       </section>
 
-      {/* Candidate Profile Sheet (lateral) */}
+      {/* Candidate Profile Sheet (lateral) with Blur Effect and CTA */}
       <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
         <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
           {selectedCandidate && (
             <div className="relative h-full flex flex-col">
               <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
                 <div className="flex items-center gap-4">
-                  <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
+                  {/* Generic avatar for prospects */}
+                  <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center">
+                    <User className="w-8 h-8 text-gray-600" />
+                  </div>
                   <div>
-                    <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
+                    {/* Anonymized name in header */}
+                    <h2 className="text-2xl font-bold">{getInitials(selectedCandidate.name)}</h2>
                     <div className="text-lg text-muted-foreground font-medium">{selectedCandidate.role}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
-                    <UserCheck className="w-4 h-4" /> Interview
-                  </Button>
                   <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setProfileOpen(false)} className="mt-1">
                     <X className="w-6 h-6" />
                   </Button>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
-                  {/* Info principal (sin avatar) */}
-                  <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
-                    <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
-                    <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
-                      {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
-                      {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
-                      {selectedCandidate.languages.map((lang) => (
-                        <Badge key={lang} variant="outline">{lang}</Badge>
-                      ))}
+              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2 relative">
+                {/* Conversion CTA Banner - Non-blurred */}
+                <div className="absolute top-4 left-6 right-6 z-20 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 shadow-lg">
+                  <h2 className="text-lg font-bold text-blue-900 mb-2">Unlock Full Candidate Details</h2>
+                  <p className="text-blue-800 text-sm mb-3">
+                    To view the complete profile, work history, and interview details, please sign the PandaDoc service agreement sent to your email.
+                  </p>
+                  <Button 
+                    onClick={handleContactAccountManager}
+                    style={{ backgroundColor: blue, borderColor: blue }}
+                    className="hover:opacity-90"
+                  >
+                    Contact Account Manager
+                  </Button>
+                </div>
+
+                {/* Blurred Content */}
+                <div className="filter blur-sm select-none pointer-events-none">
+                  <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
+                    {/* Info principal (sin avatar) */}
+                    <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
+                      <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
+                      <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
+                        {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
+                        {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
+                        {selectedCandidate.languages.map((lang) => (
+                          <Badge key={lang} variant="outline">{lang}</Badge>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div className="flex-1">
-                    <div className="mb-2 font-semibold text-[#222]">Specialization</div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {selectedCandidate.specializations.map((spec) => (
-                        <Badge key={spec} variant="secondary">{spec}</Badge>
-                      ))}
-                    </div>
-                    <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {selectedCandidate.skills.map((skill) => (
-                        <Badge key={skill} variant="outline">{skill}</Badge>
-                      ))}
-                    </div>
-                    <div className="mb-2 font-semibold text-[#222]">About Me</div>
-                    <div className="text-sm text-muted-foreground mb-4">
-                      {selectedCandidate.about}
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="flex-1">
+                      <div className="mb-2 font-semibold text-[#222]">Specialization</div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedCandidate.specializations.map((spec) => (
+                          <Badge key={spec} variant="secondary">{spec}</Badge>
+                        ))}
+                      </div>
+                      <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedCandidate.skills.map((skill) => (
+                          <Badge key={skill} variant="outline">{skill}</Badge>
+                        ))}
+                      </div>
+                      <div className="mb-2 font-semibold text-[#222]">About Me</div>
+                      <div className="text-sm text-muted-foreground mb-4">
+                        {selectedCandidate.about}
+                      </div>
                     </div>
                   </div>
+                  <Tabs defaultValue="education" className="w-full">
+                    <TabsList className="mb-2">
+                      <TabsTrigger value="education">Education</TabsTrigger>
+                      <TabsTrigger value="experience">Experience</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="education">
+                      <div className="flex flex-col gap-2">
+                        {selectedCandidate.education.map((edu, idx) => (
+                          <Card key={idx} className="p-3 flex flex-col gap-1">
+                            <div className="font-semibold">{edu.degree}</div>
+                            <div className="text-sm text-muted-foreground">{edu.institution}</div>
+                            <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
+                          </Card>
+                        ))}
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="experience">
+                      <div className="flex flex-col gap-2">
+                        {selectedCandidate.experience.map((exp, idx) => (
+                          <Card key={idx} className="p-3 flex flex-col gap-1">
+                            <div className="font-semibold">{exp.role}</div>
+                            <div className="text-sm text-muted-foreground">{exp.company}</div>
+                            <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
+                            {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
+                          </Card>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </div>
-                <Tabs defaultValue="education" className="w-full">
-                  <TabsList className="mb-2">
-                    <TabsTrigger value="education">Education</TabsTrigger>
-                    <TabsTrigger value="experience">Experience</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="education">
-                    <div className="flex flex-col gap-2">
-                      {selectedCandidate.education.map((edu, idx) => (
-                        <Card key={idx} className="p-3 flex flex-col gap-1">
-                          <div className="font-semibold">{edu.degree}</div>
-                          <div className="text-sm text-muted-foreground">{edu.institution}</div>
-                          <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="experience">
-                    <div className="flex flex-col gap-2">
-                      {selectedCandidate.experience.map((exp, idx) => (
-                        <Card key={idx} className="p-3 flex flex-col gap-1">
-                          <div className="font-semibold">{exp.role}</div>
-                          <div className="text-sm text-muted-foreground">{exp.company}</div>
-                          <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
-                          {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-                </Tabs>
               </div>
             </div>
           )}

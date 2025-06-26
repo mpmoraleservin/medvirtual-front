@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, UserPlus } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import SubmitHireRequestForm from "@/components/ui/submit-hire-request-form";
 
@@ -152,6 +152,24 @@ export default function Header({ userRole }: HeaderProps) {
           </Dialog>
         </div>
       )}
+      {userRole === "PROSPECT" && (
+        <div className="flex gap-2 items-center">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <Button size="lg" className="gap-2" variant="default" aria-label="Submit Hire Request" onClick={() => setOpen(true)}>
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Submit Your First Hire Request</span>
+            </Button>
+            <DialogContent className="max-w-2xl w-full min-h-[540px] flex flex-col">
+              <div className="flex flex-col flex-1 min-h-[480px]">
+                <DialogHeader className="mb-2">
+                  <DialogTitle>Submit Your First Hire Request</DialogTitle>
+                </DialogHeader>
+                <StepperProspectHireRequest onClose={() => setOpen(false)} />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
       {userRole === "ADMIN" && (
         <div className="flex gap-2 items-center">
           <Button 
@@ -284,5 +302,121 @@ export default function Header({ userRole }: HeaderProps) {
         </div>
       )}
     </header>
+  );
+}
+
+function StepperProspectHireRequest({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState(1);
+  const [org, setOrg] = useState({
+    companyName: "",
+    companyIndustry: "",
+    companyDescription: ""
+  });
+  const orgValid = org.companyName.trim() && org.companyIndustry.trim() && org.companyDescription.trim();
+
+  // Ref for role form
+  const roleFormRef = useRef<unknown>(null);
+  const handleRoleFormSubmit = () => {
+    setStep(3);
+  };
+
+  // Ref for organization form
+  const orgFormRef = useRef<HTMLFormElement>(null);
+
+  // Stepper visual
+  function StepCircle({ active, number, label }: { active: boolean, number: number, label: string }) {
+    return (
+      <div className="flex flex-col items-center min-w-[90px]">
+        <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 text-lg font-bold transition-all ${active ? 'border-[#009FE3] text-[#009FE3] bg-[#E6F6FD]' : 'border-muted-foreground text-muted-foreground bg-muted'}`}>{number}</div>
+        <span className={`mt-2 text-xs font-semibold ${active ? 'text-[#009FE3]' : 'text-muted-foreground'}`}>{label}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col flex-1 min-h-[400px]">
+      {/* Stepper visual y contenido centrado verticalmente */}
+      <div className="flex flex-col flex-1 justify-center gap-6">
+        <div className="flex items-center justify-center gap-0 mb-4">
+          <StepCircle active={step === 1} number={1} label="Organization" />
+          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 1 ? 'bg-[#009FE3]' : 'bg-muted-foreground/30'} transition-all`} />
+          <StepCircle active={step === 2} number={2} label="Role" />
+          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 2 ? 'bg-[#009FE3]' : 'bg-muted-foreground/30'} transition-all`} />
+          <StepCircle active={step === 3} number={3} label="Agreement" />
+        </div>
+        {/* Step 1: Organization */}
+        {step === 1 && (
+          <form
+            ref={orgFormRef}
+            className="flex flex-col gap-4 min-h-[260px] justify-center"
+            onSubmit={e => {
+              e.preventDefault();
+              if (orgValid) setStep(2);
+            }}
+          >
+            <label className="font-semibold">Company Name
+              <input
+                name="companyName"
+                type="text"
+                required
+                value={org.companyName}
+                onChange={e => setOrg(o => ({ ...o, companyName: e.target.value }))}
+                className="mt-1 block w-full rounded border px-3 py-2 text-base border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                placeholder="Your company name"
+              />
+            </label>
+            <label className="font-semibold">Industry / What do you do?
+              <input
+                name="companyIndustry"
+                type="text"
+                required
+                value={org.companyIndustry}
+                onChange={e => setOrg(o => ({ ...o, companyIndustry: e.target.value }))}
+                className="mt-1 block w-full rounded border px-3 py-2 text-base border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                placeholder="e.g. Healthcare, Clinic, Hospital, etc."
+              />
+            </label>
+            <label className="font-semibold">Description
+              <textarea
+                name="companyDescription"
+                required
+                value={org.companyDescription}
+                onChange={e => setOrg(o => ({ ...o, companyDescription: e.target.value }))}
+                className="mt-1 block w-full rounded border px-3 py-2 text-base min-h-[100px] border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                placeholder="Describe your company"
+              />
+            </label>
+          </form>
+        )}
+        {/* Step 2: Role */}
+        {step === 2 && (
+          <div className="flex flex-col gap-4 min-h-[260px] justify-center">
+            <SubmitHireRequestForm hideSubmitButton onSubmit={handleRoleFormSubmit} ref={roleFormRef} />
+          </div>
+        )}
+        {/* Step 3: PandaDoc */}
+        {step === 3 && (
+          <div className="flex flex-col items-center justify-center gap-6 min-h-[260px]">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-full bg-[#009FE3]/10 flex items-center justify-center mb-2">
+                <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path stroke="#009FE3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 12.5l3 3 5-5M12 21C6.477 21 2 16.523 2 11.001 2 5.477 6.477 1 12 1s10 4.477 10 10.001C22 16.523 17.523 21 12 21z"/></svg>
+              </div>
+              <h3 className="text-xl font-bold text-center text-foreground">Almost done!</h3>
+              <p className="text-center text-muted-foreground max-w-md">To start the search, you must sign the PandaDoc agreement. However, your request is ready and an agent will contact you soon to guide you through the process.</p>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* Footer de botones siempre abajo */}
+      <div className="flex justify-between items-center mt-6">
+        {step === 1 && <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>}
+        {step === 2 && <Button type="button" variant="ghost" onClick={() => setStep(1)}>Back</Button>}
+        {step === 3 && <Button type="button" variant="ghost" onClick={() => setStep(2)}>Back</Button>}
+        <div className="flex-1" />
+        {step === 1 && <Button type="button" disabled={!orgValid} variant="accent" onClick={() => orgFormRef.current?.requestSubmit()}>Next</Button>}
+        {step === 2 && <Button type="button" variant="accent" onClick={() => (roleFormRef.current as { submit?: () => void })?.submit?.()}>Next</Button>}
+        {step === 3 && <Button variant="accent" onClick={() => { toast.success('Request submitted!'); onClose(); }}>Create Request</Button>}
+      </div>
+    </div>
   );
 } 

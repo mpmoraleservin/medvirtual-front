@@ -11,7 +11,6 @@ import {
   Users2,
   PanelLeft,
   ClipboardList,
-  UserCog,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,8 +35,13 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: "/dashboard/prospect/hire-requests",
-    label: "My Requests",
+    label: "My Hire Requests",
     icon: <ListChecks size={20} />, roles: ["PROSPECT"]
+  },
+  {
+    href: "/dashboard/prospect/talent-pool",
+    label: "Talent Pool",
+    icon: <Users2 size={20} />, roles: ["PROSPECT"]
   },
   // Active Client
   {
@@ -102,6 +106,20 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
   const navItems = NAV_ITEMS.filter((item) => item.roles.includes(userRole));
   const pathname = usePathname();
 
+  // Get the appropriate profile link based on user role
+  const getProfileLink = () => {
+    switch (userRole) {
+      case "PROSPECT":
+        return "/dashboard/prospect/profile";
+      case "ACTIVE_CLIENT":
+        return "/dashboard/client/profile";
+      case "ADMIN":
+        return "/dashboard/admin/profile";
+      default:
+        return "/dashboard/prospect/profile";
+    }
+  };
+
   return (
     <aside
       className={`hidden sm:flex fixed left-0 top-0 z-30 flex-col items-start justify-between w-64 h-screen bg-white border-r border-[#E9EAEB]${className ? ` ${className}` : ""}`}
@@ -127,34 +145,25 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
         </nav>
       </div>
       <div className="w-full flex flex-col gap-2">
-        <div className="px-4">
-          <Link
-            href="/settings"
-            className="w-full flex items-center gap-3 font-medium text-[#181D27] text-sm rounded-[6px] px-3 py-2 hover:bg-gray-100 transition-colors"
-          >
-            <UserCog size={20} />
-            Settings
-          </Link>
-        </div>
         <Separator />
-        <div className="flex items-center justify-center p-2">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGasA3GR9lZOu0QmGpOt_lz5f1o0hOJTD_RA&s"
-            alt="profile"
-            className="w-10 rounded-full mr-4"
-          />
+        <Link href={getProfileLink()} className="flex items-center justify-center p-2 hover:bg-gray-50 transition-colors">
+          <div className="w-10 h-10 rounded-full bg-[#E9F1FF] text-[#009FE3] font-bold text-base flex items-center justify-center mr-4">
+            DS
+          </div>
           <div className="flex flex-col mr-10">
             <span className="font-medium text-sm text-[#181D27]">
-              Elizabeth Pascoe
+              Dr. Smith
             </span>
             <span className="font-medium text-xs text-[#717680]">
-              Super Admin
+              {userRole === "PROSPECT" ? "Prospect" : 
+               userRole === "ACTIVE_CLIENT" ? "Active Client" : 
+               "Super Admin"}
             </span>
           </div>
           <button className="cursor-pointer">
             <LogOut size={16} color="gray" />
           </button>
-        </div>
+        </Link>
       </div>
     </aside>
   );
