@@ -37,7 +37,7 @@ export default function CreatePanelPage() {
   const [interviewDate, setInterviewDate] = useState("")
   const [interviewTime, setInterviewTime] = useState("")
 
-  // Filtro de candidatos por búsqueda semántica simple
+  // Simple semantic search filter for candidates
   const filteredCandidates = useMemo(() => {
     return CANDIDATES.filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -47,7 +47,7 @@ export default function CreatePanelPage() {
     ).filter(c => !panel.some(p => p.id === c.id))
   }, [search, panel])
 
-  // Añadir candidato al panel
+  // Add candidate to panel
   const handleAddToPanel = (candidate: Candidate) => {
     if (panel.length < PANEL_SIZE && !panel.some(c => c.id === candidate.id)) {
       setPanel([...panel, candidate])

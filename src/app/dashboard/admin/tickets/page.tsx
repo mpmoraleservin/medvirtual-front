@@ -239,12 +239,12 @@ const mockTickets: Ticket[] = [
 
 // --- Status Configuration ---
 const statusConfig = {
-  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Ticket recién creado" },
-  "In Review": { label: "In Review", color: "bg-blue-500 text-white", count: 0, description: "En revisión por el equipo" },
-  "In Progress": { label: "In Progress", color: "bg-yellow-500 text-white", count: 0, description: "Trabajando en la solución" },
-  "Awaiting Response": { label: "Awaiting Response", color: "bg-purple-500 text-white", count: 0, description: "Esperando respuesta del cliente" },
-  "Resolved": { label: "Resolved", color: "bg-green-500 text-white", count: 0, description: "Ticket resuelto" },
-  "Closed": { label: "Closed", color: "bg-red-500 text-white", count: 0, description: "Ticket cerrado" },
+  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Ticket just created" },
+  "In Review": { label: "In Review", color: "bg-blue-500 text-white", count: 0, description: "Under review by the team" },
+  "In Progress": { label: "In Progress", color: "bg-yellow-500 text-white", count: 0, description: "Working on the solution" },
+  "Awaiting Response": { label: "Awaiting Response", color: "bg-purple-500 text-white", count: 0, description: "Waiting for client response" },
+  "Resolved": { label: "Resolved", color: "bg-green-500 text-white", count: 0, description: "Ticket resolved" },
+  "Closed": { label: "Closed", color: "bg-red-500 text-white", count: 0, description: "Ticket closed" },
 }
 
 const typeConfig = {
@@ -534,7 +534,7 @@ export default function TicketsWorkflow() {
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
                                 <Card className="p-4 flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                  {/* Header con botón de ver arriba a la derecha */}
+                                  {/* Header with view button on top right */}
                                   <div className="flex items-start justify-between mb-1">
                                     <div className="flex flex-col gap-0.5">
                                       <span className="font-semibold text-base text-foreground line-clamp-1">{ticket.clientName}</span>

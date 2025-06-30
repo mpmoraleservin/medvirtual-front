@@ -335,7 +335,7 @@ function StepperProspectHireRequest({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="flex flex-col flex-1 min-h-[400px]">
-      {/* Stepper visual y contenido centrado verticalmente */}
+      {/* Stepper visual and content centered vertically */}
       <div className="flex flex-col flex-1 justify-center gap-6">
         <div className="flex items-center justify-center gap-0 mb-4">
           <StepCircle active={step === 1} number={1} label="Organization" />
@@ -407,7 +407,7 @@ function StepperProspectHireRequest({ onClose }: { onClose: () => void }) {
           </div>
         )}
       </div>
-      {/* Footer de botones siempre abajo */}
+      {/* Footer buttons always at bottom */}
       <div className="flex justify-between items-center mt-6">
         {step === 1 && <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>}
         {step === 2 && <Button type="button" variant="ghost" onClick={() => setStep(1)}>Back</Button>}

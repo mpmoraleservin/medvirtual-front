@@ -59,7 +59,7 @@ function Button({
   )
 }
 
-// Botón de edición con X de cerrar
+// Edit button with X to close
 export function EditButtonWithClose({ onClick, onClose, className, ...props }: {
   onClick?: () => void;
   onClose?: () => void;

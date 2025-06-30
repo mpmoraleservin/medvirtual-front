@@ -122,7 +122,7 @@ const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showCl
   return (
     <form ref={formRef} className="max-w-2xl mx-auto w-full" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Fila 1: Client | Role Title */}
+        {/* Row 1: Client | Role Title */}
         {showClientSelection && (
           <div>
             <Label htmlFor="clientId">Client *</Label>
@@ -151,7 +151,7 @@ const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showCl
             <p className="text-destructive text-sm mt-1">{errors.roleTitle.message}</p>
           )}
         </div>
-        {/* Fila 2: Practice Area | Schedule Needs */}
+        {/* Row 2: Practice Area | Schedule Needs */}
         <div>
           <Label htmlFor="practiceArea">Practice Area</Label>
           <Select onValueChange={v => setValue("practiceArea", v)}>
@@ -183,7 +183,7 @@ const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showCl
             <p className="text-destructive text-sm mt-1">{errors.scheduleNeeds.message}</p>
           )}
         </div>
-        {/* Fila 3: Required Skills (col-span-2) */}
+        {/* Row 3: Required Skills (col-span-2) */}
         <div className="md:col-span-2">
           <Label htmlFor="requiredSkills">Required Skills</Label>
           <Input
@@ -209,7 +209,7 @@ const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showCl
             <p className="text-destructive text-sm mt-1">{errors.requiredSkills.message}</p>
           )}
         </div>
-        {/* Fila 4: Key Responsibilities (col-span-2) */}
+        {/* Row 4: Key Responsibilities (col-span-2) */}
         <div className="md:col-span-2">
           <Label htmlFor="keyResponsibilities">Key Responsibilities</Label>
           <Textarea id="keyResponsibilities" {...register("keyResponsibilities")}
@@ -218,7 +218,7 @@ const SubmitHireRequestForm = forwardRef(function SubmitHireRequestForm({ showCl
             <p className="text-destructive text-sm mt-1">{errors.keyResponsibilities.message}</p>
           )}
         </div>
-        {/* Fila 5: Botón (col-span-2, centrado) */}
+        {/* Row 5: Button (col-span-2, centered) */}
         {!hideSubmitButton && (
           <div className="md:col-span-2 flex justify-center">
             <Button type="submit" size="lg" className="w-full md:w-auto mt-4 md:mt-0">

@@ -22,7 +22,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
       <Sidebar userRole="ACTIVE_CLIENT" className="hidden sm:block" />
       <div className="flex-1 w-0 min-h-screen ml-0 sm:ml-64 flex flex-col">
         <Header userRole="ACTIVE_CLIENT" />
-        <main className="flex-1 pt-20 pb-20 px-2 sm:px-8 overflow-x-auto">{/* pb-20 para dejar espacio al menú inferior */}
+        <main className="flex-1 pt-20 pb-20 px-2 sm:px-8 overflow-x-auto">{/* pb-20 to leave space for bottom menu */}
           {children}
         </main>
         {/* Bottom Navigation solo mobile */}

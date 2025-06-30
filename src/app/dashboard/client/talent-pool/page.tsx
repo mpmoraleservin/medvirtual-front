@@ -325,7 +325,7 @@ export default function TalentPoolPage() {
                   <div className="mt-1 text-[10px] sm:text-xs text-muted-foreground">Exp: <span className="font-medium">{candidate.experienceLevel}</span></div>
                 </div>
               </div>
-              {/* Botón fijo abajo solo en mobile, en desktop normal */}
+              {/* Fixed button at bottom only on mobile, normal on desktop */}
               <div className="w-full mt-2 sm:mt-auto pt-1 sm:pt-2">
                 <Button
                   className="w-full py-2 text-xs sm:hidden" variant="accent"

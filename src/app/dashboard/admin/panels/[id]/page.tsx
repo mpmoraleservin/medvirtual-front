@@ -165,7 +165,7 @@ export default function PanelDetailsPage() {
 
   const handleSelectWinner = (candidateId: string) => {
     console.log("Selected winner:", candidateId);
-    // Aquí iría la lógica real
+    // Here would go the real logic
     alert(`Candidate ${candidateId} selected as winner!`);
   };
 
@@ -181,6 +181,9 @@ export default function PanelDetailsPage() {
         return "bg-gray-500 text-white";
     }
   };
+
+  // Here would go the real logic
+  // (handleSaveNotes function removed as it was unused)
 
   return (
     <div className="space-y-6">

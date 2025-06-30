@@ -14,8 +14,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar } from "@/components/ui/avatar";
 import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
 
-// Importa el componente de create-panel dinámicamente (sin SSR)
-const CreatePanel = dynamic(() => import('./[id]/create-panel/page'), { ssr: false });
+// Import the create-panel component dynamically (without SSR)
+const CreatePanelModal = dynamic(() => import('./[id]/create-panel/page'), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
+});
 
 // --- TypeScript interfaces ---
 interface Candidate {
@@ -77,23 +80,23 @@ function formatDate(date: Date) {
 }
 
 const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
-  // dateSubmitted: entre hoy y hace 29 días
+  // dateSubmitted: between today and 29 days ago
   const dateSubmitted = new Date(today);
   dateSubmitted.setDate(today.getDate() - (i % 30));
 
-  // panelDate: 2-7 días después de dateSubmitted, solo para algunos
+  // panelDate: 2-7 days after dateSubmitted, only for some
   let panelDate: string | undefined = undefined;
   if (i % 3 === 0) {
     const d = new Date(dateSubmitted);
-    d.setDate(today.getDate() + 2 + (i % 6));
+    d.setDate(d.getDate() + 2 + (i % 6));
     panelDate = formatDate(d);
   }
 
-  // interviewDate: 5-10 días después de dateSubmitted, solo para algunos
+  // interviewDate: 5-10 days after dateSubmitted, only for some
   let interviewDate: string | undefined = undefined;
   if (i % 4 === 0) {
     const d = new Date(dateSubmitted);
-    d.setDate(today.getDate() + 5 + (i % 5));
+    d.setDate(d.getDate() + 5 + (i % 6));
     interviewDate = formatDate(d);
   }
 
@@ -127,13 +130,13 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
 });
 
 const statusConfig = {
-  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Cliente acaba de enviar la solicitud" },
-  "Sourcing": { label: "Sourcing", color: "bg-blue-500 text-white", count: 0, description: "Buscando candidatos en el pool" },
-  "Panel Ready": { label: "Panel Ready", color: "bg-yellow-500 text-white", count: 0, description: "5 candidatos seleccionados" },
-  "Interview Scheduled": { label: "Interview Scheduled", color: "bg-purple-500 text-white", count: 0, description: "Entrevista agendada" },
-  "Awaiting Decision": { label: "Awaiting Decision", color: "bg-orange-500 text-white", count: 0, description: "Esperando decisión del cliente" },
-  "Placement Complete": { label: "Placement Complete", color: "bg-green-500 text-white", count: 0, description: "Contratación completada" },
-  "Canceled": { label: "Canceled", color: "bg-red-500 text-white", count: 0, description: "Solicitud cancelada" },
+  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Client just submitted the request" },
+  "Sourcing": { label: "Sourcing", color: "bg-blue-500 text-white", count: 0, description: "Searching for candidates in the pool" },
+  "Panel Ready": { label: "Panel Ready", color: "bg-yellow-500 text-white", count: 0, description: "5 candidates selected" },
+  "Interview Scheduled": { label: "Interview Scheduled", color: "bg-purple-500 text-white", count: 0, description: "Interview scheduled" },
+  "Awaiting Decision": { label: "Awaiting Decision", color: "bg-orange-500 text-white", count: 0, description: "Waiting for client decision" },
+  "Placement Complete": { label: "Placement Complete", color: "bg-green-500 text-white", count: 0, description: "Hiring completed" },
+  "Canceled": { label: "Canceled", color: "bg-red-500 text-white", count: 0, description: "Request canceled" },
 };
 
 const priorityColors = {
@@ -520,8 +523,8 @@ export default function HireRequestsWorkflow() {
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
                                 <Card className="p-4 flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                  {/* Header con botón de ver arriba a la derecha */}
-                                  <div className="flex items-start justify-between mb-1">
+                                  {/* Header with view button on top right */}
+                                  <div className="flex items-center justify-between mb-4">
                                     <div className="flex flex-col gap-0.5">
                                       <span className="font-semibold text-base text-foreground line-clamp-1">{request.clientName}</span>
                                       <span className="text-xs text-muted-foreground">{request.role}</span>
@@ -721,7 +724,7 @@ export default function HireRequestsWorkflow() {
       {/* Modal Dialog para Create Panel */}
       <Dialog open={panelModalOpen} onOpenChange={open => { setPanelModalOpen(open); if (!open) setPanelRequestId(null); }}>
         <DialogContent className="w-screen h-screen max-w-5xl max-h-[95vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
-          {panelRequestId && <CreatePanel key={panelRequestId} />}
+          {panelRequestId && <CreatePanelModal key={panelRequestId} />}
         </DialogContent>
       </Dialog>
       {/* Modal simple para ver registro de candidato */}

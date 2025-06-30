@@ -55,18 +55,18 @@ const STATUS_ICONS: Record<HireRequest["status"], React.ReactNode> = {
   "Canceled": <XCircle className="w-4 h-4" />,
 };
 
-// Fecha base: hoy es 2025-06-25
-const today = new Date(2025, 5, 25); // Mes 5 = Junio (0-indexed)
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+const today = new Date('2025-06-25');
+
 const hireRequests: HireRequest[] = Array.from({ length: 11 }).map((_, i) => {
-  // dateSubmitted: entre hoy y hace 10 días
+  // dateSubmitted: between today and 10 days ago
   const dateSubmitted = new Date(today);
   dateSubmitted.setDate(today.getDate() - (i % 11));
 
-  // interviewDate: 2-7 días después de dateSubmitted, solo para algunos
+  // interviewDate: 2-7 days after dateSubmitted, only for some
   let interviewDate: string | undefined = undefined;
   if (i % 4 === 0) {
     const d = new Date(dateSubmitted);
@@ -98,7 +98,7 @@ const hireRequests: HireRequest[] = Array.from({ length: 11 }).map((_, i) => {
     department: base[i].department,
     requestedBy: base[i].requestedBy,
     candidatesCount: base[i].candidatesCount,
-    interviewDate,
+    interviewDate: interviewDate,
   };
 });
 
@@ -160,19 +160,19 @@ export default function MyHireRequestsPage() {
   const getStatusDescription = (status: HireRequest["status"]) => {
     switch (status) {
       case "New":
-        return "Cliente acaba de enviar la solicitud";
+        return "Client just submitted the request";
       case "Sourcing":
-        return "Buscando candidatos en el pool";
+        return "Searching for candidates in the pool";
       case "Panel Ready":
-        return "5 candidatos seleccionados";
+        return "5 candidates selected";
       case "Interview Scheduled":
-        return "Entrevista agendada";
+        return "Interview scheduled";
       case "Awaiting Decision":
-        return "Esperando decisión del cliente";
+        return "Waiting for client decision";
       case "Placement Complete":
-        return "Contratación completada";
+        return "Hiring completed";
       case "Canceled":
-        return "Solicitud cancelada";
+        return "Request canceled";
       default:
         return "";
     }
@@ -229,7 +229,7 @@ export default function MyHireRequestsPage() {
         </div>
       </div>
       <div className="flex flex-col rounded-lg border bg-card p-4">
-        {/* Tabla tradicional solo en desktop */}
+        {/* Traditional table only on desktop */}
         <div className="hidden sm:block overflow-x-auto">
           <Table className="w-full min-w-[600px]">
             <TableHeader>
