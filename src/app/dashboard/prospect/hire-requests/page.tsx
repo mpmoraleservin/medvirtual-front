@@ -3,14 +3,16 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table";
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle, Info, Clock } from "lucide-react";
 
-// --- TypeScript interfaces ---
+// Unified Hire Request Status Type
+type HireRequestStatus = "Pending Signature";
+
 interface HireRequest {
   id: string;
   role: string;
   dateSubmitted: string;
-  status: "Pending Signature";
+  status: HireRequestStatus;
   description?: string;
 }
 
@@ -35,6 +37,15 @@ const hireRequests: HireRequest[] = [
 // Color palette from prospect dashboard
 const blue = "#009FE3";
 
+// Unified status configuration
+const STATUS_CONFIG = {
+  "Pending Signature": {
+    color: "bg-amber-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Waiting for client to sign service agreement"
+  }
+};
+
 // --- Advanced Table Configuration ---
 const columns: TableColumn<HireRequest>[] = [
   {
@@ -54,7 +65,7 @@ const columns: TableColumn<HireRequest>[] = [
     type: "badge",
     badgeConfig: {
       variant: "secondary",
-      className: "bg-blue-100 text-blue-800 border-blue-200"
+      className: STATUS_CONFIG["Pending Signature"].color
     }
   },
   {

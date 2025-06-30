@@ -171,6 +171,8 @@ export default function PanelDetailsPage() {
 
   const getStatusColor = (status: CandidatePanel["status"]) => {
     switch (status) {
+      case "Panel Ready":
+        return "bg-yellow-500 text-white";
       case "Interview Scheduled":
         return "bg-purple-500 text-white";
       case "Awaiting Decision":

@@ -23,10 +23,11 @@ import {
   XCircle, 
   Eye, 
   Plus, 
-  UserPlus,
-  
+  UserPlus, 
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  CheckCircle,
+  CheckSquare
 } from "lucide-react";
 
 // --- TypeScript interfaces ---
@@ -80,13 +81,76 @@ interface Candidate {
   experienceLevel: "Junior" | "Mid" | "Senior";
 }
 
+// Unified Hire Request Status Type
+type HireRequestStatus = 
+  | "Pending Signature"
+  | "New" 
+  | "Sourcing"
+  | "Panel Ready"
+  | "Interview Scheduled"
+  | "Awaiting Decision"
+  | "Placement Complete"
+  | "Canceled";
+
 interface HireRequest {
   id: string;
   role: string;
-  status: "Open" | "Interviewing" | "Hired" | "Closed";
+  status: HireRequestStatus;
   date: string;
   candidates: Candidate[];
 }
+
+// Unified status configuration using app's design system
+const STATUS_CONFIG: Record<HireRequestStatus, {
+  color: string;
+  icon: React.ReactNode;
+  description: string;
+}> = {
+  "Pending Signature": {
+    color: "bg-amber-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Waiting for client to sign service agreement"
+  },
+  "New": {
+    color: "bg-gray-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Client just submitted the request"
+  },
+  "Sourcing": {
+    color: "bg-blue-500 text-white border-transparent",
+    icon: <Users className="w-4 h-4" />,
+    description: "Searching for candidates in the pool"
+  },
+  "Panel Ready": {
+    color: "bg-yellow-500 text-white border-transparent",
+    icon: <CheckCircle className="w-4 h-4" />,
+    description: "Candidates selected and ready for review"
+  },
+  "Interview Scheduled": {
+    color: "bg-purple-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Interview scheduled with client"
+  },
+  "Awaiting Decision": {
+    color: "bg-orange-500 text-white border-transparent",
+    icon: <AlertCircle className="w-4 h-4" />,
+    description: "Waiting for client decision"
+  },
+  "Placement Complete": {
+    color: "bg-green-500 text-white border-transparent",
+    icon: <CheckSquare className="w-4 h-4" />,
+    description: "Hiring completed successfully"
+  },
+  "Canceled": {
+    color: "bg-red-500 text-white border-transparent",
+    icon: <XCircle className="w-4 h-4" />,
+    description: "Request canceled"
+  }
+};
+
+// Helper functions
+const getStatusColor = (status: HireRequestStatus) => STATUS_CONFIG[status].color;
+const getStatusIcon = (status: HireRequestStatus) => STATUS_CONFIG[status].icon;
 
 // --- Mock Data ---
 const clientName = "Dr. Smith";
@@ -239,21 +303,21 @@ const hireRequests: HireRequest[] = [
   { 
     id: "1", 
     role: "Registered Nurse", 
-    status: "Open", 
+    status: "New", 
     date: "2024-06-01",
     candidates: []
   },
   { 
     id: "2", 
     role: "Medical Receptionist", 
-    status: "Interviewing", 
+    status: "Interview Scheduled", 
     date: "2024-05-28",
     candidates: [candidate1, candidate2, candidate3]
   },
   { 
     id: "3", 
     role: "Lab Technician", 
-    status: "Hired", 
+    status: "Placement Complete", 
     date: "2024-05-20",
     candidates: [candidate3]
   },
@@ -752,13 +816,10 @@ export default function ClientDashboardV2() {
                     <p className="text-sm text-gray-500">Created: {request.date}</p>
                   </div>
                   <Badge 
-                    variant={
-                      request.status === "Open" ? "default" :
-                      request.status === "Interviewing" ? "secondary" :
-                      request.status === "Hired" ? "default" : "outline"
-                    }
-                    className="text-sm"
+                    variant="outline"
+                    className={`text-sm ${getStatusColor(request.status)}`}
                   >
+                    {getStatusIcon(request.status)}
                     {request.status}
                   </Badge>
                 </div>

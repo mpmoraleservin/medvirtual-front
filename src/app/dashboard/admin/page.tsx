@@ -11,11 +11,22 @@ interface AdminDashboardStats {
   openSupportTickets: number
 }
 
+// Unified Hire Request Status Type
+type HireRequestStatus = 
+  | "Pending Signature"
+  | "New" 
+  | "Sourcing"
+  | "Panel Ready"
+  | "Interview Scheduled"
+  | "Awaiting Decision"
+  | "Placement Complete"
+  | "Canceled";
+
 interface RecentHireRequest {
   id: string
   clientName: string
   roleRequested: string
-  status: "Pending" | "In Review" | "Scheduled" | "Completed" | "Cancelled"
+  status: HireRequestStatus
   date: string
 }
 
@@ -32,46 +43,49 @@ const recentHireRequests: RecentHireRequest[] = [
     id: "1",
     clientName: "Dr. Sarah Johnson",
     roleRequested: "Registered Nurse",
-    status: "Pending",
+    status: "New",
     date: "2024-06-01"
   },
   {
     id: "2",
     clientName: "Wellness Medical Center",
     roleRequested: "Medical Assistant",
-    status: "In Review",
+    status: "Sourcing",
     date: "2024-05-31"
   },
   {
     id: "3",
     clientName: "Dr. Michael Chen",
     roleRequested: "Lab Technician",
-    status: "Scheduled",
+    status: "Interview Scheduled",
     date: "2024-05-30"
   },
   {
     id: "4",
     clientName: "Community Health Clinic",
     roleRequested: "Receptionist",
-    status: "Completed",
+    status: "Placement Complete",
     date: "2024-05-29"
   },
   {
     id: "5",
     clientName: "Dr. Emily Rodriguez",
     roleRequested: "Nurse Practitioner",
-    status: "Pending",
+    status: "Awaiting Decision",
     date: "2024-05-28"
   },
 ]
 
 // --- Table Configuration ---
 const statusConfig = [
-  { key: "Pending", label: "Pending", color: "bg-[#009FE3] text-white border-transparent" },
-  { key: "In Review", label: "In Review", color: "bg-[#00C6F2] text-white border-transparent" },
-  { key: "Scheduled", label: "Scheduled", color: "bg-[#222] text-white border-transparent" },
-  { key: "Completed", label: "Completed", color: "bg-white text-[#009FE3] border border-[#009FE3]" },
-  { key: "Cancelled", label: "Cancelled", color: "bg-red-100 text-red-700 border-transparent" },
+  { key: "Pending Signature", label: "Pending Signature", color: "bg-amber-500 text-white border-transparent" },
+  { key: "New", label: "New", color: "bg-gray-500 text-white border-transparent" },
+  { key: "Sourcing", label: "Sourcing", color: "bg-blue-500 text-white border-transparent" },
+  { key: "Panel Ready", label: "Panel Ready", color: "bg-yellow-500 text-white border-transparent" },
+  { key: "Interview Scheduled", label: "Interview Scheduled", color: "bg-purple-500 text-white border-transparent" },
+  { key: "Awaiting Decision", label: "Awaiting Decision", color: "bg-orange-500 text-white border-transparent" },
+  { key: "Placement Complete", label: "Placement Complete", color: "bg-green-500 text-white border-transparent" },
+  { key: "Canceled", label: "Canceled", color: "bg-red-500 text-white border-transparent" },
 ];
 
 const columns: TableColumn<RecentHireRequest>[] = [
@@ -92,11 +106,14 @@ const columns: TableColumn<RecentHireRequest>[] = [
     header: "Status",
     type: "status",
     statusColors: {
-      "Pending": "bg-[#009FE3] text-white border-transparent",
-      "In Review": "bg-[#00C6F2] text-white border-transparent",
-      "Scheduled": "bg-[#222] text-white border-transparent",
-      "Completed": "bg-white text-[#009FE3] border border-[#009FE3]",
-      "Cancelled": "bg-red-100 text-red-700 border-transparent"
+      "Pending Signature": "bg-amber-500 text-white border-transparent",
+      "New": "bg-gray-500 text-white border-transparent",
+      "Sourcing": "bg-blue-500 text-white border-transparent",
+      "Panel Ready": "bg-yellow-500 text-white border-transparent",
+      "Interview Scheduled": "bg-purple-500 text-white border-transparent",
+      "Awaiting Decision": "bg-orange-500 text-white border-transparent",
+      "Placement Complete": "bg-green-500 text-white border-transparent",
+      "Canceled": "bg-red-500 text-white border-transparent"
     }
   },
   {

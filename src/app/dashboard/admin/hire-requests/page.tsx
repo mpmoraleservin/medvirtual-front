@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck } from "lucide-react";
+import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck, AlertCircle, CheckSquare } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -41,13 +41,24 @@ interface AICandidate {
   certifications: string[];
 }
 
+// Unified Hire Request Status Type
+type HireRequestStatus = 
+  | "Pending Signature"
+  | "New" 
+  | "Sourcing"
+  | "Panel Ready"
+  | "Interview Scheduled"
+  | "Awaiting Decision"
+  | "Placement Complete"
+  | "Canceled";
+
 interface HireRequest {
   id: string;
   clientName: string;
   role: string;
   dateSubmitted: string;
   assignedTo: string;
-  status: "New" | "Sourcing" | "Panel Ready" | "Interview Scheduled" | "Awaiting Decision" | "Placement Complete" | "Canceled";
+  status: HireRequestStatus;
   priority: "High" | "Medium" | "Low";
   candidatesCount?: number;
   panelDate?: string;
@@ -129,14 +140,56 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
   };
 });
 
+// Unified status configuration using app's design system
 const statusConfig = {
-  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Client just submitted the request" },
-  "Sourcing": { label: "Sourcing", color: "bg-blue-500 text-white", count: 0, description: "Searching for candidates in the pool" },
-  "Panel Ready": { label: "Panel Ready", color: "bg-yellow-500 text-white", count: 0, description: "5 candidates selected" },
-  "Interview Scheduled": { label: "Interview Scheduled", color: "bg-purple-500 text-white", count: 0, description: "Interview scheduled" },
-  "Awaiting Decision": { label: "Awaiting Decision", color: "bg-orange-500 text-white", count: 0, description: "Waiting for client decision" },
-  "Placement Complete": { label: "Placement Complete", color: "bg-green-500 text-white", count: 0, description: "Hiring completed" },
-  "Canceled": { label: "Canceled", color: "bg-red-500 text-white", count: 0, description: "Request canceled" },
+  "Pending Signature": { 
+    label: "Pending Signature", 
+    color: "bg-amber-500 text-white", 
+    count: 0, 
+    description: "Waiting for client to sign service agreement" 
+  },
+  "New": { 
+    label: "New", 
+    color: "bg-gray-500 text-white", 
+    count: 0, 
+    description: "Client just submitted the request" 
+  },
+  "Sourcing": { 
+    label: "Sourcing", 
+    color: "bg-blue-500 text-white", 
+    count: 0, 
+    description: "Searching for candidates in the pool" 
+  },
+  "Panel Ready": { 
+    label: "Panel Ready", 
+    color: "bg-yellow-500 text-white", 
+    count: 0, 
+    description: "Candidates selected and ready for review" 
+  },
+  "Interview Scheduled": { 
+    label: "Interview Scheduled", 
+    color: "bg-purple-500 text-white", 
+    count: 0, 
+    description: "Interview scheduled with client" 
+  },
+  "Awaiting Decision": { 
+    label: "Awaiting Decision", 
+    color: "bg-orange-500 text-white", 
+    count: 0, 
+    description: "Waiting for client decision" 
+  },
+  "Placement Complete": { 
+    label: "Placement Complete", 
+    color: "bg-green-500 text-white", 
+    count: 0, 
+    description: "Hiring completed successfully" 
+  },
+  "Canceled": { 
+    label: "Canceled", 
+    color: "bg-red-500 text-white", 
+    count: 0, 
+    description: "Request canceled" 
+  },
 };
 
 const priorityColors = {
@@ -146,6 +199,7 @@ const priorityColors = {
 };
 
 const allStatuses = [
+  "Pending Signature",
   "New",
   "Sourcing",
   "Panel Ready",
@@ -337,6 +391,7 @@ export default function HireRequestsWorkflow() {
       return matchesSearch && matchesAssigned && matchesPriority;
     });
     const grouped: Record<string, HireRequest[]> = {
+      "Pending Signature": [],
       "New": [],
       "Sourcing": [],
       "Panel Ready": [],
@@ -353,6 +408,7 @@ export default function HireRequestsWorkflow() {
   }, [requests, search, assignedFilter, priorityFilter]);
 
   const statusOrder = [
+    "Pending Signature",
     "New",
     "Sourcing",
     "Panel Ready",
@@ -396,24 +452,26 @@ export default function HireRequestsWorkflow() {
     return diffDays;
   };
 
-  const getStatusIcon = (status: HireRequest["status"]) => {
+  const getStatusIcon = (status: HireRequestStatus) => {
     switch (status) {
+      case "Pending Signature":
+        return <Clock className="w-4 h-4" />
       case "New":
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="w-4 h-4" />
       case "Sourcing":
-        return <User className="w-4 h-4" />;
+        return <User className="w-4 h-4" />
       case "Panel Ready":
-        return <CheckCircle className="w-4 h-4" />;
+        return <CheckCircle className="w-4 h-4" />
       case "Interview Scheduled":
-        return <Calendar className="w-4 h-4" />;
+        return <Calendar className="w-4 h-4" />
       case "Awaiting Decision":
-        return <Clock className="w-4 h-4" />;
+        return <AlertCircle className="w-4 h-4" />
       case "Placement Complete":
-        return <CheckCircle className="w-4 h-4" />;
+        return <CheckSquare className="w-4 h-4" />
       case "Canceled":
-        return <XCircle className="w-4 h-4" />;
+        return <XCircle className="w-4 h-4" />
       default:
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="w-4 h-4" />
     }
   };
 
@@ -503,7 +561,7 @@ export default function HireRequestsWorkflow() {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                           <Badge className={statusConfig[status as keyof typeof statusConfig].color}>
-                            {getStatusIcon(status as HireRequest["status"])}
+                            {getStatusIcon(status as HireRequestStatus)}
                             {statusConfig[status as keyof typeof statusConfig].label}
                           </Badge>
                           <span className="text-sm text-muted-foreground">

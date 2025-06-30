@@ -5,17 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Eye, Filter, Clock, Users, Calendar, CheckCircle, XCircle, X } from "lucide-react";
+import { Eye, Filter, Clock, Users, Calendar, CheckCircle, XCircle, X, AlertCircle, CheckSquare } from "lucide-react";
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
+// Unified Hire Request Status Type
+type HireRequestStatus = 
+  | "Pending Signature"
+  | "New" 
+  | "Sourcing"
+  | "Panel Ready"
+  | "Interview Scheduled"
+  | "Awaiting Decision"
+  | "Placement Complete"
+  | "Canceled";
+
 interface HireRequest {
   id: string;
   role: string;
   dateSubmitted: string;
-  status: "New" | "Sourcing" | "Panel Ready" | "Interview Scheduled" | "Awaiting Decision" | "Placement Complete" | "Canceled";
+  status: HireRequestStatus;
   description?: string;
   location?: string;
   department?: string;
@@ -26,6 +37,7 @@ interface HireRequest {
 
 const STATUS_OPTIONS = [
   "All",
+  "Pending Signature",
   "New",
   "Sourcing",
   "Panel Ready",
@@ -35,25 +47,54 @@ const STATUS_OPTIONS = [
   "Canceled",
 ] as const;
 
-const STATUS_COLORS: Record<HireRequest["status"], string> = {
-  "New": "bg-gray-500 text-white border-transparent",
-  "Sourcing": "bg-blue-500 text-white border-transparent",
-  "Panel Ready": "bg-yellow-500 text-white border-transparent",
-  "Interview Scheduled": "bg-purple-500 text-white border-transparent",
-  "Awaiting Decision": "bg-orange-500 text-white border-transparent",
-  "Placement Complete": "bg-green-500 text-white border-transparent",
-  "Canceled": "bg-red-500 text-white border-transparent",
-};
+// Unified status configuration using app's design system
+const STATUS_CONFIG = {
+  "Pending Signature": {
+    color: "bg-amber-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Waiting for client to sign service agreement"
+  },
+  "New": {
+    color: "bg-gray-500 text-white border-transparent",
+    icon: <Clock className="w-4 h-4" />,
+    description: "Client just submitted the request"
+  },
+  "Sourcing": {
+    color: "bg-blue-500 text-white border-transparent",
+    icon: <Users className="w-4 h-4" />,
+    description: "Searching for candidates in the pool"
+  },
+  "Panel Ready": {
+    color: "bg-yellow-500 text-white border-transparent",
+    icon: <CheckCircle className="w-4 h-4" />,
+    description: "Candidates selected and ready for review"
+  },
+  "Interview Scheduled": {
+    color: "bg-purple-500 text-white border-transparent",
+    icon: <Calendar className="w-4 h-4" />,
+    description: "Interview scheduled with client"
+  },
+  "Awaiting Decision": {
+    color: "bg-orange-500 text-white border-transparent",
+    icon: <AlertCircle className="w-4 h-4" />,
+    description: "Waiting for client decision"
+  },
+  "Placement Complete": {
+    color: "bg-green-500 text-white border-transparent",
+    icon: <CheckSquare className="w-4 h-4" />,
+    description: "Hiring completed successfully"
+  },
+  "Canceled": {
+    color: "bg-red-500 text-white border-transparent",
+    icon: <XCircle className="w-4 h-4" />,
+    description: "Request canceled"
+  }
+} as const;
 
-const STATUS_ICONS: Record<HireRequest["status"], React.ReactNode> = {
-  "New": <Clock className="w-4 h-4" />,
-  "Sourcing": <Users className="w-4 h-4" />,
-  "Panel Ready": <CheckCircle className="w-4 h-4" />,
-  "Interview Scheduled": <Calendar className="w-4 h-4" />,
-  "Awaiting Decision": <Clock className="w-4 h-4" />,
-  "Placement Complete": <CheckCircle className="w-4 h-4" />,
-  "Canceled": <XCircle className="w-4 h-4" />,
-};
+// Helper functions
+const getStatusColor = (status: HireRequestStatus) => STATUS_CONFIG[status].color;
+const getStatusIcon = (status: HireRequestStatus) => STATUS_CONFIG[status].icon;
+const getStatusDescription = (status: HireRequestStatus) => STATUS_CONFIG[status].description;
 
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
@@ -75,24 +116,24 @@ const hireRequests: HireRequest[] = Array.from({ length: 11 }).map((_, i) => {
   }
 
   const base = [
-    { role: "Medical Receptionist", status: "New", description: "Front desk support for clinic.", location: "Miami, FL", department: "Reception", requestedBy: "Dr. Smith" },
-    { role: "Registered Nurse", status: "Sourcing", description: "Experienced RN for ER.", location: "Orlando, FL", department: "Nursing", requestedBy: "Dr. Lee", candidatesCount: 12 },
-    { role: "Lab Technician", status: "Panel Ready", description: "Bloodwork and diagnostics.", location: "Tampa, FL", department: "Lab", requestedBy: "Dr. Patel", candidatesCount: 5 },
-    { role: "Front Desk Specialist", status: "Interview Scheduled", description: "Patient check-in/out.", location: "Jacksonville, FL", department: "Reception", requestedBy: "Dr. Gomez" },
-    { role: "Physician Assistant", status: "Awaiting Decision", description: "Support for outpatient clinic.", location: "Miami, FL", department: "Medical", requestedBy: "Dr. Smith" },
-    { role: "Billing Coordinator", status: "Placement Complete", description: "Insurance and billing support.", location: "Orlando, FL", department: "Billing", requestedBy: "Dr. Lee" },
-    { role: "X-Ray Technician", status: "Sourcing", description: "Radiology support.", location: "Tampa, FL", department: "Radiology", requestedBy: "Dr. Patel", candidatesCount: 8 },
-    { role: "Nurse Practitioner", status: "Interview Scheduled", description: "Primary care NP.", location: "Jacksonville, FL", department: "Nursing", requestedBy: "Dr. Gomez" },
-    { role: "Medical Biller", status: "Awaiting Decision", description: "Claims and billing.", location: "Miami, FL", department: "Billing", requestedBy: "Dr. Smith" },
-    { role: "Receptionist", status: "Placement Complete", description: "Front desk support.", location: "Orlando, FL", department: "Reception", requestedBy: "Dr. Lee" },
-    { role: "Surgical Tech", status: "Canceled", description: "Surgical support.", location: "Miami, FL", department: "Surgery", requestedBy: "Dr. Smith" },
+    { role: "Medical Receptionist", status: "New" as HireRequestStatus, description: "Front desk support for clinic.", location: "Miami, FL", department: "Reception", requestedBy: "Dr. Smith" },
+    { role: "Registered Nurse", status: "Sourcing" as HireRequestStatus, description: "Experienced RN for ER.", location: "Orlando, FL", department: "Nursing", requestedBy: "Dr. Lee", candidatesCount: 12 },
+    { role: "Lab Technician", status: "Panel Ready" as HireRequestStatus, description: "Bloodwork and diagnostics.", location: "Tampa, FL", department: "Lab", requestedBy: "Dr. Patel", candidatesCount: 5 },
+    { role: "Front Desk Specialist", status: "Interview Scheduled" as HireRequestStatus, description: "Patient check-in/out.", location: "Jacksonville, FL", department: "Reception", requestedBy: "Dr. Gomez" },
+    { role: "Physician Assistant", status: "Awaiting Decision" as HireRequestStatus, description: "Support for outpatient clinic.", location: "Miami, FL", department: "Medical", requestedBy: "Dr. Smith" },
+    { role: "Billing Coordinator", status: "Placement Complete" as HireRequestStatus, description: "Insurance and billing support.", location: "Orlando, FL", department: "Billing", requestedBy: "Dr. Lee" },
+    { role: "X-Ray Technician", status: "Sourcing" as HireRequestStatus, description: "Radiology support.", location: "Tampa, FL", department: "Radiology", requestedBy: "Dr. Patel", candidatesCount: 8 },
+    { role: "Nurse Practitioner", status: "Interview Scheduled" as HireRequestStatus, description: "Primary care NP.", location: "Jacksonville, FL", department: "Nursing", requestedBy: "Dr. Gomez" },
+    { role: "Medical Biller", status: "Awaiting Decision" as HireRequestStatus, description: "Claims and billing.", location: "Miami, FL", department: "Billing", requestedBy: "Dr. Smith" },
+    { role: "Receptionist", status: "Placement Complete" as HireRequestStatus, description: "Front desk support.", location: "Orlando, FL", department: "Reception", requestedBy: "Dr. Lee" },
+    { role: "Surgical Tech", status: "Canceled" as HireRequestStatus, description: "Surgical support.", location: "Miami, FL", department: "Surgery", requestedBy: "Dr. Smith" },
   ];
 
   return {
     id: (i + 1).toString(),
     role: base[i].role,
     dateSubmitted: formatDate(dateSubmitted),
-    status: base[i].status as HireRequest["status"],
+    status: base[i].status,
     description: base[i].description,
     location: base[i].location,
     department: base[i].department,
@@ -156,27 +197,6 @@ export default function MyHireRequestsPage() {
     filteredRequests.slice((page - 1) * effectivePageSize, page * effectivePageSize),
     [filteredRequests, page, effectivePageSize]
   );
-
-  const getStatusDescription = (status: HireRequest["status"]) => {
-    switch (status) {
-      case "New":
-        return "Client just submitted the request";
-      case "Sourcing":
-        return "Searching for candidates in the pool";
-      case "Panel Ready":
-        return "5 candidates selected";
-      case "Interview Scheduled":
-        return "Interview scheduled";
-      case "Awaiting Decision":
-        return "Waiting for client decision";
-      case "Placement Complete":
-        return "Hiring completed";
-      case "Canceled":
-        return "Request canceled";
-      default:
-        return "";
-    }
-  };
 
   return (
     <div className="flex flex-col w-full max-w-none px-4 sm:px-8 py-8">
@@ -261,8 +281,8 @@ export default function MyHireRequestsPage() {
                   </TableCell>
                   <TableCell className="py-3 sm:py-4 align-middle text-xs sm:text-base">
                     <div className="flex items-center gap-2">
-                      {STATUS_ICONS[req.status]}
-                      <Badge className={STATUS_COLORS[req.status]}>
+                      {getStatusIcon(req.status)}
+                      <Badge className={getStatusColor(req.status)}>
                         {req.status}
                       </Badge>
                     </div>
@@ -309,8 +329,8 @@ export default function MyHireRequestsPage() {
                   <div className="text-xs text-muted-foreground leading-tight">{req.department} &middot; {req.location}</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {STATUS_ICONS[req.status]}
-                  <Badge className={`text-xs ${STATUS_COLORS[req.status]}`}>
+                  {getStatusIcon(req.status)}
+                  <Badge className={`text-xs ${getStatusColor(req.status)}`}>
                     {req.status}
                   </Badge>
                 </div>
@@ -382,129 +402,152 @@ export default function MyHireRequestsPage() {
         )}
       </div>
 
-      {/* Advanced Filters Dialog */}
-      <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
-        <DialogContent className="max-w-sm w-full">
-          <DialogTitle className="sr-only">Advanced Filters</DialogTitle>
-          <div className="flex flex-col space-y-4 py-2">
-            <div>
-              <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                value={departmentFilter}
-                onChange={e => setDepartmentFilter(e.target.value)}
-                placeholder="e.g. Nursing"
-              />
+      {/* Request Details Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogTitle className="flex items-center justify-between">
+            <span>Request Details</span>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setModalOpen(false)}
+              className="h-6 w-6"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogTitle>
+          {selectedRequest && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Role</Label>
+                  <p className="text-sm">{selectedRequest.role}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getStatusIcon(selectedRequest.status)}
+                    <Badge className={getStatusColor(selectedRequest.status)}>
+                      {selectedRequest.status}
+                    </Badge>
+                  </div>
+                </div>
+                {selectedRequest.department && (
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Department</Label>
+                    <p className="text-sm">{selectedRequest.department}</p>
+                  </div>
+                )}
+                {selectedRequest.location && (
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Location</Label>
+                    <p className="text-sm">{selectedRequest.location}</p>
+                  </div>
+                )}
+                {selectedRequest.requestedBy && (
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Requested By</Label>
+                    <p className="text-sm">{selectedRequest.requestedBy}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Date Submitted</Label>
+                  <p className="text-sm">{selectedRequest.dateSubmitted}</p>
+                </div>
+              </div>
+              {selectedRequest.description && (
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Description</Label>
+                  <p className="text-sm mt-1">{selectedRequest.description}</p>
+                </div>
+              )}
+              {selectedRequest.candidatesCount && (
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Candidates Found</Label>
+                  <p className="text-sm">{selectedRequest.candidatesCount} candidates</p>
+                </div>
+              )}
+              {selectedRequest.interviewDate && (
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Interview Date</Label>
+                  <p className="text-sm">{selectedRequest.interviewDate}</p>
+                </div>
+              )}
             </div>
-            <div>
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={locationFilter}
-                onChange={e => setLocationFilter(e.target.value)}
-                placeholder="e.g. Miami, FL"
-              />
-            </div>
-            <div>
-              <Label htmlFor="dateFrom">Date From</Label>
-              <Input
-                id="dateFrom"
-                type="date"
-                value={dateFrom}
-                onChange={e => setDateFrom(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="dateTo">Date To</Label>
-              <Input
-                id="dateTo"
-                type="date"
-                value={dateTo}
-                onChange={e => setDateTo(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter className="flex flex-col gap-2 mt-2">
-            <Button onClick={() => { setDepartmentFilter(""); setLocationFilter(""); setDateFrom(""); setDateTo(""); }}>Clear Filters</Button>
-            <Button onClick={() => setFilterOpen(false)} variant="default">Apply</Button>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* View Details Sheet */}
-      {selectedRequest && (
-        <Sheet open={modalOpen} onOpenChange={setModalOpen}>
-          <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
-            <div className="relative h-full flex flex-col">
-              <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-start justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">{selectedRequest.role}</h2>
-                  <div className="text-lg text-muted-foreground font-medium">{selectedRequest.status}</div>
-                </div>
-                <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setModalOpen(false)} className="mt-1">
-                  <X className="w-6 h-6" />
-                </Button>
+      {/* Advanced Filters Sheet */}
+      <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
+        <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Advanced Filters</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="department">Department</Label>
+                <Input
+                  id="department"
+                  placeholder="Filter by department..."
+                  value={departmentFilter}
+                  onChange={e => setDepartmentFilter(e.target.value)}
+                />
               </div>
-              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
-                <div className="space-y-3">
-                  <div>
-                    <span className="font-semibold">Status:</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      {STATUS_ICONS[selectedRequest.status]}
-                      <Badge className={STATUS_COLORS[selectedRequest.status]}>
-                        {selectedRequest.status}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {getStatusDescription(selectedRequest.status)}
-                    </p>
-                  </div>
-                  {selectedRequest.description && (
-                    <div>
-                      <span className="font-semibold">Description:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.description}</p>
-                    </div>
-                  )}
-                  {selectedRequest.department && (
-                    <div>
-                      <span className="font-semibold">Department:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.department}</p>
-                    </div>
-                  )}
-                  {selectedRequest.location && (
-                    <div>
-                      <span className="font-semibold">Location:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.location}</p>
-                    </div>
-                  )}
-                  {selectedRequest.requestedBy && (
-                    <div>
-                      <span className="font-semibold">Requested By:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.requestedBy}</p>
-                    </div>
-                  )}
-                  <div>
-                    <span className="font-semibold">Date Submitted:</span>
-                    <p className="text-sm text-muted-foreground mt-1">{selectedRequest.dateSubmitted}</p>
-                  </div>
-                  {selectedRequest.candidatesCount && (
-                    <div>
-                      <span className="font-semibold">Candidates Found:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.candidatesCount}</p>
-                    </div>
-                  )}
-                  {selectedRequest.interviewDate && (
-                    <div>
-                      <span className="font-semibold">Interview Date:</span>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedRequest.interviewDate}</p>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  placeholder="Filter by location..."
+                  value={locationFilter}
+                  onChange={e => setLocationFilter(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="dateFrom">Date From</Label>
+                <Input
+                  id="dateFrom"
+                  type="date"
+                  value={dateFrom}
+                  onChange={e => setDateFrom(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="dateTo">Date To</Label>
+                <Input
+                  id="dateTo"
+                  type="date"
+                  value={dateTo}
+                  onChange={e => setDateTo(e.target.value)}
+                />
               </div>
             </div>
-          </SheetContent>
-        </Sheet>
-      )}
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDepartmentFilter("");
+                  setLocationFilter("");
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className="flex-1"
+              >
+                Clear All
+              </Button>
+              <Button onClick={() => setFilterOpen(false)} className="flex-1">
+                Apply Filters
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 } 

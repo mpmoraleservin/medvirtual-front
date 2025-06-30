@@ -10,20 +10,20 @@ import PanelDetailsPage from "./[id]/page";
 import type { HireRequest, Candidate } from "./[id]/page";
 import { PageTitle } from "@/components/ui/page-title";
 
-// --- TypeScript interfaces ---
-interface CandidatePanel {
+export interface CandidatePanel {
   id: string;
-  hireRequestTitle: string;
-  clientName: string;
-  dateCreated: string;
-  status: "Panel Ready" | "Interview Scheduled" | "Awaiting Decision" | "Placement Complete";
-  candidatesCount: number;
-  scheduledDate?: string;
-  assignedTo: string;
-  priority: "High" | "Medium" | "Low";
-  actions?: React.ReactNode;
   hireRequest: HireRequest;
   candidates: Candidate[];
+  status: "Panel Ready" | "Interview Scheduled" | "Awaiting Decision" | "Placement Complete";
+  dateCreated: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  assignedTo: string;
+  winnerId?: string;
+  hireRequestTitle: string;
+  clientName: string;
+  candidatesCount: number;
+  priority: "High" | "Medium" | "Low";
 }
 
 // --- Mock Data ---
@@ -147,12 +147,28 @@ const candidatePanels: CandidatePanel[] = [
   }
 ];
 
-// --- Status Configuration ---
+// Unified status configuration
 const statusConfig = [
-  { key: "Panel Ready", label: "Panel Ready", color: "bg-yellow-500 text-white" },
-  { key: "Interview Scheduled", label: "Interview Scheduled", color: "bg-purple-500 text-white" },
-  { key: "Awaiting Decision", label: "Awaiting Decision", color: "bg-orange-500 text-white" },
-  { key: "Placement Complete", label: "Placement Complete", color: "bg-green-500 text-white" }
+  {
+    key: "Panel Ready",
+    label: "Panel Ready",
+    color: "bg-yellow-500 text-white"
+  },
+  {
+    key: "Interview Scheduled",
+    label: "Interview Scheduled", 
+    color: "bg-purple-500 text-white"
+  },
+  {
+    key: "Awaiting Decision",
+    label: "Awaiting Decision",
+    color: "bg-orange-500 text-white"
+  },
+  {
+    key: "Placement Complete",
+    label: "Placement Complete",
+    color: "bg-green-500 text-white"
+  }
 ];
 
 // --- Table Columns ---
@@ -175,12 +191,24 @@ const columns: TableColumn<CandidatePanel>[] = [
     key: "status",
     header: "Status",
     type: "status",
+    width: "15%",
     statusColors: {
-      "Panel Ready": "bg-yellow-500 text-white border-transparent",
-      "Interview Scheduled": "bg-purple-500 text-white border-transparent",
-      "Awaiting Decision": "bg-orange-500 text-white border-transparent",
-      "Placement Complete": "bg-green-500 text-white border-transparent"
-    },
+      "Panel Ready": "bg-yellow-500 text-white",
+      "Interview Scheduled": "bg-purple-500 text-white",
+      "Awaiting Decision": "bg-orange-500 text-white",
+      "Placement Complete": "bg-green-500 text-white"
+    }
+  },
+  {
+    key: "dateCreated",
+    header: "Date Created",
+    type: "text",
+    width: "15%"
+  },
+  {
+    key: "assignedTo",
+    header: "Assigned To",
+    type: "text",
     width: "15%"
   },
   {
@@ -188,12 +216,6 @@ const columns: TableColumn<CandidatePanel>[] = [
     header: "Candidates",
     type: "text",
     width: "10%"
-  },
-  {
-    key: "actions",
-    header: "Actions",
-    type: "action",
-    width: "15%"
   }
 ];
 
@@ -258,37 +280,6 @@ export default function CandidatePanelsPage() {
       setSheetOpen(true);
     }
   };
-
-  // Render action button based on status
-  const renderActionButton = (panel: CandidatePanel) => {
-    if (panel.status === "Panel Ready") {
-      return (
-        <Button 
-          size="sm" 
-          onClick={() => handleActionClick(panel)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          Schedule Interview
-        </Button>
-      );
-    } else {
-      return (
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => handleActionClick(panel)}
-        >
-          View Details
-        </Button>
-      );
-    }
-  };
-
-  // Custom data with actions
-  const dataWithActions = filteredData.map(panel => ({
-    ...panel,
-    actions: renderActionButton(panel)
-  }));
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-6">
@@ -373,12 +364,13 @@ export default function CandidatePanelsPage() {
         {/* Data Table */}
         <div className="mb-8">
           <AdvancedTable
-            data={dataWithActions}
+            data={filteredData}
             columns={columns}
             title=""
             searchPlaceholder="Search by hire request or client..."
             statusConfig={statusConfig}
             statusKey="status"
+            onViewDetails={handleActionClick}
             showPagination={true}
             showPageSize={true}
             showSearch={true}

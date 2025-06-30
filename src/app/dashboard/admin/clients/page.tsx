@@ -71,7 +71,7 @@ const hireRequestsByClient: Record<string, { role: string; status: string; date:
   // ...add more for other clients as needed
 };
 
-// Colores de estado globales para toda la app
+// Global status colors for the entire app
 const STATUS_COLORS: Record<string, string> = {
   "Active": "bg-green-500 text-white border-transparent",
   "Inactive": "bg-gray-400 text-white border-transparent",
@@ -80,9 +80,8 @@ const STATUS_COLORS: Record<string, string> = {
   "Panel Ready": "bg-yellow-500 text-white border-transparent",
   "Interview Scheduled": "bg-purple-500 text-white border-transparent",
   "Awaiting Decision": "bg-orange-500 text-white border-transparent",
-  "Placement Complete": "bg-green-700 text-white border-transparent",
+  "Placement Complete": "bg-green-500 text-white border-transparent",
   "Canceled": "bg-red-500 text-white border-transparent",
-  "Placement Completed": "bg-green-700 text-white border-transparent",
 };
 
 export default function AdminClientsPage() {
