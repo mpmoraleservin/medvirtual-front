@@ -3,14 +3,14 @@ import Sidebar from "@/components/sidebar";
 import Header from "@/components/ui/header";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, ClipboardList, Star, Settings } from "lucide-react";
+import { Home, Users, ClipboardList, Star, User } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard/client", icon: Home, label: "Home" },
   { href: "/dashboard/client/staff", icon: Users, label: "Staff" },
   { href: "/dashboard/client/hire-requests", icon: ClipboardList, label: "Hire Requests" },
   { href: "/dashboard/client/talent-pool", icon: Star, label: "Talent Pool" },
-  { href: "/dashboard/client/settings", icon: Settings, label: "Settings" },
+  { href: "/dashboard/client/settings", icon: User, label: "Profile" },
 ];
 
 export default function ClientDashboardLayout({ children }: { children: React.ReactNode }) {

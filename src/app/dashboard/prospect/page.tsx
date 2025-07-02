@@ -41,15 +41,15 @@ export default function ProspectDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col px-4 sm:px-8 pt-6">
+    <div className="min-h-screen bg-background flex flex-col px-2 sm:px-8 pt-4 pb-20"> {/* pb-20 for mobile nav */}
       {/* Title */}
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8 max-w-2xl">Welcome, Dr Smith!</h1>
+      <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-6 max-w-2xl">Welcome, Dr Smith!</h1>
 
       {/* Top Section – two columns, flex layout for equal height */}
-      <div className="flex flex-col lg:flex-row gap-6 mb-12">
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
         {/* CTA Card */}
         <Card
-          className="p-0 overflow-hidden border-2 flex-1 flex flex-col justify-stretch"
+          className="p-0 overflow-hidden border-2 flex-1 flex flex-col justify-stretch min-w-0"
           style={{ borderColor: blue }}
         >
           <div
@@ -57,14 +57,14 @@ export default function ProspectDashboard() {
             style={{ background: `linear-gradient(135deg, ${blue} 0%, #6EC7F0 100%)` }}
           >
             {/* Text / bullets */}
-            <div className="flex-1 p-4 md:p-6 text-white flex flex-col justify-center">
-              <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
+            <div className="flex-1 p-3 md:p-5 text-white flex flex-col justify-center">
+              <h2 className="text-2xl md:text-3xl font-bold leading-tight mb-3">
                 Let us find your next<br />Team Member
               </h2>
-              <p className="mb-4 text-sm md:text-base max-w-md opacity-90">
+              <p className="mb-3 text-xs md:text-base max-w-md opacity-90">
                 Matching elite remote medical professionals with practices across the U.S.
               </p>
-              <ul className="space-y-1 mb-6 text-[13px]">
+              <ul className="space-y-1 mb-4 text-xs">
                 <li className="flex items-start gap-2"><span className="shrink-0 bg-white/20 p-1 rounded-full"><UserCheck className="w-4 h-4" /></span> Top-tier vetted talent</li>
                 <li className="flex items-start gap-2"><span className="shrink-0 bg-white/20 p-1 rounded-full"><UserCheck className="w-4 h-4" /></span> 30+ specialized roles</li>
                 <li className="flex items-start gap-2"><span className="shrink-0 bg-white/20 p-1 rounded-full"><UserCheck className="w-4 h-4" /></span> Quick turnaround</li>
@@ -72,7 +72,7 @@ export default function ProspectDashboard() {
               <Dialog open={hireDialogOpen} onOpenChange={setHireDialogOpen}>
                 <Button
                   style={{ backgroundColor: "#FFFFFF", color: blue }}
-                  className="font-semibold text-base hover:opacity-90"
+                  className="font-semibold text-sm md:text-base hover:opacity-90"
                   onClick={() => setHireDialogOpen(true)}
                 >
                   Submit a Hire Request
@@ -91,18 +91,18 @@ export default function ProspectDashboard() {
         </Card>
 
         {/* Right column stack */}
-        <div className="flex flex-col gap-6 flex-1 justify-stretch">
+        <div className="flex flex-col gap-4 flex-1 justify-stretch min-w-0">
           {/* Concierge Card */}
-          <Card className="flex flex-row items-center gap-4 border-2 flex-1 justify-center bg-gradient-to-r from-[#f6fbff] to-[#eaf6fd] p-4 md:p-6 rounded-2xl shadow-sm" style={{ borderColor: blue }}>
+          <Card className="flex flex-row items-center gap-3 border-2 flex-1 justify-center bg-gradient-to-r from-[#f6fbff] to-[#eaf6fd] p-3 md:p-5 rounded-2xl shadow-sm min-w-0" style={{ borderColor: blue }}>
             {/* MedVirtual Logo */}
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white rounded-full shadow border border-blue-100">
-              <img src="/logo.png" alt="MedVirtual Logo" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+            <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 md:w-20 md:h-20 bg-white rounded-full shadow border border-blue-100">
+              <img src="/logo.png" alt="MedVirtual Logo" className="w-10 h-10 md:w-14 md:h-14 object-contain" />
             </div>
             {/* Info and actions */}
-            <div className="flex-1 flex flex-col justify-center gap-1 pl-2">
-              <h3 className="text-lg md:text-xl font-bold mb-0.5 text-left">Your MedVirtual Concierge</h3>
-              <p className="text-muted-foreground text-xs mb-0.5 text-left">Account medvirtual</p>
-              <p className="font-semibold text-sm mb-2 text-left">Joe Coleman, DM</p>
+            <div className="flex-1 flex flex-col justify-center gap-1 pl-2 min-w-0">
+              <h3 className="text-base md:text-xl font-bold mb-0.5 text-left">Your MedVirtual Concierge</h3>
+              <p className="text-muted-foreground text-xs mb-0.5 text-left truncate">Account medvirtual</p>
+              <p className="font-semibold text-xs md:text-sm mb-2 text-left truncate">Joe Coleman, DM</p>
               <div className="flex gap-2 mt-1">
                 <a href="mailto:joe.coleman@medvirtual.com" aria-label="Email Joe Coleman">
                   <Button size="icon" variant="ghost" className="hover:bg-blue-50 text-blue-600 border border-blue-100">
@@ -119,9 +119,9 @@ export default function ProspectDashboard() {
           </Card>
 
           {/* Testimonial Card */}
-          <Card className="p-5 flex flex-col gap-4 border-l-4 flex-1 justify-center" style={{ borderColor: blue }}>
-            <div className="text-3xl leading-none text-[#2c7be5]">"</div>
-            <p className="italic text-sm">
+          <Card className="p-4 flex flex-col gap-3 border-l-4 flex-1 justify-center min-w-0" style={{ borderColor: blue }}>
+            <div className="text-2xl leading-none text-[#2c7be5]">"</div>
+            <p className="italic text-xs md:text-sm">
               "MedVirtual found us an amazing bilingual medical scheduler. Couldn't be happier!"
             </p>
             <div className="text-xs font-semibold">Stacy Nguyen <span className="font-normal text-muted-foreground">| Practice Manager</span></div>
@@ -130,47 +130,47 @@ export default function ProspectDashboard() {
       </div>
 
       {/* Talent Section */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Start Exploring Talent</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg md:text-2xl font-bold">Start Exploring Talent</h2>
         <a href="/dashboard/prospect/talent-pool">
           <Button
             style={{ backgroundColor: blue, color: "#fff" }}
-            className="font-semibold text-base px-6 py-2 rounded-xl shadow-md hover:opacity-90"
+            className="font-semibold text-sm md:text-base px-4 py-2 rounded-xl shadow-md hover:opacity-90"
           >
             Explore Talent
           </Button>
         </a>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {talent.map((t, idx) => (
           <div
             key={t.id}
             className="relative group cursor-pointer rounded-2xl p-[2px] bg-gradient-to-br from-[#009FE3] via-[#6EC7F0] to-[#b2e6fa] shadow-lg hover:scale-[1.03] transition-transform"
             onClick={() => openProfile(t)}
           >
-            <Card className="flex flex-col justify-between rounded-2xl p-4 h-full bg-white min-h-[230px]">
+            <Card className="flex flex-col justify-between rounded-2xl p-3 md:p-4 h-full bg-white min-h-[200px] md:min-h-[230px]">
               {/* Star icon top right */}
-              <div className="absolute top-3 right-3 z-10">
+              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-10">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#FACC15" stroke="#FACC15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               </div>
               {/* Title and availability, with padding to avoid star overlap */}
-              <div className="mb-2 pt-1 pr-6">
-                <h3 className="font-bold text-lg text-[#009FE3] mb-1 leading-tight whitespace-normal">{t.title}</h3>
+              <div className="mb-2 pt-1 pr-5">
+                <h3 className="font-bold text-base md:text-lg text-[#009FE3] mb-1 leading-tight whitespace-normal">{t.title}</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{t.experience}</span>
+                  <span className="text-xs md:text-sm text-muted-foreground">{t.experience}</span>
                   <span className="inline-block w-1 h-1 rounded-full bg-blue-200" />
-                  <span className="text-sm text-green-600 font-semibold">Available</span>
+                  <span className="text-xs md:text-sm text-green-600 font-semibold">Available</span>
                 </div>
               </div>
               {/* Languages and specialization */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                {t.languages.map(l => (<Badge key={l} variant="secondary" className="text-xs px-2 py-0.5">{l}</Badge>))}
-                {t.specialization && <Badge variant="outline" className="text-xs px-2 py-0.5">{t.specialization}</Badge>}
+              <div className="flex flex-wrap gap-1 md:gap-2 mb-2 md:mb-3">
+                {t.languages.map(l => (<Badge key={l} variant="secondary" className="text-[10px] md:text-xs px-2 py-0.5">{l}</Badge>))}
+                {t.specialization && <Badge variant="outline" className="text-[10px] md:text-xs px-2 py-0.5">{t.specialization}</Badge>}
               </div>
               {/* Top skill and price, stacked vertically */}
               <div className="flex flex-col gap-1 mt-auto">
-                <span className="text-xs text-yellow-700 font-semibold bg-yellow-50 rounded px-2 py-1">Top Skill: {t.specialization || t.languages[0]}</span>
-                <span className="text-base text-blue-700 font-bold bg-blue-50 rounded px-2 py-1">${idx === 0 ? '2,200' : idx === 1 ? '1,500' : idx === 2 ? '2,800' : '1,900'}<span className="text-xs font-normal"> /mo</span></span>
+                <span className="text-[10px] md:text-xs text-yellow-700 font-semibold bg-yellow-50 rounded px-2 py-1">Top Skill: {t.specialization || t.languages[0]}</span>
+                <span className="text-sm md:text-base text-blue-700 font-bold bg-blue-50 rounded px-2 py-1">${idx === 0 ? '2,200' : idx === 1 ? '1,500' : idx === 2 ? '2,800' : '1,900'}<span className="text-[10px] md:text-xs font-normal"> /mo</span></span>
               </div>
             </Card>
           </div>
@@ -216,8 +216,8 @@ export default function ProspectDashboard() {
       </Sheet>
 
       {/* FAQ Section - Interactive Accordion */}
-      <section className="w-full mt-16 mb-10">
-        <h2 className="text-2xl font-bold mb-6 text-left">Frequently Asked Questions</h2>
+      <section className="w-full mt-12 mb-10">
+        <h2 className="text-lg md:text-2xl font-bold mb-4 text-left">Frequently Asked Questions</h2>
         <Accordion type="single" collapsible className="space-y-2 w-full">
           <AccordionItem value="q1">
             <AccordionTrigger className="font-semibold text-[#009FE3] text-lg">How do I start the hiring process?</AccordionTrigger>
