@@ -305,7 +305,7 @@ export default function Header({ userRole }: HeaderProps) {
   );
 }
 
-function StepperProspectHireRequest({ onClose }: { onClose: () => void }) {
+export function StepperProspectHireRequest({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(1);
   const [org, setOrg] = useState({
     companyName: "",
