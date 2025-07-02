@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar } from "@/components/ui/avatar";
-import { UserCheck, Star, Eye, Filter, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Dialog as FilterDialog, DialogContent as FilterDialogContent, DialogHeader as FilterDialogHeader, DialogTitle as FilterDialogTitle, DialogFooter as FilterDialogFooter } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdvancedTable } from "@/components/ui/advanced-table";
+import { PageTitle } from '@/components/ui/page-title';
+import { CandidateCard } from '@/components/ui/candidate-card';
 
 interface CandidateEducation {
   institution: string;
@@ -240,388 +232,63 @@ const candidates: Candidate[] = [
   },
 ];
 
-const topMatches = candidates.slice(0, 3);
+// Top Matches: seleccionar los primeros 3 candidatos Senior como ejemplo
+const topMatches = candidates.filter(c => c.experienceLevel === 'Senior').slice(0, 3);
 
-export default function TalentPoolPage() {
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [search, setSearch] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [roleFilter, setRoleFilter] = useState("");
-  const [specializationFilter, setSpecializationFilter] = useState("");
-  const [languageFilter, setLanguageFilter] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+// Definir columnas y filtros para AdvancedTable
+const columns = [
+  { key: 'name' as keyof Candidate, header: 'Name', searchable: true },
+  { key: 'role' as keyof Candidate, header: 'Role', searchable: true },
+  { key: 'specializations' as keyof Candidate, header: 'Specializations', type: 'badge' as const, searchable: true, badgeConfig: { variant: 'secondary' as const, className: 'bg-chart-5/10 text-chart-5 text-xs font-medium' } },
+  { key: 'skills' as keyof Candidate, header: 'Skills', type: 'badge' as const, searchable: true, badgeConfig: { variant: 'outline' as const, className: 'bg-primary/10 text-primary text-xs font-medium' } },
+  { key: 'experienceLevel' as keyof Candidate, header: 'Experience', type: 'status' as const, statusColors: { Junior: 'bg-chart-2/10 text-chart-2', Mid: 'bg-chart-3/10 text-chart-3', Senior: 'bg-chart-4/10 text-chart-4' } },
+  { key: 'pricePerMonth' as keyof Candidate, header: 'Price/Month', type: 'currency' as const },
+];
+const filters = [
+  { key: 'role' as keyof Candidate, label: 'Role', type: 'text' as const, placeholder: 'e.g. Nurse' },
+  { key: 'specializations' as keyof Candidate, label: 'Specialization', type: 'text' as const, placeholder: 'e.g. Pediatrics' },
+  { key: 'languages' as keyof Candidate, label: 'Language', type: 'text' as const, placeholder: 'e.g. Spanish' },
+  { key: 'experienceLevel' as keyof Candidate, label: 'Experience Level', type: 'select' as const, options: [ { value: 'Junior', label: 'Junior' }, { value: 'Mid', label: 'Mid' }, { value: 'Senior', label: 'Senior' } ] },
+  { key: 'skills' as keyof Candidate, label: 'Skills', type: 'text' as const, placeholder: 'e.g. BLS Certified' },
+];
 
-  // Reset page to 1 when filters or pageSize change
-  React.useEffect(() => { setPage(1); }, [search, roleFilter, specializationFilter, languageFilter, pageSize]);
-
-  const handleViewProfile = (candidate: Candidate) => {
-    setSelectedCandidate(candidate);
-    setProfileOpen(true);
-  };
-
-  const filteredCandidates = candidates.filter((c) => {
-    const matchesSearch =
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.role.toLowerCase().includes(search.toLowerCase()) ||
-      c.specializations.some((s) => s.toLowerCase().includes(search.toLowerCase())) ||
-      c.skills.some((s) => s.toLowerCase().includes(search.toLowerCase()));
-    const matchesRole = roleFilter ? c.role.toLowerCase().includes(roleFilter.toLowerCase()) : true;
-    const matchesSpec = specializationFilter ? c.specializations.some((s) => s.toLowerCase().includes(specializationFilter.toLowerCase())) : true;
-    const matchesLang = languageFilter ? c.languages.some((l) => l.toLowerCase().includes(languageFilter.toLowerCase())) : true;
-    return matchesSearch && matchesRole && matchesSpec && matchesLang;
-  });
-
-  const pageCount = Math.ceil(filteredCandidates.length / pageSize);
-  const paginatedCandidates = useMemo(() =>
-    filteredCandidates.slice((page - 1) * pageSize, page * pageSize),
-    [filteredCandidates, page, pageSize]
-  );
+export default function ClientTalentPoolPage() {
 
   return (
-    <div className="flex flex-col w-full max-w-none px-4 sm:px-8 py-8 min-h-[calc(100vh-80px)]">
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Explore Our Talent Pool</h1>
-
+    <div className="space-y-6">
+      <PageTitle title="Talent Pool" />
+      
       {/* Top Matches Section */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Top Matches for You</h2>
-        {/* Desktop: grid, Mobile: stacked cards full width, compact */}
-        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:gap-6">
-          {topMatches.map((candidate) => (
-            <Card
-              key={candidate.id}
-              className="relative flex flex-row sm:flex-col items-center sm:items-center justify-between w-full max-w-full sm:max-w-[320px] mx-auto p-3 sm:p-4 rounded-xl border-2 border-yellow-300 bg-[#FDF8E5] shadow-lg min-h-[100px] sm:min-h-[320px]"
-            >
-              {/* Estrella y ojito */}
-              <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
-                <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 drop-shadow" fill="#FACC15" />
-              </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute top-2 right-2 bg-white shadow-md hover:bg-blue-50 text-blue-600 border border-blue-100"
-                onClick={() => handleViewProfile(candidate)}
-                aria-label="View Profile"
-              >
-                <Eye className="w-5 h-5" />
-              </Button>
-              {/* Avatar y datos */}
-              <div className="flex flex-row items-center gap-3 w-full sm:flex-col sm:items-center sm:gap-2 sm:mt-6 sm:mb-4">
-                <Avatar name={candidate.name} src={candidate.avatarUrl} className="w-10 h-10 sm:w-12 sm:h-12 text-lg sm:text-xl" />
-                <div className="flex-1 flex flex-col items-start sm:items-center">
-                  <div className="font-bold text-sm sm:text-base text-[#222] text-left sm:text-center">{candidate.name}</div>
-                  <div className="text-muted-foreground text-xs sm:text-sm text-left sm:text-center">{candidate.role}</div>
-                  <div className="flex flex-wrap gap-1 mt-1 justify-start sm:justify-center">
-                    {candidate.specializations.map((spec) => (
-                      <Badge key={spec} variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0.5">{spec}</Badge>
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-1 justify-start sm:justify-center">
-                    {candidate.skills.slice(0, 2).map((skill) => (
-                      <Badge key={skill} variant="outline" className="text-[10px] sm:text-xs px-1.5 py-0.5">{skill}</Badge>
-                    ))}
-                  </div>
-                  <div className="mt-1 text-[10px] sm:text-xs text-muted-foreground">Exp: <span className="font-medium">{candidate.experienceLevel}</span></div>
-                </div>
-              </div>
-              {/* Fixed button at bottom only on mobile, normal on desktop */}
-              <div className="w-full mt-2 sm:mt-auto pt-1 sm:pt-2">
-                <Button
-                  className="w-full py-2 text-xs sm:hidden" variant="accent"
-                  onClick={() => alert(`Request interview with ${candidate.name}`)}
-                >
-                  <UserCheck className="w-5 h-5" />
-                </Button>
-                <Button
-                  className="w-full gap-2 text-base hidden sm:inline-flex py-3" variant="accent"
-                  onClick={() => alert(`Request interview with ${candidate.name}`)}
-                >
-                  <UserCheck className="w-4 h-4" /> Request Interview
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {topMatches.map((candidate) => (
+          <CandidateCard
+            key={candidate.id}
+            candidate={candidate}
+            variant="featured"
+            onViewProfile={() => {}}
+          />
+        ))}
+      </div>
 
-      {/* Full Talent Pool Table - mobile: cards, desktop: table */}
-      <section className="flex flex-col rounded-lg border bg-card p-4">
-        <h2 className="text-lg font-semibold mb-4">Full Talent Pool</h2>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div className="flex flex-1 gap-2">
-            <Input
-              type="text"
-              placeholder="Search by name, role, skill..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full sm:w-64"
-            />
-            <Button variant="outline" className="gap-2" onClick={() => setFilterOpen(true)}>
-              <Filter className="w-4 h-4" />
-              Filter
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page:</span>
-            <Select value={pageSize.toString()} onValueChange={v => setPageSize(Number(v))}>
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        {/* Mobile: cards stacked, Desktop: table */}
-        <div className="flex flex-col gap-3 sm:hidden">
-          {paginatedCandidates.map((candidate) => (
-            <div key={candidate.id} className="rounded-lg border bg-white p-3 flex flex-col gap-2 shadow-sm">
-              <div className="flex items-center gap-3">
-                <Avatar name={candidate.name} src={candidate.avatarUrl} />
-                <div className="flex-1">
-                  <div className="font-semibold text-[#222] leading-tight text-sm">{candidate.name}</div>
-                  <div className="text-xs text-muted-foreground leading-tight">{candidate.role}</div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1 text-[10px] mt-1">
-                {candidate.specializations.map((spec) => (
-                  <Badge key={spec} variant="secondary">{spec}</Badge>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-1 text-[10px] mt-1">
-                {candidate.skills.map((skill) => (
-                  <Badge key={skill} variant="outline">{skill}</Badge>
-                ))}
-              </div>
-              <div className="flex justify-between text-[10px] mt-1">
-                <div><span className="font-medium">Exp:</span> {candidate.experienceLevel}</div>
-                <div><span className="font-medium">Price:</span> {candidate.currency === "USD" ? "$" : candidate.currency}{candidate.pricePerMonth}</div>
-              </div>
-              <div className="flex justify-end gap-2 mt-2">
-                <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" aria-label="View Profile" title="View Profile" onClick={() => handleViewProfile(candidate)}>
-                  <Eye className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          ))}
-          {paginatedCandidates.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 text-xs">No candidates found.</div>
-          )}
-        </div>
-        {/* Desktop table */}
-        <div className="hidden sm:block overflow-x-auto">
-          <Table className="w-full min-w-[600px]">
-            <TableHeader>
-              <TableRow className="bg-[#F6F6F7] border-b border-[#E5E7EB]">
-                <TableHead className="font-bold text-base text-[#222] py-4">Name</TableHead>
-                <TableHead className="font-bold text-base text-[#222] py-4">Role</TableHead>
-                <TableHead className="font-bold text-base text-[#222] py-4">Specializations</TableHead>
-                <TableHead className="font-bold text-base text-[#222] py-4">Skills</TableHead>
-                <TableHead className="font-bold text-base text-[#222] py-4 text-center">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedCandidates.map((candidate) => (
-                <TableRow key={candidate.id} className="bg-white border-b border-[#F1F1F1] hover:bg-[#F6F6F7] transition-colors group">
-                  <TableCell className="py-4 align-middle">
-                    <div className="flex items-center gap-3">
-                      <Avatar name={candidate.name} src={candidate.avatarUrl} />
-                      <div>
-                        <div className="font-semibold text-[#222] leading-tight">{candidate.name}</div>
-                        <div className="text-sm text-muted-foreground leading-tight">{candidate.role}</div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-4 align-middle text-[#222]">{candidate.role}</TableCell>
-                  <TableCell className="py-4 align-middle">
-                    <div className="flex flex-wrap gap-1">
-                      {candidate.specializations.map((spec) => (
-                        <Badge key={spec} variant="secondary">{spec}</Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-4 align-middle">
-                    <div className="flex flex-wrap gap-1">
-                      {candidate.skills.map((skill) => (
-                        <Badge key={skill} variant="outline">{skill}</Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-4 text-center align-middle">
-                    <div className="flex justify-center gap-2">
-                      <Button
-                        size="icon"
-                        className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                        aria-label="View Profile"
-                        title="View Profile"
-                        onClick={() => handleViewProfile(candidate)}
-                      >
-                        <Eye className="w-5 h-5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {paginatedCandidates.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    No candidates found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        {/* Pagination Controls avanzados */}
-        <div className="flex flex-wrap justify-between items-center mt-4 pt-2 border-t border-muted-foreground/10 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page === 1}
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
-          <div className="flex gap-1">
-            {Array.from({ length: pageCount }, (_, i) => (
-              <Button
-                key={i+1}
-                size="sm"
-                variant={page === i+1 ? "default" : "outline"}
-                onClick={() => setPage(i+1)}
-                className="px-3"
-              >
-                {i+1}
-              </Button>
-            ))}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page === pageCount || pageCount === 0}
-            onClick={() => setPage(p => Math.min(pageCount, p + 1))}
-          >
-            Next
-          </Button>
-        </div>
-        {/* Filtros avanzados en Dialog */}
-        <FilterDialog open={filterOpen} onOpenChange={setFilterOpen}>
-          <FilterDialogContent className="max-w-sm w-full">
-            <FilterDialogHeader>
-              <FilterDialogTitle>Advanced Filters</FilterDialogTitle>
-            </FilterDialogHeader>
-            <div className="flex flex-col space-y-4 py-2">
-              <Label htmlFor="role">Role</Label>
-              <Input id="role" value={roleFilter} onChange={e => setRoleFilter(e.target.value)} placeholder="e.g. Nurse" />
-              <Label htmlFor="specialization">Specialization</Label>
-              <Input id="specialization" value={specializationFilter} onChange={e => setSpecializationFilter(e.target.value)} placeholder="e.g. Pediatrics" />
-              <Label htmlFor="language">Language</Label>
-              <Input id="language" value={languageFilter} onChange={e => setLanguageFilter(e.target.value)} placeholder="e.g. Spanish" />
-            </div>
-            <FilterDialogFooter className="flex flex-col gap-2 mt-2">
-              <Button onClick={() => { setRoleFilter(""); setSpecializationFilter(""); setLanguageFilter(""); }}>Clear Filters</Button>
-              <Button onClick={() => setFilterOpen(false)} variant="default">Apply</Button>
-            </FilterDialogFooter>
-          </FilterDialogContent>
-        </FilterDialog>
-      </section>
-
-      {/* Candidate Profile Sheet (lateral) */}
-      <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
-        <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
-          {selectedCandidate && (
-            <div className="relative h-full flex flex-col">
-              <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
-                <div className="flex items-center gap-4">
-                  <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
-                  <div>
-                    <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
-                    <div className="text-lg text-muted-foreground font-medium">{selectedCandidate.role}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
-                    <UserCheck className="w-4 h-4" /> Interview
-                  </Button>
-                  <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setProfileOpen(false)} className="mt-1">
-                    <X className="w-6 h-6" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
-                  {/* Info principal (sin avatar) */}
-                  <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
-                    <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
-                    <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
-                      {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
-                      {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
-                      {selectedCandidate.languages.map((lang) => (
-                        <Badge key={lang} variant="outline">{lang}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div className="flex-1">
-                    <div className="mb-2 font-semibold text-[#222]">Specialization</div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {selectedCandidate.specializations.map((spec) => (
-                        <Badge key={spec} variant="secondary">{spec}</Badge>
-                      ))}
-                    </div>
-                    <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {selectedCandidate.skills.map((skill) => (
-                        <Badge key={skill} variant="outline">{skill}</Badge>
-                      ))}
-                    </div>
-                    <div className="mb-2 font-semibold text-[#222]">About Me</div>
-                    <div className="text-sm text-muted-foreground mb-4">
-                      {selectedCandidate.about}
-                    </div>
-                  </div>
-                </div>
-                <Tabs defaultValue="education" className="w-full">
-                  <TabsList className="mb-2">
-                    <TabsTrigger value="education">Education</TabsTrigger>
-                    <TabsTrigger value="experience">Experience</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="education">
-                    <div className="flex flex-col gap-2">
-                      {selectedCandidate.education.map((edu, idx) => (
-                        <Card key={idx} className="p-3 flex flex-col gap-1">
-                          <div className="font-semibold">{edu.degree}</div>
-                          <div className="text-sm text-muted-foreground">{edu.institution}</div>
-                          <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="experience">
-                    <div className="flex flex-col gap-2">
-                      {selectedCandidate.experience.map((exp, idx) => (
-                        <Card key={idx} className="p-3 flex flex-col gap-1">
-                          <div className="font-semibold">{exp.role}</div>
-                          <div className="text-sm text-muted-foreground">{exp.company}</div>
-                          <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
-                          {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <Card>
+        <CardHeader>
+          <CardTitle>Candidates</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AdvancedTable
+            data={candidates}
+            columns={columns}
+            filters={filters}
+            defaultPageSize={10}
+            showPagination={true}
+            showSearch={true}
+            showFilters={true}
+            showPageSize={true}
+            searchPlaceholder="Search candidates..."
+            emptyMessage="No candidates found."
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 } 

@@ -61,47 +61,46 @@ export default function Signup() {
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
             <div className="flex items-center justify-between mb-16">
                 <img src="/logo.png" alt="company logo" className="w-56" />
-                {viewport < 640 ? null : <a href="/login" className="absolute top-5 right-5 h-fit font-bold text-white text-xl leading-[100%] px-6 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer">
+                {viewport < 640 ? null : <a href="/login" className="absolute top-5 right-5 h-fit font-bold text-primary-foreground text-xl leading-[100%] px-6 py-4 rounded-xl bg-primary cursor-pointer">
                     Log In
                 </a>}
             </div>
             <div className="w-full max-w-[560px] flex flex-col  items-start">
                 <div className="mb-8">
-                    <h1 className="font-semibold text-[40px] text-[#313131]">Sign Up</h1>
-                    <h2 className="font-normal text-[#313131] opacity-80">{'Let\'s get you all set up so you can access your personal account.'}
-                    </h2>
+                    <h1 className="font-semibold text-[40px] text-foreground">Sign Up</h1>
+                    <h2 className="font-normal text-foreground opacity-80">{'Let\'s get you all set up so you can access your personal account.'}</h2>
                 </div>
 
                 <div className="w-full flex flex-col sm:flex-row sm:gap-6">
                     <div className="w-full mb-4">
-                        <Label htmlFor="first_name" className="font-medium color-[#0C1421] mb-1">First Name</Label>
-                        <Input id="first_name" type="text" placeholder="John" value={firstName} onChange={e => setFirstName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                        <Label htmlFor="first_name" className="font-medium text-foreground mb-1">First Name</Label>
+                        <Input id="first_name" type="text" placeholder="John" value={firstName} onChange={e => setFirstName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                     </div>
                     <div className="w-full mb-4">
-                        <Label htmlFor="last_name" className="font-medium color-[#0C1421] mb-1">Last Name</Label>
-                        <Input id="last_name" type="text" placeholder="Doe" value={lastName} onChange={e => setLastName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                        <Label htmlFor="last_name" className="font-medium text-foreground mb-1">Last Name</Label>
+                        <Input id="last_name" type="text" placeholder="Doe" value={lastName} onChange={e => setLastName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                     </div>
                 </div>
                 <div className="w-full flex flex-col sm:flex-row sm:gap-6">
                     <div className="w-full mb-4">
-                        <Label htmlFor="job_title" className="font-medium color-[#0C1421] mb-1">Job Title</Label>
-                        <Input id="job_title" type="text" placeholder="Talent Recruiter" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                        <Label htmlFor="job_title" className="font-medium text-foreground mb-1">Job Title</Label>
+                        <Input id="job_title" type="text" placeholder="Talent Recruiter" value={jobTitle} onChange={e => setJobTitle(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                     </div>
                     <div className="w-full mb-4">
-                        <Label htmlFor="company_name" className="font-medium color-[#0C1421] mb-1">Company Name</Label>
-                        <Input id="company_name" type="text" placeholder="MedVirtual" value={companyName} onChange={e => setCompanyName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                        <Label htmlFor="company_name" className="font-medium text-foreground mb-1">Company Name</Label>
+                        <Input id="company_name" type="text" placeholder="MedVirtual" value={companyName} onChange={e => setCompanyName(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                     </div>
                 </div>
 
                 <div className="w-full mb-4">
-                    <Label htmlFor="email" className="font-medium color-[#0C1421] mb-1">Email</Label>
-                    <Input id="email" type="email" placeholder="john@medvirtual.com" value={email} onChange={e => setEmail(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                    <Label htmlFor="email" className="font-medium text-foreground mb-1">Email</Label>
+                    <Input id="email" type="email" placeholder="john@medvirtual.com" value={email} onChange={e => setEmail(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                 </div>
 
                 <div className="w-full mb-2">
-                    <Label htmlFor="password" className="font-medium color-[#0C1421] mb-1">Password</Label>
+                    <Label htmlFor="password" className="font-medium text-foreground mb-1">Password</Label>
                     <div className="relative flex items-center justify-center">
-                        <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]" />
+                        <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground outline-primary" />
                         <Button
                             variant="ghost"
                             size="icon"
@@ -113,10 +112,10 @@ export default function Signup() {
                     </div>
                 </div>
 
-                <Progress value={passwordComplianceProgess(password)} className={`h-1 mb-2 ${passwordComplianceProgess(password) == 100 ? "[&>div]:bg-green-500" : "[&>div]:bg-yellow-500"}`} />
+                <Progress value={passwordComplianceProgess(password)} className={`h-1 mb-2 ${passwordComplianceProgess(password) == 100 ? "[&>div]:bg-chart-2" : "[&>div]:bg-chart-5"}`} />
                 <div className="w-full flex items-center justify-between mb-2">
-                    <p className="text-xs font-medium text-black opacity-70 ">Your password must contain:</p>
-                    <span className="text-xs text-black opacity-70 font-bold">{passwordComplianceProgess(password) == 100 ? "Strong" : "Weak"}</span>
+                    <p className="text-xs font-medium text-foreground opacity-70 ">Your password must contain:</p>
+                    <span className="text-xs text-foreground opacity-70 font-bold">{passwordComplianceProgess(password) == 100 ? "Strong" : "Weak"}</span>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-6">
                     <PasswordRequirement text="At least 1 uppercase letter (A–Z)" isCompliant={/[A-Z]/.test(password)} />
@@ -127,16 +126,16 @@ export default function Signup() {
 
                 <div className="w-full flex items-center justify-between mb-10">
                     <div className="flex items-center justify-start gap-2">
-                        <Checkbox id="remember" className="w-4 h-4 border-2 border-[#313131] cursor-pointer" checked={agreedToTerms} onCheckedChange={() => setAgreedToTerms(!agreedToTerms)} />
-                        <Label htmlFor="remember" className="font-medium color-[#313131] text-sm cursor-pointer gap-1">I agree to the <a href="" className="m-0 cursor-pointer text-[#079599]">Terms</a> and <a href="" className="m-0 cursor-pointer text-[#079599]">Privacy Policies</a></Label>
+                        <Checkbox id="remember" className="w-4 h-4 border-2 border-border cursor-pointer" checked={agreedToTerms} onCheckedChange={() => setAgreedToTerms(!agreedToTerms)} />
+                        <Label htmlFor="remember" className="font-medium text-foreground text-sm cursor-pointer gap-1">I agree to the <a href="" className="m-0 cursor-pointer text-primary">Terms</a> and <a href="" className="m-0 cursor-pointer text-primary">Privacy Policies</a></Label>
                     </div>
                 </div>
 
                 <div className="w-full flex flex-col gap-4 mb-14">
-                    <Button className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer hover:opacity-0.8" disabled={!isInfoComplete()}>
+                    <Button className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8" disabled={!isInfoComplete()}>
                         Sign Up
                     </Button>
-                    {viewport < 640 ? <a href="/login" className="w-full text-center font-bold text-[var(--primary-color)] text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
+                    {viewport < 640 ? <a href="/login" className="w-full text-center font-bold text-primary text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
                         Log in
                     </a> : null}
                 </div>

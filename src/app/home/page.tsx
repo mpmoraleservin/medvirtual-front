@@ -104,7 +104,7 @@ const columns: TableColumn<CandidateInfo>[] = [
     type: "badge",
     badgeConfig: {
       variant: "secondary",
-      className: "rounded-full bg-[#F9F5FF] text-[#5C3CC2] text-xs font-medium"
+      className: "rounded-full bg-chart-5/10 text-chart-5 text-xs font-medium"
     }
   },
   {
@@ -114,7 +114,7 @@ const columns: TableColumn<CandidateInfo>[] = [
     type: "badge",
     badgeConfig: {
       variant: "outline",
-      className: "rounded-full bg-[#175CD31A] text-[#175CD3] text-xs font-medium"
+      className: "rounded-full bg-primary/10 text-primary text-xs font-medium"
     }
   },
   {
@@ -153,7 +153,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative w-full flex items-start bg-[#F6F8FA]">
+    <div className="relative w-full flex items-start bg-muted">
       <div className="w-full h-screen p-4 overflow-y-scroll">
         <AdvancedTable
           data={candidates}

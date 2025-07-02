@@ -239,24 +239,24 @@ const mockTickets: Ticket[] = [
 
 // --- Status Configuration ---
 const statusConfig = {
-  "New": { label: "New", color: "bg-gray-500 text-white", count: 0, description: "Ticket just created" },
-  "In Review": { label: "In Review", color: "bg-blue-500 text-white", count: 0, description: "Under review by the team" },
-  "In Progress": { label: "In Progress", color: "bg-yellow-500 text-white", count: 0, description: "Working on the solution" },
-  "Awaiting Response": { label: "Awaiting Response", color: "bg-purple-500 text-white", count: 0, description: "Waiting for client response" },
-  "Resolved": { label: "Resolved", color: "bg-green-500 text-white", count: 0, description: "Ticket resolved" },
-  "Closed": { label: "Closed", color: "bg-red-500 text-white", count: 0, description: "Ticket closed" },
+  "New": { label: "New", color: "bg-muted-foreground text-primary-foreground", count: 0, description: "Ticket just created" },
+"In Review": { label: "In Review", color: "bg-primary text-primary-foreground", count: 0, description: "Under review by the team" },
+"In Progress": { label: "In Progress", color: "bg-chart-3 text-primary-foreground", count: 0, description: "Working on the solution" },
+"Awaiting Response": { label: "Awaiting Response", color: "bg-chart-5 text-primary-foreground", count: 0, description: "Waiting for client response" },
+"Resolved": { label: "Resolved", color: "bg-chart-2 text-primary-foreground", count: 0, description: "Ticket resolved" },
+"Closed": { label: "Closed", color: "bg-destructive text-primary-foreground", count: 0, description: "Ticket closed" },
 }
 
 const typeConfig = {
-  "Bonus": "bg-yellow-100 text-yellow-800 border-yellow-200",
-  "Termination": "bg-red-100 text-red-800 border-red-200",
-  "Interview Request": "bg-blue-100 text-blue-800 border-blue-200"
+  "Bonus": "bg-chart-3/10 text-chart-3 border-chart-3/20",
+"Termination": "bg-destructive/10 text-destructive border-destructive/20",
+"Interview Request": "bg-primary/10 text-primary border-primary/20"
 }
 
 const priorityColors = {
-  "High": "bg-red-100 text-red-700 border-red-200",
-  "Medium": "bg-yellow-100 text-yellow-700 border-yellow-200",
-  "Low": "bg-green-100 text-green-700 border-green-200",
+  "High": "bg-destructive/10 text-destructive border-destructive/20",
+"Medium": "bg-chart-3/10 text-chart-3 border-chart-3/20",
+"Low": "bg-chart-2/10 text-chart-2 border-chart-2/20",
 }
 
 const allStatuses = [
@@ -422,7 +422,7 @@ export default function TicketsWorkflow() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -507,7 +507,7 @@ export default function TicketsWorkflow() {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex flex-col min-w-[320px] w-[320px] rounded-xl bg-[#F6F8FA] px-2 py-3 ${snapshot.isDraggingOver ? 'ring-2 ring-blue-400' : ''}`}
+                      className={`flex flex-col min-w-[320px] w-[320px] rounded-xl bg-muted px-2 py-3 ${snapshot.isDraggingOver ? 'ring-2 ring-primary' : ''}`}
                     >
                       {/* Column Header */}
                       <div className="flex items-center justify-between mb-4">
@@ -533,7 +533,7 @@ export default function TicketsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <Card className="p-4 flex flex-col gap-2 bg-background border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
                                   {/* Header with view button on top right */}
                                   <div className="flex items-start justify-between mb-1">
                                     <div className="flex flex-col gap-0.5">
@@ -546,7 +546,7 @@ export default function TicketsWorkflow() {
                                         variant="ghost"
                                         title="View"
                                         aria-label="View"
-                                        className="hover:bg-blue-100"
+                                        className="hover:bg-primary/10"
                                         onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
                                       >
                                         <Eye className="w-5 h-5" />
@@ -574,11 +574,11 @@ export default function TicketsWorkflow() {
                                     <div className="flex items-center gap-1">
                                       <Calendar className="w-3 h-3" />
                                       <span>{formatDate(ticket.dateRaised)}</span>
-                                      <span className="text-orange-600">({getDaysSinceSubmitted(ticket.dateRaised)}d ago)</span>
+                                      <span className="text-chart-5">({getDaysSinceSubmitted(ticket.dateRaised)}d ago)</span>
                                     </div>
                                     {ticket.attachments && ticket.attachments.length > 0 && (
                                       <div className="flex items-center gap-1">
-                                        <span className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px]">
+                                        <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px]">
                                           {ticket.attachments.length}
                                         </span>
                                         <span>attachments</span>
@@ -612,7 +612,7 @@ export default function TicketsWorkflow() {
           <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
             {selectedTicket && (
               <div className="relative h-full flex flex-col">
-                <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
+                <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
                   <div className="flex items-center gap-4">
                     <Avatar name={selectedTicket.clientName} className="w-14 h-14 text-2xl" />
                     <div>
@@ -635,17 +635,17 @@ export default function TicketsWorkflow() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-6">
                     {/* Client */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Client</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Client</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedTicket.clientName}</div>
                     </div>
                     {/* Ticket ID */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Ticket ID</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Ticket ID</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedTicket.id}</div>
                     </div>
                     {/* Type */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Type</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Type</div>
                       <Badge className={typeConfig[selectedTicket.type]}>
                         {getTypeIcon(selectedTicket.type)}
                         {selectedTicket.type}
@@ -653,35 +653,35 @@ export default function TicketsWorkflow() {
                     </div>
                     {/* Priority */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Priority</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Priority</div>
                       <Badge className={priorityColors[selectedTicket.priority]}>
                         {selectedTicket.priority}
                       </Badge>
                     </div>
                     {/* Status */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Status</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Status</div>
                       <Badge className={statusConfig[selectedTicket.status].color}>
                         {selectedTicket.status}
                       </Badge>
                     </div>
                     {/* Assigned To */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Assigned To</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Assigned To</div>
                       <div className="font-normal text-base text-muted-foreground">
                         {selectedTicket.assignedTo || "Unassigned"}
                       </div>
                     </div>
                     {/* Date Raised */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Date Raised</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Date Raised</div>
                       <div className="font-normal text-base text-muted-foreground">
                         {formatDate(selectedTicket.dateRaised)}
                       </div>
                     </div>
                     {/* Last Updated */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Last Updated</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Last Updated</div>
                       <div className="font-normal text-base text-muted-foreground">
                         {selectedTicket.lastUpdated}
                       </div>
@@ -689,21 +689,21 @@ export default function TicketsWorkflow() {
                     {/* Department */}
                     {selectedTicket.department && (
                       <div>
-                        <div className="font-semibold text-sm text-[#222] mb-1">Department</div>
+                        <div className="font-semibold text-sm text-foreground mb-1">Department</div>
                         <div className="font-normal text-base text-muted-foreground">{selectedTicket.department}</div>
                       </div>
                     )}
                     {/* Location */}
                     {selectedTicket.location && (
                       <div>
-                        <div className="font-semibold text-sm text-[#222] mb-1">Location</div>
+                        <div className="font-semibold text-sm text-foreground mb-1">Location</div>
                         <div className="font-normal text-base text-muted-foreground">{selectedTicket.location}</div>
                       </div>
                     )}
                     {/* Staff/Candidate Name */}
                     {(selectedTicket.staffName || selectedTicket.candidateName) && (
                       <div>
-                        <div className="font-semibold text-sm text-[#222] mb-1">
+                        <div className="font-semibold text-sm text-foreground mb-1">
                           {selectedTicket.type === "Interview Request" ? "Candidate" : "Staff Member"}
                         </div>
                         <div className="font-normal text-base text-muted-foreground">
@@ -714,7 +714,7 @@ export default function TicketsWorkflow() {
                     {/* Category */}
                     {selectedTicket.category && (
                       <div>
-                        <div className="font-semibold text-sm text-[#222] mb-1">Category</div>
+                        <div className="font-semibold text-sm text-foreground mb-1">Category</div>
                         <div className="font-normal text-base text-muted-foreground">{selectedTicket.category}</div>
                       </div>
                     )}
@@ -722,8 +722,8 @@ export default function TicketsWorkflow() {
 
                   {/* Description */}
                   <div className="mb-6">
-                    <div className="font-semibold text-sm text-[#222] mb-2">Description</div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="font-semibold text-sm text-foreground mb-2">Description</div>
+                    <div className="bg-muted p-4 rounded-lg">
                       <p className="text-sm whitespace-pre-wrap">{selectedTicket.description}</p>
                     </div>
                   </div>
@@ -739,9 +739,9 @@ export default function TicketsWorkflow() {
                       {selectedTicket.attachments && selectedTicket.attachments.length > 0 ? (
                         <div className="space-y-2 mt-4">
                           {selectedTicket.attachments.map((attachment, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                               <div className="flex items-center gap-3">
-                                <FileText className="w-4 h-4 text-gray-500" />
+                                <FileText className="w-4 h-4 text-muted-foreground" />
                                 <span className="text-sm font-medium">{attachment}</span>
                               </div>
                               <Button variant="outline" size="sm">Download</Button>
@@ -789,8 +789,8 @@ export default function TicketsWorkflow() {
                   </Tabs>
 
                   {/* Actions */}
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="font-semibold text-sm text-[#222] mb-3">Actions</div>
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <div className="font-semibold text-sm text-foreground mb-3">Actions</div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" size="sm">
                         Assign to Team

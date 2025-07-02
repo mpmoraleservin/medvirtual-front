@@ -122,7 +122,7 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden sm:flex fixed left-0 top-0 z-30 flex-col items-start justify-between w-64 h-screen bg-white border-r border-[#E9EAEB]${className ? ` ${className}` : ""}`}
+              className={`hidden sm:flex fixed left-0 top-0 z-30 flex-col items-start justify-between w-64 h-screen bg-background border-r border-border${className ? ` ${className}` : ""}`}
     >
       <div className="p-4 w-full">
         <img src="/logo.png" alt="company logo" className="w-32 mb-6" />
@@ -133,8 +133,8 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`w-full flex items-center gap-3 font-medium text-[#181D27] text-sm rounded-[6px] px-3 py-2 transition-colors hover:bg-gray-100 ${
-                  isActive ? "bg-gray-200 text-black" : ""
+                className={`w-full flex items-center gap-3 font-medium text-foreground text-sm rounded-[6px] px-3 py-2 transition-colors hover:bg-muted ${
+                  isActive ? "bg-muted text-foreground" : ""
                 }`}
               >
                 {item.icon}
@@ -146,22 +146,22 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
       </div>
       <div className="w-full flex flex-col gap-2">
         <Separator />
-        <Link href={getProfileLink()} className="flex items-center justify-center p-2 hover:bg-gray-50 transition-colors">
-          <div className="w-10 h-10 rounded-full bg-[#E9F1FF] text-[#009FE3] font-bold text-base flex items-center justify-center mr-4">
+        <Link href={getProfileLink()} className="flex items-center justify-center p-2 hover:bg-muted transition-colors">
+          <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base flex items-center justify-center mr-4">
             DS
           </div>
           <div className="flex flex-col mr-10">
-            <span className="font-medium text-sm text-[#181D27]">
+            <span className="font-medium text-sm text-foreground">
               Dr. Smith
             </span>
-            <span className="font-medium text-xs text-[#717680]">
+            <span className="font-medium text-xs text-muted-foreground">
               {userRole === "PROSPECT" ? "Prospect" : 
                userRole === "ACTIVE_CLIENT" ? "Active Client" : 
                "Super Admin"}
             </span>
           </div>
           <button className="cursor-pointer">
-            <LogOut size={16} color="gray" />
+            <LogOut size={16} className="text-muted-foreground" />
           </button>
         </Link>
       </div>

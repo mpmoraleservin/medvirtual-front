@@ -17,7 +17,7 @@ import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
 // Import the create-panel component dynamically (without SSR)
 const CreatePanelModal = dynamic(() => import('./[id]/create-panel/page'), {
   ssr: false,
-  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
+  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
 });
 
 // --- TypeScript interfaces ---
@@ -144,58 +144,58 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
 const statusConfig = {
   "Pending Signature": { 
     label: "Pending Signature", 
-    color: "bg-amber-500 text-white", 
+    color: "bg-chart-5 text-primary-foreground", 
     count: 0, 
     description: "Waiting for client to sign service agreement" 
   },
   "New": { 
     label: "New", 
-    color: "bg-gray-500 text-white", 
+    color: "bg-muted-foreground text-primary-foreground", 
     count: 0, 
     description: "Client just submitted the request" 
   },
   "Sourcing": { 
     label: "Sourcing", 
-    color: "bg-blue-500 text-white", 
+    color: "bg-primary text-primary-foreground", 
     count: 0, 
     description: "Searching for candidates in the pool" 
   },
   "Panel Ready": { 
     label: "Panel Ready", 
-    color: "bg-yellow-500 text-white", 
+    color: "bg-chart-3 text-primary-foreground", 
     count: 0, 
     description: "Candidates selected and ready for review" 
   },
   "Interview Scheduled": { 
     label: "Interview Scheduled", 
-    color: "bg-purple-500 text-white", 
+    color: "bg-chart-5 text-primary-foreground", 
     count: 0, 
     description: "Interview scheduled with client" 
   },
   "Awaiting Decision": { 
     label: "Awaiting Decision", 
-    color: "bg-orange-500 text-white", 
+    color: "bg-chart-4 text-primary-foreground", 
     count: 0, 
     description: "Waiting for client decision" 
   },
   "Placement Complete": { 
     label: "Placement Complete", 
-    color: "bg-green-500 text-white", 
+    color: "bg-chart-2 text-primary-foreground", 
     count: 0, 
     description: "Hiring completed successfully" 
   },
   "Canceled": { 
     label: "Canceled", 
-    color: "bg-red-500 text-white", 
+    color: "bg-destructive text-primary-foreground", 
     count: 0, 
     description: "Request canceled" 
   },
 };
 
 const priorityColors = {
-  "High": "bg-red-100 text-red-700 border-red-200",
-  "Medium": "bg-yellow-100 text-yellow-700 border-yellow-200",
-  "Low": "bg-green-100 text-green-700 border-green-200",
+  "High": "bg-destructive/10 text-destructive border-destructive/20",
+  "Medium": "bg-chart-3/10 text-chart-3 border-chart-3/20",
+  "Low": "bg-chart-2/10 text-chart-2 border-chart-2/20",
 };
 
 const allStatuses = [
@@ -484,7 +484,7 @@ export default function HireRequestsWorkflow() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -555,7 +555,7 @@ export default function HireRequestsWorkflow() {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex flex-col min-w-[320px] w-[320px] rounded-xl bg-[#F6F8FA] px-2 py-3 ${snapshot.isDraggingOver ? 'ring-2 ring-blue-400' : ''}`}
+                      className={`flex flex-col min-w-[320px] w-[320px] rounded-xl bg-muted px-2 py-3 ${snapshot.isDraggingOver ? 'ring-2 ring-primary' : ''}`}
                     >
                       {/* Column Header */}
                       <div className="flex items-center justify-between mb-4">
@@ -580,7 +580,7 @@ export default function HireRequestsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <Card className="p-4 flex flex-col gap-2 bg-background border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
                                   {/* Header with view button on top right */}
                                   <div className="flex items-center justify-between mb-4">
                                     <div className="flex flex-col gap-0.5">
@@ -593,7 +593,7 @@ export default function HireRequestsWorkflow() {
                                         variant="ghost"
                                         title="View"
                                         aria-label="View"
-                                        className="hover:bg-blue-100"
+                                        className="hover:bg-primary/10"
                                         onClick={() => { setSelectedRequest(request); setModalOpen(true); }}
                                       >
                                         <Eye className="w-5 h-5" />
@@ -610,29 +610,29 @@ export default function HireRequestsWorkflow() {
                                     <div className="flex items-center gap-1">
                                       <Calendar className="w-3 h-3" />
                                       <span>{request.dateSubmitted}</span>
-                                      <span className="text-orange-600">({getDaysSinceSubmitted(request.dateSubmitted)}d ago)</span>
+                                      <span className="text-chart-5">({getDaysSinceSubmitted(request.dateSubmitted)}d ago)</span>
                                     </div>
                                     {request.candidatesCount && (
                                       <div className="flex items-center gap-1">
-                                        <span className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px]">{request.candidatesCount}</span>
+                                        <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px]">{request.candidatesCount}</span>
                                         <span>candidates</span>
                                       </div>
                                     )}
                                     {request.interviewDate && (
-                                      <div className="flex items-center gap-1 text-green-600">
+                                      <div className="flex items-center gap-1 text-chart-2">
                                         <Clock className="w-3 h-3" />
                                         <span>Interview: {request.interviewDate}</span>
                                       </div>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100 mt-2">
+                                  <div className="flex items-center gap-2 pt-2 border-t border-border mt-2">
                                     {status === "Panel Ready" && (
                                       <Button
                                         size="icon"
                                         variant="ghost"
                                         title="Schedule Interview"
                                         aria-label="Schedule Interview"
-                                        className="hover:bg-green-100"
+                                        className="hover:bg-chart-2/10"
                                         onClick={() => { setPanelRequestId(request.id); setPanelModalOpen(true); }}
                                       >
                                         <ArrowRight className="w-5 h-5" />
@@ -665,7 +665,7 @@ export default function HireRequestsWorkflow() {
           <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
             {selectedRequest && (
               <div className="relative h-full flex flex-col">
-                <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
+                <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
                   <div className="flex items-center gap-4">
                     <Avatar name={selectedRequest.clientName} src={selectedRequest.candidates?.[0].avatarUrl} className="w-14 h-14 text-2xl" />
                     <div>
@@ -674,7 +674,7 @@ export default function HireRequestsWorkflow() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedRequest.clientName}`)}>
+                    <Button className="gap-2" variant="default" onClick={() => alert(`Request interview with ${selectedRequest.clientName}`)}>
                       <UserCheck className="w-4 h-4" /> Interview
                     </Button>
                     <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setModalOpen(false)} className="mt-1">
@@ -686,53 +686,53 @@ export default function HireRequestsWorkflow() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-6">
                     {/* Client */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Client</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Client</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.clientName}</div>
                     </div>
                     {/* Role Title */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Role Title</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Role Title</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.roleTitle}</div>
                     </div>
                     {/* Practice Area | Schedule Needs */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Practice Area</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Practice Area</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.practiceArea}</div>
                     </div>
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Schedule Needs</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Schedule Needs</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.scheduleNeeds}</div>
                     </div>
                     {/* Required Skills */}
                     <div className="md:col-span-2">
-                      <div className="font-semibold text-sm text-[#222] mb-1">Required Skills</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Required Skills</div>
                       <div className="flex flex-wrap gap-2">
                         {(selectedRequest.requiredSkills || []).map(skill => (
-                          <span key={skill} className="inline-block bg-gray-100 text-gray-800 rounded px-2 py-0.5 text-xs font-medium">{skill}</span>
+                          <span key={skill} className="inline-block bg-muted text-foreground rounded px-2 py-0.5 text-xs font-medium">{skill}</span>
                         ))}
                       </div>
                     </div>
                     {/* Key Responsibilities */}
                     <div className="md:col-span-2">
-                      <div className="font-semibold text-sm text-[#222] mb-1">Key Responsibilities</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Key Responsibilities</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.keyResponsibilities}</div>
                     </div>
                     {/* Location | Contact */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Location</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Location</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.location}</div>
                     </div>
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Contact</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Contact</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.requestedBy}</div>
                     </div>
                     {/* Status | Created */}
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Status</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Status</div>
                       <Badge className={statusConfig[selectedRequest.status].color}>{selectedRequest.status}</Badge>
                     </div>
                     <div>
-                      <div className="font-semibold text-sm text-[#222] mb-1">Created</div>
+                      <div className="font-semibold text-sm text-foreground mb-1">Created</div>
                       <div className="font-normal text-base text-muted-foreground">{selectedRequest.dateSubmitted}</div>
                     </div>
                   </div>
@@ -744,7 +744,7 @@ export default function HireRequestsWorkflow() {
                     </TabsList>
                     <TabsContent value="ai">
                       <AdvancedTable
-                        data={AI_TOP_10.map(c => ({ ...c, action: <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
+                        data={AI_TOP_10.map(c => ({ ...c, action: <Button size="icon" className="bg-primary/10 hover:bg-primary/20 text-primary" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
                         columns={aiTop10Columns}
                         title={undefined}
                         statusKey={undefined}
@@ -760,7 +760,7 @@ export default function HireRequestsWorkflow() {
                     </TabsContent>
                     <TabsContent value="panel">
                       <AdvancedTable
-                        data={(selectedRequest.candidates || []).map((c) => ({ ...c, action: <Button size="icon" className="bg-blue-100 hover:bg-blue-200 text-blue-700" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
+                        data={(selectedRequest.candidates || []).map((c) => ({ ...c, action: <Button size="icon" className="bg-primary/10 hover:bg-primary/20 text-primary" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
                         columns={candidateColumns}
                         title={undefined}
                         statusKey={undefined}
@@ -781,7 +781,7 @@ export default function HireRequestsWorkflow() {
       )}
       {/* Modal Dialog para Create Panel */}
       <Dialog open={panelModalOpen} onOpenChange={open => { setPanelModalOpen(open); if (!open) setPanelRequestId(null); }}>
-        <DialogContent className="w-screen h-screen max-w-5xl max-h-[95vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
+        <DialogContent className="w-screen h-screen max-w-5xl max-h-[95vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
           {panelRequestId && <CreatePanelModal key={panelRequestId} />}
         </DialogContent>
       </Dialog>

@@ -10,9 +10,9 @@ const statCardVariants = cva(
         default: "border-border",
         primary: "border-primary/20 bg-primary/5",
         secondary: "border-secondary/20 bg-secondary/5",
-        success: "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950",
-        warning: "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950",
-        danger: "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950",
+        success: "border-chart-2/20 bg-chart-2/10 dark:border-chart-2/30 dark:bg-chart-2/20",
+warning: "border-chart-3/20 bg-chart-3/10 dark:border-chart-3/30 dark:bg-chart-3/20",
+danger: "border-destructive/20 bg-destructive/10 dark:border-destructive/30 dark:bg-destructive/20",
       },
       size: {
         sm: "p-4",
@@ -60,8 +60,8 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
                     className={cn(
                       "text-xs font-medium",
                       trend.isPositive
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
+                        ? "text-chart-2"
+                        : "text-destructive"
                     )}
                   >
                     {trend.isPositive ? "+" : ""}{trend.value}%

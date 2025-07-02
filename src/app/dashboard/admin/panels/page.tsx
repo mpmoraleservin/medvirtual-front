@@ -152,22 +152,22 @@ const statusConfig = [
   {
     key: "Panel Ready",
     label: "Panel Ready",
-    color: "bg-yellow-500 text-white"
+    color: "bg-chart-5 text-primary-foreground"
   },
   {
     key: "Interview Scheduled",
     label: "Interview Scheduled", 
-    color: "bg-purple-500 text-white"
+    color: "bg-chart-3 text-primary-foreground"
   },
   {
     key: "Awaiting Decision",
     label: "Awaiting Decision",
-    color: "bg-orange-500 text-white"
+    color: "bg-chart-4 text-primary-foreground"
   },
   {
     key: "Placement Complete",
     label: "Placement Complete",
-    color: "bg-green-500 text-white"
+    color: "bg-chart-2 text-primary-foreground"
   }
 ];
 
@@ -193,10 +193,10 @@ const columns: TableColumn<CandidatePanel>[] = [
     type: "status",
     width: "15%",
     statusColors: {
-      "Panel Ready": "bg-yellow-500 text-white",
-      "Interview Scheduled": "bg-purple-500 text-white",
-      "Awaiting Decision": "bg-orange-500 text-white",
-      "Placement Complete": "bg-green-500 text-white"
+      "Panel Ready": "bg-chart-5 text-primary-foreground",
+      "Interview Scheduled": "bg-chart-3 text-primary-foreground",
+      "Awaiting Decision": "bg-chart-4 text-primary-foreground",
+      "Placement Complete": "bg-chart-2 text-primary-foreground"
     }
   },
   {
@@ -282,7 +282,7 @@ export default function CandidatePanelsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <PageTitle title="Candidate Panels" subtitle="Manage and schedule candidate panels for client interviews" />
         {/* Filtros */}
@@ -307,8 +307,8 @@ export default function CandidatePanelsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-card border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Clock className="h-5 w-5 text-yellow-600" />
+              <div className="p-2 bg-chart-5/10 rounded-lg">
+                <Clock className="h-5 w-5 text-chart-5" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Panel Ready</p>
@@ -321,8 +321,8 @@ export default function CandidatePanelsPage() {
           
           <div className="bg-card border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Calendar className="h-5 w-5 text-purple-600" />
+              <div className="p-2 bg-chart-3/10 rounded-lg">
+                <Calendar className="h-5 w-5 text-chart-3" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Scheduled</p>
@@ -335,8 +335,8 @@ export default function CandidatePanelsPage() {
           
           <div className="bg-card border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Clock className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-chart-4/10 rounded-lg">
+                <Clock className="h-5 w-5 text-chart-4" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Awaiting Decision</p>
@@ -349,8 +349,8 @@ export default function CandidatePanelsPage() {
           
           <div className="bg-card border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-chart-2/10 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-chart-2" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Completed</p>

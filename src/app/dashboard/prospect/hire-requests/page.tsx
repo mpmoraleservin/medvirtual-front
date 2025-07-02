@@ -34,13 +34,10 @@ const hireRequests: HireRequest[] = [
   }
 ];
 
-// Color palette from prospect dashboard
-const blue = "#009FE3";
-
 // Unified status configuration
 const STATUS_CONFIG = {
   "Pending Signature": {
-    color: "bg-amber-500 text-white border-transparent",
+    color: "bg-chart-5 text-primary-foreground border-transparent",
     icon: <Clock className="w-4 h-4" />,
     description: "Waiting for client to sign service agreement"
   }
@@ -92,15 +89,14 @@ export default function ProspectHireRequestsPage() {
         </div>
 
         {/* Prominent Alert Box */}
-        <Card className="mb-8 p-4" style={{ borderColor: blue, background: `${blue}08` }}>
+        <Card className="mb-8 p-4 border-primary bg-primary/5">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 mt-0.5 flex-shrink-0" style={{ color: blue }} />
-            <div style={{ color: blue }}>
+            <Info className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
+            <div className="text-primary">
               <strong>Important:</strong> Your hire requests will be reviewed by our team once the PandaDoc service agreement is signed. Please check your email for the document.
               <Button 
                 variant="link" 
-                className="p-0 h-auto underline ml-1"
-                style={{ color: blue }}
+                className="p-0 h-auto underline ml-1 text-primary"
                 onClick={handleCheckEmail}
               >
                 Check your email now
@@ -125,27 +121,20 @@ export default function ProspectHireRequestsPage() {
 
         {/* Additional Call to Action */}
         {hireRequests.length > 0 && (
-          <Card className="mt-8 p-6" style={{ 
-            background: `${blue}08`, 
-            borderColor: blue 
-          }}>
+          <Card className="mt-8 p-6 bg-primary/5 border-primary">
             <div className="flex items-start gap-4">
-              <AlertTriangle className="w-6 h-6 mt-1 flex-shrink-0" style={{ color: blue }} />
+              <AlertTriangle className="w-6 h-6 mt-1 flex-shrink-0 text-primary" />
               <div>
-                <h3 className="font-semibold mb-2" style={{ color: blue }}>
+                <h3 className="font-semibold mb-2 text-primary">
                   Ready to move forward?
                 </h3>
-                <p className="mb-4" style={{ color: blue }}>
+                <p className="mb-4 text-primary">
                   To start reviewing candidates for your hire requests, please complete the service agreement. 
                   This document outlines our terms and ensures we can begin sourcing the best talent for your needs.
                 </p>
                 <Button 
                   variant="default" 
-                  style={{ 
-                    backgroundColor: blue, 
-                    borderColor: blue 
-                  }}
-                  className="hover:opacity-90"
+                  className="hover:opacity-90 bg-primary border-primary"
                   onClick={handleCheckEmail}
                 >
                   <Info className="w-4 h-4 mr-2" />

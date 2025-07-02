@@ -172,15 +172,15 @@ export default function PanelDetailsPage() {
   const getStatusColor = (status: CandidatePanel["status"]) => {
     switch (status) {
       case "Panel Ready":
-        return "bg-yellow-500 text-white";
+        return "bg-chart-5 text-primary-foreground";
       case "Interview Scheduled":
-        return "bg-purple-500 text-white";
+        return "bg-chart-3 text-primary-foreground";
       case "Awaiting Decision":
-        return "bg-orange-500 text-white";
+        return "bg-chart-4 text-primary-foreground";
       case "Placement Complete":
-        return "bg-green-500 text-white";
+        return "bg-muted text-primary-foreground";
       default:
-        return "bg-gray-500 text-white";
+        return "bg-muted text-primary-foreground";
     }
   };
 
@@ -297,7 +297,7 @@ export default function PanelDetailsPage() {
                   {/* Winner Badge for Placement Complete */}
                   {usedPanel.status === "Placement Complete" && usedPanel.winnerId === candidate.id && (
                     <div className="absolute top-2 right-2">
-                      <Badge className="bg-green-500 text-white flex items-center gap-1">
+                      <Badge className="bg-chart-2 text-primary-foreground flex items-center gap-1">
                         <Award className="h-3 w-3" />
                         Winner
                       </Badge>

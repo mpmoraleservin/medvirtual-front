@@ -101,7 +101,7 @@ export default function Header({ userRole }: HeaderProps) {
   }
 
   return (
-    <header className="fixed top-0 left-0 w-full h-16 z-40 bg-white border-b border-[#E9EAEB] flex items-center justify-between px-4 sm:px-8">
+    <header className="fixed top-0 left-0 w-full h-16 z-40 bg-background border-b border-border flex items-center justify-between px-4 sm:px-8">
       <img src="/logo.png" alt="company logo" className="h-8" />
       {userRole === "ACTIVE_CLIENT" && (
         <div className="flex gap-2 items-center">
@@ -133,12 +133,12 @@ export default function Header({ userRole }: HeaderProps) {
                 <div>
                   <Label htmlFor="refer-name">Name *</Label>
                   <Input id="refer-name" value={referName} onChange={e => setReferName(e.target.value)} required autoFocus />
-                  {referError.name && <div className="text-red-500 text-xs mt-1">{referError.name}</div>}
+                  {referError.name && <div className="text-destructive text-xs mt-1">{referError.name}</div>}
                 </div>
                 <div>
                   <Label htmlFor="refer-email">Email *</Label>
                   <Input id="refer-email" type="email" value={referEmail} onChange={e => setReferEmail(e.target.value)} required />
-                  {referError.email && <div className="text-red-500 text-xs mt-1">{referError.email}</div>}
+                  {referError.email && <div className="text-destructive text-xs mt-1">{referError.email}</div>}
                 </div>
                 <div>
                   <Label htmlFor="refer-msg">Message</Label>
@@ -215,7 +215,7 @@ export default function Header({ userRole }: HeaderProps) {
                       autoFocus 
                       placeholder="John"
                     />
-                    {clientError.firstName && <div className="text-red-500 text-xs mt-1">{clientError.firstName}</div>}
+                    {clientError.firstName && <div className="text-destructive text-xs mt-1">{clientError.firstName}</div>}
                   </div>
                   <div className="flex-1">
                     <Label htmlFor="last-name">Last Name *</Label>
@@ -226,7 +226,7 @@ export default function Header({ userRole }: HeaderProps) {
                       required 
                       placeholder="Smith"
                     />
-                    {clientError.lastName && <div className="text-red-500 text-xs mt-1">{clientError.lastName}</div>}
+                    {clientError.lastName && <div className="text-destructive text-xs mt-1">{clientError.lastName}</div>}
                   </div>
                 </div>
 
@@ -240,7 +240,7 @@ export default function Header({ userRole }: HeaderProps) {
                       required 
                       placeholder="Talent Recruiter"
                     />
-                    {clientError.jobTitle && <div className="text-red-500 text-xs mt-1">{clientError.jobTitle}</div>}
+                    {clientError.jobTitle && <div className="text-destructive text-xs mt-1">{clientError.jobTitle}</div>}
                   </div>
                   <div className="flex-1">
                     <Label htmlFor="company-name">Company Name *</Label>
@@ -251,7 +251,7 @@ export default function Header({ userRole }: HeaderProps) {
                       required 
                       placeholder="MedVirtual"
                     />
-                    {clientError.companyName && <div className="text-red-500 text-xs mt-1">{clientError.companyName}</div>}
+                    {clientError.companyName && <div className="text-destructive text-xs mt-1">{clientError.companyName}</div>}
                   </div>
                 </div>
 
@@ -265,7 +265,7 @@ export default function Header({ userRole }: HeaderProps) {
                     required 
                     placeholder="john.smith@example.com"
                   />
-                  {clientError.email && <div className="text-red-500 text-xs mt-1">{clientError.email}</div>}
+                  {clientError.email && <div className="text-destructive text-xs mt-1">{clientError.email}</div>}
                 </div>
 
                 <div>
@@ -278,7 +278,7 @@ export default function Header({ userRole }: HeaderProps) {
                     required 
                     placeholder="+1 (555) 123-4567"
                   />
-                  {clientError.phone && <div className="text-red-500 text-xs mt-1">{clientError.phone}</div>}
+                  {clientError.phone && <div className="text-destructive text-xs mt-1">{clientError.phone}</div>}
                 </div>
 
                 <div>
@@ -290,7 +290,7 @@ export default function Header({ userRole }: HeaderProps) {
                     required 
                     placeholder="Smith Medical Center"
                   />
-                  {clientError.practiceName && <div className="text-red-500 text-xs mt-1">{clientError.practiceName}</div>}
+                  {clientError.practiceName && <div className="text-destructive text-xs mt-1">{clientError.practiceName}</div>}
                 </div>
 
                 <DialogFooter>
@@ -327,8 +327,8 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
   function StepCircle({ active, number, label }: { active: boolean, number: number, label: string }) {
     return (
       <div className="flex flex-col items-center min-w-[90px]">
-        <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 text-lg font-bold transition-all ${active ? 'border-[#009FE3] text-[#009FE3] bg-[#E6F6FD]' : 'border-muted-foreground text-muted-foreground bg-muted'}`}>{number}</div>
-        <span className={`mt-2 text-xs font-semibold ${active ? 'text-[#009FE3]' : 'text-muted-foreground'}`}>{label}</span>
+        <div className={`font-bold transition-all ${active ? 'border-primary text-primary bg-primary/10' : 'border-muted-foreground text-muted-foreground bg-muted'}`}>{number}</div>
+        <span className={`mt-2 text-xs font-semibold ${active ? 'text-primary' : 'text-muted-foreground'}`}>{label}</span>
       </div>
     );
   }
@@ -339,9 +339,9 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
       <div className="flex flex-col flex-1 justify-center gap-6">
         <div className="flex items-center justify-center gap-0 mb-4">
           <StepCircle active={step === 1} number={1} label="Organization" />
-          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 1 ? 'bg-[#009FE3]' : 'bg-muted-foreground/30'} transition-all`} />
+          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 1 ? 'bg-primary' : 'bg-muted-foreground/30'} transition-all`} />
           <StepCircle active={step === 2} number={2} label="Role" />
-          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 2 ? 'bg-[#009FE3]' : 'bg-muted-foreground/30'} transition-all`} />
+          <div className={`h-1 flex-grow mx-1 sm:mx-2 ${step > 2 ? 'bg-primary' : 'bg-muted-foreground/30'} transition-all`} />
           <StepCircle active={step === 3} number={3} label="Agreement" />
         </div>
         {/* Step 1: Organization */}
@@ -361,7 +361,7 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
                 required
                 value={org.companyName}
                 onChange={e => setOrg(o => ({ ...o, companyName: e.target.value }))}
-                className="mt-1 block w-full rounded border px-3 py-2 text-base border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                className="mt-1 block w-full rounded border px-3 py-2 text-base border-primary focus:ring-2 focus:ring-primary"
                 placeholder="Your company name"
               />
             </label>
@@ -372,7 +372,7 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
                 required
                 value={org.companyIndustry}
                 onChange={e => setOrg(o => ({ ...o, companyIndustry: e.target.value }))}
-                className="mt-1 block w-full rounded border px-3 py-2 text-base border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                className="mt-1 block w-full rounded border px-3 py-2 text-base border-primary focus:ring-2 focus:ring-primary"
                 placeholder="e.g. Healthcare, Clinic, Hospital, etc."
               />
             </label>
@@ -382,7 +382,7 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
                 required
                 value={org.companyDescription}
                 onChange={e => setOrg(o => ({ ...o, companyDescription: e.target.value }))}
-                className="mt-1 block w-full rounded border px-3 py-2 text-base min-h-[100px] border-[#009FE3] focus:ring-2 focus:ring-[#009FE3]"
+                className="mt-1 block w-full rounded border px-3 py-2 text-base min-h-[100px] border-primary focus:ring-2 focus:ring-primary"
                 placeholder="Describe your company"
               />
             </label>
@@ -398,8 +398,8 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
         {step === 3 && (
           <div className="flex flex-col items-center justify-center gap-6 min-h-[260px]">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-[#009FE3]/10 flex items-center justify-center mb-2">
-                <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path stroke="#009FE3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 12.5l3 3 5-5M12 21C6.477 21 2 16.523 2 11.001 2 5.477 6.477 1 12 1s10 4.477 10 10.001C22 16.523 17.523 21 12 21z"/></svg>
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 12.5l3 3 5-5M12 21C6.477 21 2 16.523 2 11.001 2 5.477 6.477 1 12 1s10 4.477 10 10.001C22 16.523 17.523 21 12 21z"/></svg>
               </div>
               <h3 className="text-xl font-bold text-center text-foreground">Almost done!</h3>
               <p className="text-center text-muted-foreground max-w-md">To start the search, you must sign the PandaDoc agreement. However, your request is ready and an agent will contact you soon to guide you through the process.</p>
@@ -413,9 +413,9 @@ export function StepperProspectHireRequest({ onClose }: { onClose: () => void })
         {step === 2 && <Button type="button" variant="ghost" onClick={() => setStep(1)}>Back</Button>}
         {step === 3 && <Button type="button" variant="ghost" onClick={() => setStep(2)}>Back</Button>}
         <div className="flex-1" />
-        {step === 1 && <Button type="button" disabled={!orgValid} variant="accent" onClick={() => orgFormRef.current?.requestSubmit()}>Next</Button>}
-        {step === 2 && <Button type="button" variant="accent" onClick={() => (roleFormRef.current as { submit?: () => void })?.submit?.()}>Next</Button>}
-        {step === 3 && <Button variant="accent" onClick={() => { toast.success('Request submitted!'); onClose(); }}>Create Request</Button>}
+        {step === 1 && <Button type="button" disabled={!orgValid} variant="default" onClick={() => orgFormRef.current?.requestSubmit()}>Next</Button>}
+        {step === 2 && <Button type="button" variant="default" onClick={() => (roleFormRef.current as { submit?: () => void })?.submit?.()}>Next</Button>}
+        {step === 3 && <Button variant="default" onClick={() => { toast.success('Request submitted!'); onClose(); }}>Create Request</Button>}
       </div>
     </div>
   );

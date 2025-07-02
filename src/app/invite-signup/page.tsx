@@ -37,13 +37,13 @@ export default function InviteSignup() {
       </div>
       <div className="w-full max-w-[560px] flex flex-col  items-start">
         <div className="mb-8">
-          <h1 className="font-semibold text-[40px] text-[#313131] mb-4 leading-[110%]">
+          <h1 className="font-semibold text-[40px] text-foreground mb-4 leading-[110%]">
             Welcome to MedVirtual 👋
           </h1>
-          <h2 className="text-[#414651] leading-[100%] font-semibold mb-4">
+          <h2 className="text-muted-foreground leading-[100%] font-semibold mb-4">
             {"You've been invited by Sarah Kim"}
           </h2>
-          <h3 className="font-normal text-[#414651]">
+          <h3 className="font-normal text-muted-foreground">
             {
               "Set up your password to activate your MedVirtual account and start using the platform."
             }
@@ -53,7 +53,7 @@ export default function InviteSignup() {
         <div className="w-full mb-2">
           <Label
             htmlFor="password"
-            className="font-medium color-[#0C1421] mb-1"
+            className="font-medium text-foreground mb-1"
           >
             Password
           </Label>
@@ -64,7 +64,7 @@ export default function InviteSignup() {
               placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]"
+              className="px-4 py-5 rounded-lg border-[1px] border-border bg-background font-normal text-foreground outline-primary"
             />
             <Button
               variant="ghost"
@@ -85,15 +85,15 @@ export default function InviteSignup() {
           value={passwordComplianceProgess(password)}
           className={`h-1 mb-2 ${
             passwordComplianceProgess(password) == 100
-              ? "[&>div]:bg-green-500"
-              : "[&>div]:bg-yellow-500"
+              ? "[&>div]:bg-chart-2"
+: "[&>div]:bg-chart-3"
           }`}
         />
         <div className="w-full flex items-center justify-between mb-2">
-          <p className="text-xs font-medium text-black opacity-70 ">
+          <p className="text-xs font-medium text-foreground opacity-70 ">
             Your password must contain:
           </p>
-          <span className="text-xs text-black opacity-70 font-bold">
+          <span className="text-xs text-foreground opacity-70 font-bold">
             {passwordComplianceProgess(password) == 100 ? "Strong" : "Weak"}
           </span>
         </div>
@@ -119,7 +119,7 @@ export default function InviteSignup() {
         <div className="w-full mb-8">
           <Label
             htmlFor="confirm_password"
-            className="font-medium color-[#0C1421] mb-1"
+            className="font-medium text-foreground mb-1"
           >
             Confirm Password
           </Label>
@@ -130,7 +130,7 @@ export default function InviteSignup() {
               placeholder="••••••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]"
+              className="px-4 py-5 rounded-lg border-[1px] border-border bg-background font-normal text-foreground outline-primary"
             />
             <Button
               variant="ghost"
@@ -150,11 +150,11 @@ export default function InviteSignup() {
         <div className="flex items-center justify-start gap-2 mb-10">
           <Checkbox
             id="remember"
-            className="w-4 h-4 border-2 border-[#717680] cursor-pointer"
+            className="w-4 h-4 border-2 border-muted-foreground cursor-pointer"
           />
           <Label
             htmlFor="remember"
-            className="font-medium color-[#717680] cursor-pointer"
+            className="font-medium text-muted-foreground cursor-pointer"
           >
             Remember me
           </Label>
@@ -162,7 +162,7 @@ export default function InviteSignup() {
 
         <div className="w-full flex flex-col gap-4 mb-14">
           <Button
-            className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer hover:opacity-0.8"
+            className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-80"
             disabled={!isInfoComplete()}
           >
             Sign In

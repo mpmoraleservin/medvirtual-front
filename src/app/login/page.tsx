@@ -35,25 +35,24 @@ export default function Login() {
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
             <div className="flex items-center justify-between mb-16">
                 <img src="/logo.png" alt="company logo" className=" w-56 " />
-                {viewport < 640 ? null : <a href="/signup" className="absolute top-5 right-5 h-fit font-bold text-white text-xl leading-[100%] px-6 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer">
+                {viewport < 640 ? null : <a href="/signup" className="absolute top-5 right-5 h-fit font-bold text-primary-foreground text-xl leading-[100%] px-6 py-4 rounded-xl bg-primary cursor-pointer">
                     Sign up
                 </a>}
             </div>
             <div className="w-full max-w-[560px] flex flex-col  items-start">
                 <div className="mb-8">
-                    <h1 className="font-semibold text-[40px] text-[#313131]">Log In</h1>
-                    <h2 className="font-normal text-[#313131] opacity-80">{'Let\'s get you all set up so you can access your personal account'}.
-                    </h2>
+                    <h1 className="font-semibold text-[40px] text-foreground">Log In</h1>
+                    <h2 className="font-normal text-foreground opacity-80">{'Let\'s get you all set up so you can access your personal account'}.</h2>
                 </div>
                 <div className="w-full mb-4">
-                    <Label htmlFor="email" className="font-medium color-[#0C1421] mb-1">Email</Label>
-                    <Input id="email" type="email" placeholder="john@medvirtual.com" value={email} onChange={e => setEmail(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131]" />
+                    <Label htmlFor="email" className="font-medium text-foreground mb-1">Email</Label>
+                    <Input id="email" type="email" placeholder="john@medvirtual.com" value={email} onChange={e => setEmail(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground" />
                 </div>
 
                 <div className="w-full mb-6">
-                    <Label htmlFor="password" className="font-medium color-[#0C1421] mb-1">Password</Label>
+                    <Label htmlFor="password" className="font-medium text-foreground mb-1">Password</Label>
                     <div className="relative flex items-center justify-center">
-                        <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]" />
+                        <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground outline-primary" />
                         <Button
                             variant="ghost"
                             size="icon"
@@ -67,33 +66,33 @@ export default function Login() {
 
                 <div className="w-full flex items-center justify-between mb-10">
                     <div className="flex items-center justify-start gap-2">
-                        <Checkbox id="remember" className="w-4 h-4 border-2 border-[#313131] cursor-pointer" />
-                        <Label htmlFor="remember" className="font-medium color-[#313131] cursor-pointer">Remember me</Label>
+                        <Checkbox id="remember" className="w-4 h-4 border-2 border-border cursor-pointer" />
+                        <Label htmlFor="remember" className="font-medium text-foreground cursor-pointer">Remember me</Label>
                     </div>
 
-                    <a href="/password-recovery" className="font-medium text-[var(--primary-color)] text-sm">Forgot Password?</a>
+                    <a href="/password-recovery" className="font-medium text-primary text-sm">Forgot Password?</a>
                 </div>
 
                 <div className="w-full flex flex-col gap-4 mb-14">
-                    <Button className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer hover:opacity-0.8" disabled={!validateInputs(email, password)}>
+                    <Button className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8" disabled={!validateInputs(email, password)}>
                         Log In
                     </Button>
-                    {viewport < 640 ? <a href="/signup" className="w-full text-center font-bold text-[var(--primary-color)] text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
+                    {viewport < 640 ? <a href="/signup" className="w-full text-center font-bold text-primary text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
                         Sign up
                     </a> : null}
                 </div>
 
 
-                <div className="w-full flex items-center gap-4 text-sm font-normal text-[#313131] mb-14">
+                <div className="w-full flex items-center gap-4 text-sm font-normal text-foreground mb-14">
                     <Separator className="flex-1" /><span className="opacity-60">Or log in with</span><Separator className="flex-1" />
                 </div>
 
-                <Button className="h-max w-full font-semibold text-[#1A1C1E] text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-[#EFF0F6] cursor-pointer mb-2 hover:bg-gray-200">
+                <Button className="h-max w-full font-semibold text-foreground text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-border cursor-pointer mb-2 hover:bg-muted">
                     <img src="/google.png" alt="google logo" />
                     Continue with Google
                 </Button>
 
-                <Button className="h-max w-full font-semibold text-[#1A1C1E] text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-[#EFF0F6] cursor-pointer hover:bg-gray-200 mb-8">
+                <Button className="h-max w-full font-semibold text-foreground text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-border cursor-pointer hover:bg-muted mb-8">
                     <img src="/facebook.png" alt="facebook logo" />
                     Continue with Facebook
                 </Button>

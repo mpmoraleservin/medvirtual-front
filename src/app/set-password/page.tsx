@@ -32,8 +32,8 @@ export default function SetPassword() {
 
   useEffect(() => {
     toast.custom(() => (
-      <div className="flex items-center gap-3 font-[Instrument_Sans] rounded-lg px-4 py-2 bg-[#EAF7EE] border-1 border-green-500 font-medium leading-[120%] text-gray-900 shadow-lg">
-        <CircleCheck size={40} color="white" fill="#40C662" />
+      <div className="flex items-center gap-3 font-[Instrument_Sans] rounded-lg px-4 py-2 bg-chart-2/10 border-1 border-chart-2 font-medium leading-[120%] text-foreground shadow-lg">
+        <CircleCheck size={40} color="currentColor" fill="var(--chart-2)" />
         Verification successful. You can now set a new password.
       </div>
     ));
@@ -46,10 +46,10 @@ export default function SetPassword() {
       </div>
       <div className="w-full max-w-[560px] flex flex-col  items-start mt-8">
         <div className="mb-8">
-          <h1 className="font-semibold text-[40px] leading-[110%] text-[#313131] mb-1">
+          <h1 className="font-semibold text-[40px] leading-[110%] text-foreground mb-1">
             Set a Password
           </h1>
-          <h2 className="font-normal text-[#313131] opacity-80">
+          <h2 className="font-normal text-foreground opacity-80">
             {
               "Your password has been reset. Set a new one to access to your account."
             }
@@ -59,7 +59,7 @@ export default function SetPassword() {
         <div className="w-full mb-2">
           <Label
             htmlFor="password"
-            className="font-medium color-[#0C1421] mb-1"
+            className="font-medium text-foreground mb-1"
           >
             Password
           </Label>
@@ -70,7 +70,7 @@ export default function SetPassword() {
               placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]"
+              className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground outline-primary"
             />
             <Button
               variant="ghost"
@@ -91,15 +91,15 @@ export default function SetPassword() {
           value={passwordComplianceProgess(password)}
           className={`h-1 mb-2 ${
             passwordComplianceProgess(password) == 100
-              ? "[&>div]:bg-green-500"
-              : "[&>div]:bg-yellow-500"
+              ? "[&>div]:bg-chart-2"
+              : "[&>div]:bg-chart-5"
           }`}
         />
         <div className="w-full flex items-center justify-between mb-2">
-          <p className="text-xs font-medium text-black opacity-70 ">
+          <p className="text-xs font-medium text-foreground opacity-70 ">
             Your password must contain:
           </p>
-          <span className="text-xs text-black opacity-70 font-bold">
+          <span className="text-xs text-foreground opacity-70 font-bold">
             {passwordComplianceProgess(password) == 100 ? "Strong" : "Weak"}
           </span>
         </div>
@@ -125,7 +125,7 @@ export default function SetPassword() {
         <div className="w-full mb-8">
           <Label
             htmlFor="confirm_password"
-            className="font-medium color-[#0C1421] mb-1"
+            className="font-medium text-foreground mb-1"
           >
             Confirm Password
           </Label>
@@ -136,7 +136,7 @@ export default function SetPassword() {
               placeholder="••••••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="px-4 py-5 rounded-lg border-[1px] border-[#D4D7E3] bg-[#F7FBFF] font-normal text-[#313131] outline-[var(--primary-color)]"
+              className="px-4 py-5 rounded-lg border-[1px] border-border bg-input font-normal text-foreground outline-primary"
             />
             <Button
               variant="ghost"
@@ -155,7 +155,7 @@ export default function SetPassword() {
 
         <div className="w-full flex flex-col gap-4 mb-8">
           <Button
-            className="h-max w-full font-bold text-white text-xl leading-[100%] px-4 py-4 rounded-xl bg-[var(--primary-color)] cursor-pointer hover:opacity-0.8"
+            className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8"
             disabled={!isInfoComplete()}
             onClick={() => {}}
           >

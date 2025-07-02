@@ -26,7 +26,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
           {children}
         </main>
         {/* Bottom Navigation solo mobile */}
-        <nav className="sm:hidden fixed bottom-0 left-0 w-full h-16 bg-white border-t border-[#E9EAEB] flex justify-around items-center z-50 shadow-lg">
+        <nav className="sm:hidden fixed bottom-0 left-0 w-full h-16 bg-background border-t border-border flex justify-around items-center z-50 shadow-lg">
           {navItems.map(({ href, icon: Icon, label }) => {
             const isActive = pathname === href || (href !== "/dashboard/client" && pathname.startsWith(href));
             return (

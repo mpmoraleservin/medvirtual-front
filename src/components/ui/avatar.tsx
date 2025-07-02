@@ -12,7 +12,7 @@ export function Avatar({ src, alt, name, className }: AvatarProps) {
     ? name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "";
   return (
-    <span className={`inline-flex items-center justify-center rounded-full bg-[#E9F1FF] text-[#009FE3] font-bold text-base w-10 h-10 ${className || ""}`.trim()}>
+    <span className={`inline-flex items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-base w-10 h-10 ${className || ""}`.trim()}>
       {src ? (
         <img
           src={src}

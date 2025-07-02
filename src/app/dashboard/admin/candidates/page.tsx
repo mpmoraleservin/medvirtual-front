@@ -353,7 +353,7 @@ const columns: TableColumn<Candidate>[] = [
     type: "badge",
     badgeConfig: {
       variant: "secondary",
-      className: "rounded-full bg-[#F9F5FF] text-[#5C3CC2] text-xs font-medium"
+                          className: "rounded-full bg-chart-5/10 text-chart-5 text-xs font-medium"
     }
   },
   {
@@ -363,7 +363,7 @@ const columns: TableColumn<Candidate>[] = [
     type: "badge",
     badgeConfig: {
       variant: "outline",
-      className: "rounded-full bg-[#175CD31A] text-[#175CD3] text-xs font-medium"
+                          className: "rounded-full bg-primary/10 text-primary text-xs font-medium"
     }
   },
   {
@@ -371,9 +371,9 @@ const columns: TableColumn<Candidate>[] = [
     header: "Experience",
     type: "status",
     statusColors: {
-      "Junior": "bg-blue-100 text-blue-700",
-      "Mid": "bg-yellow-100 text-yellow-700",
-      "Senior": "bg-green-100 text-green-700"
+      "Junior": "bg-primary/10 text-primary",
+"Mid": "bg-chart-3/10 text-chart-3",
+"Senior": "bg-chart-2/10 text-chart-2"
     }
   },
   {
@@ -431,7 +431,7 @@ export default function CandidatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <PageTitle title="All Candidates" subtitle="Browse and manage all candidates in the system" />
         
@@ -457,7 +457,7 @@ export default function CandidatesPage() {
           <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
             {selectedCandidate && (
               <div className="relative h-full flex flex-col">
-                <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
+                <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
                   <div className="flex items-center gap-4">
                     <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
                     <div>
@@ -466,7 +466,7 @@ export default function CandidatesPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="gap-2" variant="accent" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
+                    <Button className="gap-2" variant="default" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
                       Interview
                     </Button>
                   </div>
@@ -476,7 +476,7 @@ export default function CandidatesPage() {
                     {/* Info principal */}
                     <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
                       <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
-                      <div className="mt-1 text-base font-semibold text-[#009FE3] text-center md:text-left">
+                      <div className="mt-1 text-base font-semibold text-primary text-center md:text-left">
                         {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
                         {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
                       </div>
@@ -489,19 +489,19 @@ export default function CandidatesPage() {
                   </div>
                   <div className="flex flex-col md:flex-row gap-8">
                     <div className="flex-1">
-                      <div className="mb-2 font-semibold text-[#222]">Specialization</div>
+                      <div className="mb-2 font-semibold text-foreground">Specialization</div>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {selectedCandidate.specializations.map((spec) => (
                           <Badge key={spec} variant="secondary">{spec}</Badge>
                         ))}
                       </div>
-                      <div className="mb-2 font-semibold text-[#222]">Skills & Certifications</div>
+                      <div className="mb-2 font-semibold text-foreground">Skills & Certifications</div>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {selectedCandidate.skills.map((skill) => (
                           <Badge key={skill} variant="outline">{skill}</Badge>
                         ))}
                       </div>
-                      <div className="mb-2 font-semibold text-[#222]">About Me</div>
+                      <div className="mb-2 font-semibold text-foreground">About Me</div>
                       <div className="text-sm text-muted-foreground mb-4">
                         {selectedCandidate.about}
                       </div>

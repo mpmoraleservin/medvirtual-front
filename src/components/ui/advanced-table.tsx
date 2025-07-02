@@ -165,7 +165,7 @@ export function AdvancedTable<T extends { id: string }>({
     switch (column.type) {
       case 'status':
         const statusColors = column.statusColors || {};
-        const color = statusColors[String(value)] || "bg-gray-100 text-gray-800";
+        const color = statusColors[String(value)] || "bg-muted text-muted-foreground";
         return (
           <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 ${color}`}>
             {String(value)}
@@ -199,7 +199,7 @@ export function AdvancedTable<T extends { id: string }>({
             {onViewDetails ? (
               <Button
                 size="icon"
-                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                className="bg-primary/10 hover:bg-primary/20 text-primary"
                 aria-label="View Details"
                 title="View Details"
                 onClick={() => onViewDetails(item)}
@@ -210,7 +210,7 @@ export function AdvancedTable<T extends { id: string }>({
               <Link href={`/dashboard/admin/panels/${item.id}`}>
                 <Button
                   size="icon"
-                  className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                  className="bg-primary/10 hover:bg-primary/20 text-primary"
                   aria-label="View Details"
                   title="View Details"
                 >
@@ -230,7 +230,7 @@ export function AdvancedTable<T extends { id: string }>({
         return <div>{String(value)}</div>;
       default:
         return (
-          <div className="font-semibold text-[#222] leading-tight">
+          <div className="font-semibold text-foreground leading-tight">
             {String(value)}
           </div>
         );
@@ -308,30 +308,30 @@ export function AdvancedTable<T extends { id: string }>({
         {/* Desktop Table */}
         <div className="hidden sm:block w-full">
           <div ref={tableContainerRef} className={`relative w-full ${className}`}>
-            <Table className="w-full" style={{ tableLayout: "auto" }}>
-              <TableHeader>
-                <TableRow className="bg-[#F6F6F7] border-b border-[#E5E7EB]">
+            <Table className="w-full rounded-xl border-[var(--table-border)] shadow-md bg-white">
+              <TableHeader className="bg-[var(--table-header-bg)] text-[var(--table-header-text)] font-bold sticky top-0 z-10 shadow-none">
+                <TableRow>
                   {columns.map((column) => (
                     <TableHead
                       key={String(column.key)}
-                      className="font-semibold text-xs sm:text-base px-6 py-3 text-left align-middle"
+                      className="px-6 py-4 text-base align-middle"
                     >
                       {column.header}
                     </TableHead>
                   ))}
-                  {onViewDetails && <TableHead className="text-center px-6 py-3">Actions</TableHead>}
+                  {onViewDetails && <TableHead className="text-center px-6 py-4 text-base align-middle">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedData.map((item) => (
-                  <TableRow key={item.id} className="bg-white border-b border-[#F1F1F1] hover:bg-[#F6F6F7] transition-colors group">
+                  <TableRow key={item.id} className="border-b-[var(--table-border)] hover:bg-[var(--table-row-hover-bg)] rounded-lg">
                     {columns.map((column) => (
                       <TableCell
                         key={String(column.key)}
                         className={
                           column.type === "status" || column.type === "action"
-                            ? "whitespace-nowrap px-6 py-3 text-xs sm:text-base align-middle"
-                            : "px-6 py-3 text-xs sm:text-base align-middle break-words whitespace-normal"
+                            ? "whitespace-nowrap px-6 py-4 text-base align-middle"
+                            : "px-6 py-4 text-base align-middle break-words whitespace-normal"
                         }
                         style={{ width: column.width || undefined }}
                       >
@@ -339,10 +339,10 @@ export function AdvancedTable<T extends { id: string }>({
                       </TableCell>
                     ))}
                     {onViewDetails && (
-                      <TableCell className="py-3 sm:py-4 text-center align-middle text-xs sm:text-base px-6 whitespace-nowrap">
+                      <TableCell className="py-4 text-center align-middle text-base px-6 whitespace-nowrap">
                         <Button
                           size="icon"
-                          className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                          className="bg-primary/10 text-primary rounded-full shadow-none hover:bg-primary/20"
                           aria-label="View Details"
                           title="View Details"
                           onClick={() => onViewDetails(item)}
@@ -355,7 +355,7 @@ export function AdvancedTable<T extends { id: string }>({
                 ))}
                 {paginatedData.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={columns.length + (onViewDetails ? 1 : 0)} className="text-center text-muted-foreground py-8 text-xs sm:text-base px-6">
+                    <TableCell colSpan={columns.length + (onViewDetails ? 1 : 0)} className="text-center text-muted-foreground py-8 text-base px-6">
                       {emptyMessage}
                     </TableCell>
                   </TableRow>
@@ -369,11 +369,11 @@ export function AdvancedTable<T extends { id: string }>({
         {showMobileCards && (
           <div className="flex flex-col gap-3 sm:hidden">
             {paginatedData.map((item) => (
-              <div key={item.id} className="rounded-lg border bg-white p-4 flex flex-col gap-2 shadow-sm">
+              <div key={item.id} className="rounded-lg border bg-background p-4 flex flex-col gap-2 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="flex-1">
                     {columns.slice(0, 2).map((column) => (
-                      <div key={String(column.key)} className="font-semibold text-[#222] leading-tight">
+                      <div key={String(column.key)} className="font-semibold text-foreground leading-tight">
                         {renderCellContent(column, item[column.key], item)}
                       </div>
                     ))}
@@ -381,7 +381,7 @@ export function AdvancedTable<T extends { id: string }>({
                   {onViewDetails && (
                     <Button 
                       size="icon" 
-                      className="bg-blue-100 hover:bg-blue-200 text-blue-700" 
+                      className="bg-primary/10 text-primary rounded-full shadow-none hover:bg-primary/20" 
                       aria-label="View Details" 
                       title="View Details"
                       onClick={() => onViewDetails(item)}
@@ -393,7 +393,7 @@ export function AdvancedTable<T extends { id: string }>({
               </div>
             ))}
             {paginatedData.length === 0 && (
-              <div className="text-center text-muted-foreground py-8 text-xs">{emptyMessage}</div>
+              <div className="text-center text-muted-foreground py-8 text-base">{emptyMessage}</div>
             )}
           </div>
         )}

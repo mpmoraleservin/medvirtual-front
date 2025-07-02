@@ -7,6 +7,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { StatusBadge, type HireRequestStatus } from "@/components/ui/status-badge";
+import { StaffCard } from "@/components/ui/staff-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter
 } from "@/components/ui/dialog";
@@ -16,18 +20,13 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { 
-  Users, 
-  Search, 
-  Clock, 
-  DollarSign, 
-  XCircle, 
-  Eye, 
-  Plus, 
-  UserPlus, 
+  Users,
   TrendingUp,
-  AlertCircle,
-  CheckCircle,
-  CheckSquare
+  Clock,
+  UserPlus,
+  Plus,
+  Search,
+  AlertCircle
 } from "lucide-react";
 
 // --- TypeScript interfaces ---
@@ -81,16 +80,7 @@ interface Candidate {
   experienceLevel: "Junior" | "Mid" | "Senior";
 }
 
-// Unified Hire Request Status Type
-type HireRequestStatus = 
-  | "Pending Signature"
-  | "New" 
-  | "Sourcing"
-  | "Panel Ready"
-  | "Interview Scheduled"
-  | "Awaiting Decision"
-  | "Placement Complete"
-  | "Canceled";
+// Unified Hire Request Status Type - imported from StatusBadge component
 
 interface HireRequest {
   id: string;
@@ -100,57 +90,7 @@ interface HireRequest {
   candidates: Candidate[];
 }
 
-// Unified status configuration using app's design system
-const STATUS_CONFIG: Record<HireRequestStatus, {
-  color: string;
-  icon: React.ReactNode;
-  description: string;
-}> = {
-  "Pending Signature": {
-    color: "bg-amber-500 text-white border-transparent",
-    icon: <Clock className="w-4 h-4" />,
-    description: "Waiting for client to sign service agreement"
-  },
-  "New": {
-    color: "bg-gray-500 text-white border-transparent",
-    icon: <Clock className="w-4 h-4" />,
-    description: "Client just submitted the request"
-  },
-  "Sourcing": {
-    color: "bg-blue-500 text-white border-transparent",
-    icon: <Users className="w-4 h-4" />,
-    description: "Searching for candidates in the pool"
-  },
-  "Panel Ready": {
-    color: "bg-yellow-500 text-white border-transparent",
-    icon: <CheckCircle className="w-4 h-4" />,
-    description: "Candidates selected and ready for review"
-  },
-  "Interview Scheduled": {
-    color: "bg-purple-500 text-white border-transparent",
-    icon: <Clock className="w-4 h-4" />,
-    description: "Interview scheduled with client"
-  },
-  "Awaiting Decision": {
-    color: "bg-orange-500 text-white border-transparent",
-    icon: <AlertCircle className="w-4 h-4" />,
-    description: "Waiting for client decision"
-  },
-  "Placement Complete": {
-    color: "bg-green-500 text-white border-transparent",
-    icon: <CheckSquare className="w-4 h-4" />,
-    description: "Hiring completed successfully"
-  },
-  "Canceled": {
-    color: "bg-red-500 text-white border-transparent",
-    icon: <XCircle className="w-4 h-4" />,
-    description: "Request canceled"
-  }
-};
-
-// Helper functions
-const getStatusColor = (status: HireRequestStatus) => STATUS_CONFIG[status].color;
-const getStatusIcon = (status: HireRequestStatus) => STATUS_CONFIG[status].icon;
+// Status configuration is now handled by StatusBadge component
 
 // --- Mock Data ---
 const clientName = "Dr. Smith";
@@ -519,117 +459,20 @@ type ModalType = null | "bonus" | "terminate" | "view";
 
 // --- Extracted Components ---
 
-// Loading Spinner Component
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center p-4">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-  </div>
-);
+// Loading Spinner Component - now imported from @/components/ui/loading-spinner
 
-// Empty State Component
-const EmptyStaffState = () => (
-  <Card className="p-8 border border-dashed border-gray-300 bg-gray-50">
-    <div className="flex flex-col items-center justify-center text-center">
-      <UserPlus className="w-12 h-12 text-gray-400 mb-4" />
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">No Staff Hired Yet</h3>
-      <p className="text-gray-600 mb-4 max-w-md">
-        Start building your team by submitting your first hire request. We'll help you find the perfect candidates.
-      </p>
-      <Link href="/dashboard/client/hire-requests/new">
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Submit First Request
-        </Button>
-      </Link>
-    </div>
-  </Card>
-);
+// Empty State Component - now imported from @/components/ui/empty-state
 
-// Staff Card Component
-const StaffCard = ({ 
-  member, 
-  onView, 
-  onBonus, 
-  onTerminate 
-}: { 
-  member: HiredStaffMember;
-  onView: () => void;
-  onBonus: () => void;
-  onTerminate: () => void;
-}) => {
-  const hasRecentBonus = member.bonuses && member.bonuses.length > 0 && 
-    new Date(member.bonuses[0].date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-  return (
-    <Card className="p-4 border border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-md">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="relative">
-          <Avatar name={member.name} src={member.avatarUrl} className="w-12 h-12 text-lg" />
-          {hasRecentBonus && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-sm text-gray-900 truncate">{member.name}</h4>
-          </div>
-          <p className="text-xs text-gray-600">{member.role}</p>
-          <p className="text-xs text-gray-500">{member.country}</p>
-          {member.recentActivity && (
-            <p className="text-xs text-blue-600 mt-1">{member.recentActivity}</p>
-          )}
-        </div>
-      </div>
-      <div className="flex justify-between items-center mb-3">
-        <div className="text-sm">
-          <span className="font-medium">{formatCurrency(member.billRate, member.currency)}</span>
-          <span className="text-gray-500">/month</span>
-        </div>
-        <div className="text-xs text-gray-500">
-          Joined: {new Date(member.joinDate).toLocaleDateString()}
-        </div>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button
-          size="icon"
-          className="bg-blue-100 hover:bg-blue-200 text-blue-700 transition-colors"
-          aria-label="View Details"
-          title="View Details"
-          onClick={onView}
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-        <Button
-          size="icon"
-          className="bg-green-100 hover:bg-green-200 text-green-700 transition-colors"
-          aria-label="Give Bonus"
-          title="Give Bonus"
-          onClick={onBonus}
-        >
-          <DollarSign className="w-4 h-4" />
-        </Button>
-        <Button
-          size="icon"
-          className="bg-red-100 hover:bg-red-200 text-red-700 transition-colors"
-          aria-label="Terminate"
-          title="Terminate"
-          onClick={onTerminate}
-        >
-          <XCircle className="w-4 h-4" />
-        </Button>
-      </div>
-    </Card>
-  );
-};
+// Staff Card Component - now imported from @/components/ui/staff-card
 
 // Candidate Teaser Card Component
 const CandidateTeaserCard = ({ candidate }: { candidate: Candidate }) => (
-  <Card className="p-4 border border-gray-200 hover:border-blue-300 transition-colors">
+  <Card className="p-4 border border-border hover:border-primary/30 transition-colors">
     <div className="flex items-start gap-3">
       <Avatar name={candidate.name} src={candidate.avatarUrl} className="w-12 h-12 text-lg" />
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-sm text-gray-900 truncate">{candidate.name}</h4>
-        <p className="text-xs text-gray-600 mb-2">{candidate.role}</p>
+        <h4 className="font-semibold text-sm text-foreground truncate">{candidate.name}</h4>
+        <p className="text-xs text-muted-foreground mb-2">{candidate.role}</p>
         <div className="flex flex-wrap gap-1 mb-2">
           {candidate.skills.slice(0, 2).map((skill) => (
             <Badge key={skill} variant="outline" className="text-xs px-1.5 py-0.5">
@@ -637,7 +480,7 @@ const CandidateTeaserCard = ({ candidate }: { candidate: Candidate }) => (
             </Badge>
           ))}
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-muted-foreground">
           {candidate.experienceLevel} • ${candidate.pricePerMonth.toLocaleString()}/month
         </div>
       </div>
@@ -647,10 +490,10 @@ const CandidateTeaserCard = ({ candidate }: { candidate: Candidate }) => (
 
 // Empty Candidate Placeholder Component
 const EmptyCandidatePlaceholder = () => (
-  <Card className="p-4 border border-dashed border-gray-300 bg-gray-50">
+  <Card className="p-4 border border-border bg-muted">
     <div className="flex flex-col items-center justify-center h-20 text-center">
-      <Clock className="w-6 h-6 text-gray-400 mb-2" />
-      <p className="text-sm text-gray-500">Sourcing the best candidates for you...</p>
+      <Clock className="w-6 h-6 text-muted-foreground mb-2" />
+      <p className="text-sm text-muted-foreground">Sourcing the best candidates for you...</p>
     </div>
   </Card>
 );
@@ -662,25 +505,25 @@ const StatsOverview = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <Card className="p-4 border border-gray-200">
+      <Card className="p-4 border border-border">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Users className="w-5 h-5 text-blue-600" />
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Users className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-sm text-gray-600">Total Staff</p>
-            <p className="text-2xl font-bold text-gray-900">{totalStaff}</p>
+            <p className="text-sm text-muted-foreground">Total Staff</p>
+            <p className="text-2xl font-bold text-foreground">{totalStaff}</p>
           </div>
         </div>
       </Card>
-      <Card className="p-4 border border-gray-200">
+      <Card className="p-4 border border-border">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <TrendingUp className="w-5 h-5 text-purple-600" />
+          <div className="p-2 bg-chart-5/10 rounded-lg">
+            <TrendingUp className="w-5 h-5 text-chart-5" />
           </div>
           <div>
-            <p className="text-sm text-gray-600">Monthly Cost</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-sm text-muted-foreground">Monthly Cost</p>
+            <p className="text-2xl font-bold text-foreground">
               ${totalMonthlyCost.toLocaleString()}
             </p>
           </div>
@@ -757,7 +600,7 @@ export default function ClientDashboardV2() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Welcome Back, {clientName}</h1>
-            <p className="text-gray-600 mt-1">Here's what's happening with your team today</p>
+            <p className="text-muted-foreground mt-1">Here's what's happening with your team today</p>
           </div>
         </div>
 
@@ -788,16 +631,28 @@ export default function ClientDashboardV2() {
           </div>
           
           {hiredStaff.length === 0 ? (
-            <EmptyStaffState />
+            <EmptyState
+              icon={<UserPlus className="w-12 h-12" />}
+              title="No Staff Hired Yet"
+              description="Start building your team by submitting your first hire request. We'll help you find the perfect candidates."
+              action={
+                <Link href="/dashboard/client/hire-requests/new">
+                  <Button className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Submit First Request
+                  </Button>
+                </Link>
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {displayedStaff.map((member) => (
                 <StaffCard
                   key={member.id}
                   member={member}
-                  onView={() => handleStaffAction("view", member)}
-                  onBonus={() => handleStaffAction("bonus", member)}
-                  onTerminate={() => handleStaffAction("terminate", member)}
+                  onView={(member) => handleStaffAction("view", member)}
+                  onBonus={(member) => handleStaffAction("bonus", member)}
+                  onTerminate={(member) => handleStaffAction("terminate", member)}
                 />
               ))}
             </div>
@@ -809,19 +664,13 @@ export default function ClientDashboardV2() {
           <h2 className="text-2xl font-semibold mb-6 text-foreground">Recent Hire Requests</h2>
           <div className="space-y-6">
             {hireRequests.map((request) => (
-              <Card key={request.id} className="p-6 border border-gray-200">
+              <Card key={request.id} className="p-6 border border-border">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{request.role}</h3>
-                    <p className="text-sm text-gray-500">Created: {request.date}</p>
+                    <h3 className="text-lg font-semibold text-foreground">{request.role}</h3>
+                    <p className="text-sm text-muted-foreground">Created: {request.date}</p>
                   </div>
-                  <Badge 
-                    variant="outline"
-                    className={`text-sm ${getStatusColor(request.status)}`}
-                  >
-                    {getStatusIcon(request.status)}
-                    {request.status}
-                  </Badge>
+                  <StatusBadge status={request.status} size="sm" />
                 </div>
                 
                 {/* Candidates Grid */}
@@ -922,7 +771,7 @@ export default function ClientDashboardV2() {
               />
               <DialogFooter>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? <LoadingSpinner /> : "Give Bonus"}
+                  {isLoading ? <LoadingSpinner size="sm" /> : "Give Bonus"}
                 </Button>
               </DialogFooter>
             </form>
@@ -945,9 +794,9 @@ export default function ClientDashboardV2() {
                   This action cannot be undone. Please provide a reason for termination.
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                <div className="text-sm text-yellow-800">
+              <div className="flex items-start gap-2 p-3 bg-chart-3/10 border border-chart-3/20 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-chart-3 mt-0.5" />
+<div className="text-sm text-chart-3">
                   <p className="font-medium">Warning</p>
                   <p>Terminating staff will immediately end their contract and access.</p>
                 </div>
@@ -962,7 +811,7 @@ export default function ClientDashboardV2() {
               />
               <DialogFooter>
                 <Button type="submit" variant="destructive" className="w-full" disabled={isLoading}>
-                  {isLoading ? <LoadingSpinner /> : "Terminate Staff"}
+                  {isLoading ? <LoadingSpinner size="sm" /> : "Terminate Staff"}
                 </Button>
               </DialogFooter>
             </form>
@@ -979,7 +828,7 @@ export default function ClientDashboardV2() {
             <div className="flex flex-col items-center gap-4 p-2">
               <Avatar src={selectedStaff?.avatarUrl} name={selectedStaff?.name} className="w-16 h-16 text-2xl" />
               <div className="text-center">
-                <div className="font-bold text-lg text-[#222]">{selectedStaff?.name}</div>
+                <div className="font-bold text-lg text-foreground">{selectedStaff?.name}</div>
                 <div className="text-muted-foreground text-sm">{selectedStaff?.role} &middot; {selectedStaff?.country}</div>
               </div>
               <div className="w-full flex flex-col gap-2 mt-2">
@@ -990,12 +839,12 @@ export default function ClientDashboardV2() {
                 )}
               </div>
               <div className="w-full mt-6">
-                <div className="font-semibold mb-2 text-[#222]">Bonus History</div>
+                <div className="font-semibold mb-2 text-foreground">Bonus History</div>
                 {selectedStaff?.bonuses && selectedStaff.bonuses.length > 0 ? (
                   <ul className="flex flex-col gap-2">
                     {selectedStaff.bonuses.map((bonus, idx) => (
                       <li key={idx} className="rounded-md border bg-muted p-3 flex flex-col gap-1">
-                        <div className="font-medium text-green-700">+{formatCurrency(bonus.amount, selectedStaff.currency)}</div>
+                        <div className="font-medium text-chart-2">+{formatCurrency(bonus.amount, selectedStaff.currency)}</div>
                         <div className="text-xs text-muted-foreground">{bonus.date}</div>
                         {bonus.notes && <div className="text-sm text-muted-foreground">{bonus.notes}</div>}
                       </li>
