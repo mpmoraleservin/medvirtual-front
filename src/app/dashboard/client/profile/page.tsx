@@ -52,6 +52,7 @@ export default function ClientProfilePage() {
       <main className="flex-1 p-6 md:p-10 w-full max-w-none px-4 sm:px-8">
         {/* Main Title */}
         <h1 className="text-3xl font-bold mb-8 text-foreground">My Profile</h1>
+        <p className="text-muted-foreground mb-8">View and update your profile and billing information</p>
 
         {/* Profile Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">

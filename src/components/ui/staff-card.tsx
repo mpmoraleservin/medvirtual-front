@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Eye, DollarSign, XCircle } from "lucide-react";
 
 interface StaffBonus {
@@ -34,8 +33,6 @@ interface StaffCardProps {
   showActions?: boolean;
   className?: string;
 }
-
-
 
 export function StaffCard({
   member,
@@ -82,106 +79,84 @@ export function StaffCard({
   }
 
   return (
-    <Card className={`p-6 hover:shadow-md transition-shadow ${className}`}>
-      <div className="flex items-start gap-4">
-        <Avatar name={member.name} className="h-12 w-12" />
-        
+    <Card className={`p-6 flex flex-col justify-between hover:shadow-md transition-shadow ${className}`} style={{ minHeight: 220 }}>
+      {/* Top section: Avatar + Name/Role */}
+      <div className="flex items-center gap-4 mb-2">
+        <Avatar name={member.name} className="h-14 w-14" />
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <h3 className="font-semibold text-lg">{member.name}</h3>
-              <p className="text-muted-foreground">{member.role}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-bold text-primary">
-                {formatCurrency(member.billRate, member.currency)}
-              </p>
-              <p className="text-sm text-muted-foreground">/month</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 mb-3">
-            <Badge variant="outline" className="bg-chart-2/10 text-chart-2 border-chart-2/20">
-              {member.country}
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              Joined {formatDate(member.joinDate)}
-            </Badge>
-            {member.bonuses && member.bonuses.length > 0 && (
-              <Badge variant="outline" className="bg-chart-3/10 text-chart-3 border-chart-3/20">
-                <DollarSign className="w-3 h-3 mr-1" />
-                {member.bonuses.length} Bonus{member.bonuses.length > 1 ? 'es' : ''}
-              </Badge>
-            )}
-          </div>
-          
-          {member.recentActivity && (
-            <p className="text-sm text-muted-foreground mb-4">
-              {member.recentActivity}
-            </p>
-          )}
-          
-          {showActions && (
-            <div className="flex gap-2">
-              {onView && (
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => onView(member)}
-                    >
-                      <Eye className="w-4 h-4 mr-1" />
-                      View Details
-                    </Button>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-80">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold">{member.name}</h4>
-                      <p className="text-sm text-muted-foreground">{member.role}</p>
-                      <p className="text-sm">Joined: {formatDate(member.joinDate)}</p>
-                      {member.bonuses && member.bonuses.length > 0 && (
-                        <div>
-                          <p className="text-sm font-medium">Recent Bonuses:</p>
-                          <div className="space-y-1">
-                            {member.bonuses.slice(0, 3).map((bonus, index) => (
-                              <div key={index} className="text-xs text-muted-foreground">
-                                {formatCurrency(bonus.amount, member.currency)} - {formatDate(bonus.date)}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
-              )}
-              
-              {onBonus && (
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onBonus(member)}
-                >
-                  <DollarSign className="w-4 h-4 mr-1" />
-                  Add Bonus
-                </Button>
-              )}
-              
-              {onTerminate && (
-                <Button 
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onTerminate(member)}
-                >
-                  <XCircle className="w-4 h-4 mr-1" />
-                  Terminate
-                </Button>
-              )}
-            </div>
-          )}
+          <h3 className="font-semibold text-lg leading-tight truncate">{member.name}</h3>
+          <p className="text-muted-foreground text-base leading-tight truncate">{member.role}</p>
         </div>
       </div>
+      {/* Price per month row */}
+      <div className="mb-1">
+        <span className="text-2xl font-bold text-primary">{formatCurrency(member.billRate, member.currency)}</span>
+        <span className="text-sm text-muted-foreground ml-1">/month</span>
+      </div>
+      {/* Country row */}
+      <div className="mb-1">
+        <Badge variant="outline" className="bg-chart-2/10 text-chart-2 border-chart-2/20">
+          {member.country}
+        </Badge>
+      </div>
+      {/* Join date row */}
+      <div className="mb-1">
+        <Badge variant="secondary" className="text-xs">
+          Joined {formatDate(member.joinDate)}
+        </Badge>
+      </div>
+      {/* Bonuses row */}
+      {member.bonuses && member.bonuses.length > 0 && (
+        <div className="mb-1">
+          <Badge variant="outline" className="bg-chart-3/10 text-chart-3 border-chart-3/20">
+            <DollarSign className="w-3 h-3 mr-1" />
+            {member.bonuses.length} Bonus{member.bonuses.length > 1 ? 'es' : ''}
+          </Badge>
+        </div>
+      )}
+      {/* Spacer to push actions to bottom */}
+      <div className="flex-1" />
+      {/* Fixed action buttons at the bottom */}
+      {showActions && (
+        <div className="flex gap-2 mt-4 pt-2 border-t border-border justify-between">
+          {onView && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 border-none flex-1"
+              title="View Details"
+              aria-label="View Details"
+              onClick={() => onView(member)}
+            >
+              <Eye className="w-5 h-5" />
+            </Button>
+          )}
+          {onBonus && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-green-100 hover:bg-green-200 text-green-700 border-none flex-1"
+              title="Add Bonus"
+              aria-label="Add Bonus"
+              onClick={() => onBonus(member)}
+            >
+              <DollarSign className="w-5 h-5" />
+            </Button>
+          )}
+          {onTerminate && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-red-100 hover:bg-red-200 text-red-700 border-none flex-1"
+              title="Terminate"
+              aria-label="Terminate"
+              onClick={() => onTerminate(member)}
+            >
+              <XCircle className="w-5 h-5" />
+            </Button>
+          )}
+        </div>
+      )}
     </Card>
   );
 } 

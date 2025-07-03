@@ -252,7 +252,7 @@ export default function ProspectHireRequestsPage() {
           </Card>
         )}
 
-        {/* View Hire Request Dialog */}
+        {/* View Request Details Dialog */}
         <Sheet open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
           <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
             {selectedRequest && (

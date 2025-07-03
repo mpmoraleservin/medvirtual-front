@@ -72,6 +72,11 @@ const NAV_ITEMS: NavItem[] = [
     icon: <ListChecks size={20} />, roles: ["ACTIVE_CLIENT"]
   },
   {
+    href: "/dashboard/client/interview-panels",
+    label: "Interview Panels",
+    icon: <Users size={20} />, roles: ["ACTIVE_CLIENT"]
+  },
+  {
     href: "/dashboard/client/staff",
     label: "My Hired Staff",
     icon: <UserCheck size={20} />, roles: ["ACTIVE_CLIENT"]

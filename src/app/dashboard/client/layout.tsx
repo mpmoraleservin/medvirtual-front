@@ -9,8 +9,9 @@ const navItems = [
   { href: "/dashboard/client", icon: Home, label: "Home" },
   { href: "/dashboard/client/staff", icon: Users, label: "Staff" },
   { href: "/dashboard/client/hire-requests", icon: ClipboardList, label: "Hire Requests" },
+  { href: "/dashboard/client/interview-panels", icon: Users, label: "Interview Panels" },
   { href: "/dashboard/client/talent-pool", icon: Star, label: "Talent Pool" },
-  { href: "/dashboard/client/settings", icon: User, label: "Profile" },
+  { href: "/dashboard/client/profile", icon: User, label: "Profile" },
 ];
 
 export default function ClientDashboardLayout({ children }: { children: React.ReactNode }) {

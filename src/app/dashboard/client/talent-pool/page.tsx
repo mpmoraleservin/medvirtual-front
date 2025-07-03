@@ -473,7 +473,8 @@ export default function ClientTalentPoolPage() {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <PageTitle title="Talent Pool" subtitle="Browse and discover talented healthcare professionals" />
+        <PageTitle title="Talent Pool" />
+        <p className="text-muted-foreground mb-8">Browse and discover talented healthcare professionals</p>
       
         {/* Top Talent Section */}
         <div className="mb-8">
@@ -486,21 +487,21 @@ export default function ClientTalentPoolPage() {
       </div>
 
           <AdvancedTable
+            key={5}
             data={candidates}
             columns={columns}
-          title=""
-          searchPlaceholder="Search by name, role, or skills..."
+            title=""
+            searchPlaceholder="Search by name, role, or skills..."
             filters={filters}
-          onViewDetails={handleViewProfile}
+            onViewDetails={handleViewProfile}
             showPagination={true}
-          showPageSize={true}
+            showPageSize={true}
             showSearch={true}
             showFilters={true}
-          pageSizeOptions={[5, 10, 20, 50]}
-          defaultPageSize={5}
+            defaultPageSize={5}
             emptyMessage="No candidates found."
-          className="mb-8"
-        />
+            className="mb-8"
+          />
 
         {/* Candidate Profile Sheet (lateral) */}
         <Sheet open={profileOpen} onOpenChange={setProfileOpen}>

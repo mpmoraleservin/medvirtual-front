@@ -89,11 +89,17 @@ export function AdvancedTable<T extends { id: string }>({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
+  const [pageSize, setPageSize] = useState<number>(defaultPageSize);
   const [manualPageSize, setManualPageSize] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
   const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  // Reset pageSize to defaultPageSize when data changes or component remounts
+  useEffect(() => {
+    setPageSize(defaultPageSize);
+    setManualPageSize(false);
+  }, [data, defaultPageSize]);
 
   // Auto-calculate page size based on viewport
   useEffect(() => {
@@ -155,11 +161,10 @@ export function AdvancedTable<T extends { id: string }>({
   }, [data, search, statusFilter, filterValues, columns, statusKey]);
 
   // Pagination
-  const effectivePageSize = pageSize ?? defaultPageSize;
-  const pageCount = Math.ceil(filteredData.length / effectivePageSize);
+  const pageCount = Math.ceil(filteredData.length / pageSize);
   const paginatedData = useMemo(() =>
-    filteredData.slice((page - 1) * effectivePageSize, page * effectivePageSize),
-    [filteredData, page, effectivePageSize]
+    filteredData.slice((page - 1) * pageSize, page * pageSize),
+    [filteredData, page, pageSize]
   );
 
   // Render cell content based on column type
@@ -257,7 +262,7 @@ export function AdvancedTable<T extends { id: string }>({
       {/* Filters and Search */}
       {(showSearch || showFilters || statusConfig) && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div className="flex flex-1 gap-2">
+          <div className="flex flex-1 gap-2 items-center">
             {showSearch && (
               <Input
                 type="text"
@@ -290,15 +295,36 @@ export function AdvancedTable<T extends { id: string }>({
                 </Button>
               </>
             )}
+            {/* Clear Filters Button */}
+            <Button
+              variant="ghost"
+              className="ml-2"
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("All");
+                setFilterValues({});
+                setPage(1);
+              }}
+              aria-label="Clear Filters"
+            >
+              Clear Filters
+            </Button>
           </div>
           {showPageSize && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Rows per page:</span>
               <Select
-                value={(pageSize ?? defaultPageSize).toString()}
+                value={pageSize.toString()}
                 onValueChange={v => {
-                  setPageSize(Number(v));
-                  setManualPageSize(true);
+                  if (v === 'All') {
+                    setPageSize(filteredData.length);
+                    setManualPageSize(true);
+                    setPage(1);
+                  } else {
+                    setPageSize(Number(v));
+                    setManualPageSize(true);
+                    setPage(1);
+                  }
                 }}
               >
                 <SelectTrigger className="w-20">
@@ -308,7 +334,7 @@ export function AdvancedTable<T extends { id: string }>({
                   {pageSizeOptions.map(size => (
                     <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
                   ))}
-                  <SelectItem value={String(filteredData.length)}>All</SelectItem>
+                  <SelectItem value="All">All</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -412,7 +438,7 @@ export function AdvancedTable<T extends { id: string }>({
         )}
 
         {/* Pagination */}
-        {showPagination && pageCount > 1 && (
+        {showPagination && pageCount > 1 && (!manualPageSize || pageSize !== filteredData.length) && (
           <div className="flex flex-wrap justify-between items-center mt-4 pt-2 border-t border-muted-foreground/10 gap-2">
             <Button
               variant="outline"
