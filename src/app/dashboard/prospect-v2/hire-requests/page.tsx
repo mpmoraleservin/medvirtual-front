@@ -115,11 +115,7 @@ export default function ProspectHireRequestsPage() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [requestToCancel, setRequestToCancel] = useState<HireRequest | null>(null);
-
-  const handleCheckEmail = () => {
-    // This could open email client or show instructions
-    alert("Please check your email for the PandaDoc service agreement");
-  };
+  const hasPandaDocLink = false;
 
   const handleViewRequest = (request: HireRequest) => {
     setSelectedRequest(request);
@@ -179,7 +175,8 @@ export default function ProspectHireRequestsPage() {
             title="View"
             style={{ background: '#eaf1f5', color: '#1976a2', border: 'none', boxShadow: 'none' }}
             className="hover:bg-[#eaf1f5] focus:bg-[#eaf1f5] active:bg-[#eaf1f5]"
-            onClick={e => { e.stopPropagation(); handleViewRequest(item); }}
+            onClick={e => { e.stopPropagation(); if (hasPandaDocLink) handleViewRequest(item); }}
+            disabled={!hasPandaDocLink}
           >
             <Eye className="w-5 h-5" />
           </Button>
@@ -188,7 +185,8 @@ export default function ProspectHireRequestsPage() {
             variant="destructive"
             aria-label="Remove"
             title="Remove"
-            onClick={e => { e.stopPropagation(); handleCancelRequest(item); }}
+            onClick={e => { e.stopPropagation(); if (hasPandaDocLink) handleCancelRequest(item); }}
+            disabled={!hasPandaDocLink}
           >
             <X className="w-5 h-5 text-white" />
           </Button>
@@ -197,12 +195,15 @@ export default function ProspectHireRequestsPage() {
     }
   ];
 
-  // Add actions to data
-  const tableData = hireRequests.map(request => ({ ...request }));
+  // Muestra la tabla vacía y el mensaje custom
+  const tableData: (HireRequest & { actions?: React.ReactNode })[] = [];
 
   return (
     <div className="min-h-screen bg-background flex">
       <main className="flex-1 p-6 md:p-10 w-full max-w-none px-4 sm:px-8">
+        {/* NUEVO: Mensaje destacado si no hay PandaDoc */}
+        {/* Banner eliminado por requerimiento */}
+
         {/* Header with Title only */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground">
@@ -211,18 +212,11 @@ export default function ProspectHireRequestsPage() {
         </div>
 
         {/* Prominent Alert Box */}
-        <Card className="mb-8 p-4 border-primary bg-primary/5">
+        <Card className="mb-8 p-4 border-yellow-400 bg-yellow-50">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-            <div className="text-primary">
-              <strong>Important:</strong> Your hire requests will be reviewed by our team once the PandaDoc service agreement is signed. Please check your email for the document.
-              <Button 
-                variant="link" 
-                className="p-0 h-auto underline ml-1 text-primary"
-                onClick={handleCheckEmail}
-              >
-                Sign PandaDoc
-              </Button>
+            <Info className="h-5 w-5 mt-0.5 flex-shrink-0 text-yellow-700" />
+            <div className="text-yellow-800">
+              <strong>Info:</strong> Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
             </div>
           </div>
         </Card>
@@ -232,7 +226,7 @@ export default function ProspectHireRequestsPage() {
           data={tableData}
           columns={columns}
           searchPlaceholder="Search hire requests..."
-          emptyMessage="No hire requests submitted yet."
+          emptyMessage="You will be able to submit hire requests once we send you the PandaDoc."
           showSearch={true}
           showFilters={false}
           showPagination={false}
@@ -243,23 +237,16 @@ export default function ProspectHireRequestsPage() {
 
         {/* Additional Call to Action */}
         {hireRequests.length > 0 && (
-          <Card className="mt-8 p-6 bg-primary/5 border-primary">
+          <Card className="mt-8 p-6 bg-yellow-50 border-yellow-400">
             <div className="flex items-start gap-4">
-              <AlertTriangle className="w-6 h-6 mt-1 flex-shrink-0 text-primary" />
+              <AlertTriangle className="w-6 h-6 mt-1 flex-shrink-0 text-yellow-700" />
               <div>
-                <h3 className="font-semibold mb-2 text-primary">
-                  Ready to move forward?
+                <h3 className="font-semibold mb-2 text-yellow-800">
+                  Service Agreement In Progress
                 </h3>
-                <p className="mb-4 text-primary">
-                  To start reviewing candidates for your hire requests, please complete the service agreement. 
-                  This document outlines our terms and ensures we can begin sourcing the best talent for your needs.
+                <p className="mb-4 text-yellow-800">
+                  Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
                 </p>
-                <Button 
-                  onClick={handleCheckEmail}
-                >
-                  <Info className="w-4 h-4 mr-2" />
-                  Sign Service Agreement
-                </Button>
               </div>
             </div>
           </Card>
@@ -284,22 +271,14 @@ export default function ProspectHireRequestsPage() {
                 </div>
                 <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
                   {/* Next Steps Alert - move to top */}
-                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+                  <div className="bg-yellow-50 border border-yellow-400 rounded-lg p-4 mb-6">
                     <div className="flex items-start gap-3">
-                      <Info className="h-5 w-5 mt-0.5 text-primary" />
+                      <Info className="h-5 w-5 mt-0.5 text-yellow-700" />
                       <div>
-                        <p className="text-sm font-medium text-primary">Next Steps</p>
-                        <p className="text-sm text-primary/80 mt-1">
-                          To proceed with this hire request, please sign the PandaDoc service agreement that was sent to your email.
+                        <p className="text-sm font-medium text-yellow-800">Next Steps</p>
+                        <p className="text-sm text-yellow-800/80 mt-1">
+                          Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
                         </p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="mt-2"
-                          onClick={handleCheckEmail}
-                        >
-                          Check Email for Agreement
-                        </Button>
                       </div>
                     </div>
                   </div>

@@ -123,6 +123,15 @@ export default function ProspectDashboard() {
     <div className="min-h-screen bg-background flex flex-col px-2 sm:px-8 pt-4 pb-20"> {/* pb-20 for mobile nav */}
       {/* Title */}
       <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-6 max-w-2xl">Welcome, Dr Smith!</h1>
+      {/* Info disclaimer igual que en hire-requests */}
+      <div className="mb-8 p-4 border-yellow-400 bg-yellow-50 rounded">
+        <div className="flex items-start gap-3">
+          <svg className="h-5 w-5 mt-0.5 flex-shrink-0 text-yellow-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+          <div className="text-yellow-800">
+            <strong>Info:</strong> Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
+          </div>
+        </div>
+      </div>
 
       {/* Top Section – two columns, flex layout for equal height */}
       <div className="flex flex-col lg:flex-row gap-4 mb-8">
@@ -277,10 +286,9 @@ export default function ProspectDashboard() {
                 </div>
                 
                 {/* CTA y contenido borroso */}
-                <div className="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex flex-col items-center">
-                  <span className="font-bold text-primary text-lg mb-1">Unlock Full Candidate Details</span>
-                  <span className="text-primary text-sm mb-2 text-center">Sign the PandaDoc to see full candidate info.</span>
-                  <Button variant="default" onClick={() => alert('Redirigir a firma de PandaDoc')}>Sign PandaDoc</Button>
+                <div className="mb-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg flex flex-col items-center">
+                  <span className="font-bold text-yellow-800 text-lg mb-1">Unlock Full Candidate Details</span>
+                  <span className="text-yellow-800 text-sm mb-2 text-center">Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!</span>
                 </div>
                 <div className="filter blur-sm pointer-events-none select-none">
                   <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">

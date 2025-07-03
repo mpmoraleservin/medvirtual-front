@@ -1,11 +1,16 @@
 "use client";
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AdvancedTable } from "@/components/ui/advanced-table";
-import { PageTitle } from '@/components/ui/page-title';
-import { CandidateCard } from '@/components/ui/candidate-card';
+import React, { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
+import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table";
 
+// --- Candidate Types and Mock Data ---
 interface CandidateEducation {
   institution: string;
   degree: string;
@@ -188,7 +193,7 @@ const candidates: Candidate[] = [
       { institution: "Miami Dade College", degree: "Radiology Tech Certificate", startYear: 2012, endYear: 2014 },
     ],
     experience: [
-      { company: "Radiology Associates", role: "X-Ray Technician", startYear: 2014 },
+      { company: "Baptist Health", role: "X-Ray Technician", startYear: 2014 },
     ],
     experienceLevel: "Mid",
   },
@@ -199,96 +204,394 @@ const candidates: Candidate[] = [
     role: "Medical Biller",
     pricePerMonth: 1400,
     currency: "USD",
-    languages: ["English"],
-    specializations: ["Claims"],
-    skills: ["Billing Software", "Data Entry", "Claims Follow-up"],
-    about: "Medical biller with a keen eye for detail and accuracy.",
+    languages: ["English", "Korean"],
+    specializations: ["Medical Billing"],
+    skills: ["CPT Coding", "ICD-10", "Claims Submission"],
+    about: "Certified medical biller with expertise in coding and claims processing.",
     education: [
-      { institution: "FIU", degree: "BSc Health Administration", startYear: 2010, endYear: 2014 },
+      { institution: "Miami Dade College", degree: "Medical Billing Certificate", startYear: 2016, endYear: 2017 },
     ],
     experience: [
-      { company: "HealthFirst", role: "Medical Biller", startYear: 2014 },
+      { company: "Medical Billing Solutions", role: "Medical Biller", startYear: 2017 },
     ],
-    experienceLevel: "Junior",
+    experienceLevel: "Mid",
   },
   {
     id: "10",
-    name: "Sara Cohen",
+    name: "Lisa Anderson",
     avatarUrl: undefined,
-    role: "Front Desk Specialist",
-    pricePerMonth: 1250,
+    role: "Registered Nurse",
+    pricePerMonth: 2400,
     currency: "USD",
-    languages: ["English", "Spanish"],
-    specializations: ["Reception"],
-    skills: ["Customer Service", "Appointment Scheduling", "Multi-line Phones"],
-    about: "Front desk specialist with a warm personality and strong organizational skills.",
+    languages: ["English"],
+    specializations: ["ICU", "Critical Care"],
+    skills: ["Ventilator Management", "Critical Care", "ACLS"],
+    about: "ICU nurse with specialized training in critical care and ventilator management.",
     education: [
-      { institution: "Miami Dade College", degree: "AA Communications", startYear: 2013, endYear: 2015 },
+      { institution: "University of Central Florida", degree: "BSN", startYear: 2015, endYear: 2019 },
     ],
     experience: [
-      { company: "Downtown Clinic", role: "Front Desk Specialist", startYear: 2015 },
+      { company: "Orlando Health", role: "ICU Nurse", startYear: 2019 },
     ],
-    experienceLevel: "Junior",
+    experienceLevel: "Mid",
+  },
+  {
+    id: "11",
+    name: "Robert Wilson",
+    avatarUrl: undefined,
+    role: "Physician Assistant",
+    pricePerMonth: 3200,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Emergency Medicine"],
+    skills: ["Emergency Procedures", "Trauma Care", "Patient Stabilization"],
+    about: "Emergency medicine PA with experience in trauma and emergency procedures.",
+    education: [
+      { institution: "Nova Southeastern University", degree: "MPAS", startYear: 2013, endYear: 2017 },
+    ],
+    experience: [
+      { company: "Memorial Regional Hospital", role: "Emergency PA", startYear: 2017 },
+    ],
+    experienceLevel: "Senior",
+  },
+  {
+    id: "12",
+    name: "Jennifer Davis",
+    avatarUrl: undefined,
+    role: "Medical Assistant",
+    pricePerMonth: 1600,
+    currency: "USD",
+    languages: ["English", "French"],
+    specializations: ["Dermatology"],
+    skills: ["Skin Procedures", "Patient Prep", "Medical Records"],
+    about: "Medical assistant specializing in dermatology with experience in skin procedures.",
+    education: [
+      { institution: "Broward College", degree: "Medical Assistant Certificate", startYear: 2018, endYear: 2019 },
+    ],
+    experience: [
+      { company: "Dermatology Associates", role: "Medical Assistant", startYear: 2019 },
+    ],
+    experienceLevel: "Mid",
+  },
+  {
+    id: "13",
+    name: "Michael Johnson",
+    avatarUrl: undefined,
+    role: "Lab Technician",
+    pricePerMonth: 1900,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Molecular Biology"],
+    skills: ["PCR Testing", "DNA Analysis", "Lab Equipment"],
+    about: "Molecular biology lab tech with expertise in PCR testing and DNA analysis.",
+    education: [
+      { institution: "University of South Florida", degree: "BSc Biology", startYear: 2014, endYear: 2018 },
+    ],
+    experience: [
+      { company: "Quest Diagnostics", role: "Molecular Lab Tech", startYear: 2018 },
+    ],
+    experienceLevel: "Mid",
+  },
+  {
+    id: "14",
+    name: "Sarah Thompson",
+    avatarUrl: undefined,
+    role: "Nurse Practitioner",
+    pricePerMonth: 3800,
+    currency: "USD",
+    languages: ["English"],
+    specializations: ["Cardiology"],
+    skills: ["Cardiac Assessment", "ECG Interpretation", "Patient Education"],
+    about: "Cardiology NP with specialized training in cardiac assessment and patient education.",
+    education: [
+      { institution: "University of Florida", degree: "DNP", startYear: 2009, endYear: 2013 },
+    ],
+    experience: [
+      { company: "Cardiology Associates", role: "Cardiology NP", startYear: 2013 },
+    ],
+    experienceLevel: "Senior",
+  },
+  {
+    id: "15",
+    name: "Alex Rodriguez",
+    avatarUrl: undefined,
+    role: "Receptionist",
+    pricePerMonth: 1300,
+    currency: "USD",
+    languages: ["English", "Spanish", "Portuguese"],
+    specializations: ["Multi-Specialty"],
+    skills: ["Multi-Language Support", "Insurance Verification", "Patient Scheduling"],
+    about: "Trilingual receptionist with experience in multi-specialty medical practices.",
+    education: [
+      { institution: "Miami Dade College", degree: "AA Healthcare Administration", startYear: 2016, endYear: 2018 },
+    ],
+    experience: [
+      { company: "Multi-Specialty Medical Group", role: "Receptionist", startYear: 2018 },
+    ],
+    experienceLevel: "Mid",
   },
 ];
 
-// Top Matches: seleccionar los primeros 3 candidatos Senior como ejemplo
-const topMatches = candidates.filter(c => c.experienceLevel === 'Senior').slice(0, 3);
-
-// Definir columnas y filtros para AdvancedTable
-const columns = [
-  { key: 'name' as keyof Candidate, header: 'Name', searchable: true },
-  { key: 'role' as keyof Candidate, header: 'Role', searchable: true },
-  { key: 'specializations' as keyof Candidate, header: 'Specializations', type: 'badge' as const, searchable: true, badgeConfig: { variant: 'secondary' as const, className: 'bg-chart-5/10 text-chart-5 text-xs font-medium' } },
-  { key: 'skills' as keyof Candidate, header: 'Skills', type: 'badge' as const, searchable: true, badgeConfig: { variant: 'outline' as const, className: 'bg-primary/10 text-primary text-xs font-medium' } },
-  { key: 'experienceLevel' as keyof Candidate, header: 'Experience', type: 'status' as const, statusColors: { Junior: 'bg-chart-2/10 text-chart-2', Mid: 'bg-chart-3/10 text-chart-3', Senior: 'bg-chart-4/10 text-chart-4' } },
-  { key: 'pricePerMonth' as keyof Candidate, header: 'Price/Month', type: 'currency' as const },
+// Table columns configuration
+const columns: TableColumn<Candidate>[] = [
+  {
+    key: "name",
+    header: "Name",
+    searchable: true,
+    type: "avatar"
+  },
+  {
+    key: "role",
+    header: "Role",
+    searchable: true,
+    type: "text"
+  },
+  {
+    key: "specializations",
+    header: "Specializations",
+    searchable: true,
+    type: "badge",
+    badgeConfig: {
+      variant: "secondary",
+      className: "rounded-full bg-chart-5/10 text-chart-5 text-xs font-medium"
+    }
+  },
+  {
+    key: "skills",
+    header: "Skills",
+    searchable: true,
+    type: "badge",
+    badgeConfig: {
+      variant: "outline",
+      className: "rounded-full bg-primary/10 text-primary text-xs font-medium"
+    }
+  },
+  {
+    key: "experienceLevel",
+    header: "Experience",
+    type: "status",
+    statusColors: {
+      "Junior": "bg-primary/10 text-primary",
+      "Mid": "bg-chart-3/10 text-chart-3",
+      "Senior": "bg-chart-2/10 text-chart-2"
+    }
+  },
+  {
+    key: "pricePerMonth",
+    header: "Price/Month",
+    type: "currency"
+  }
 ];
+
+// Filters configuration
 const filters = [
-  { key: 'role' as keyof Candidate, label: 'Role', type: 'text' as const, placeholder: 'e.g. Nurse' },
-  { key: 'specializations' as keyof Candidate, label: 'Specialization', type: 'text' as const, placeholder: 'e.g. Pediatrics' },
-  { key: 'languages' as keyof Candidate, label: 'Language', type: 'text' as const, placeholder: 'e.g. Spanish' },
-  { key: 'experienceLevel' as keyof Candidate, label: 'Experience Level', type: 'select' as const, options: [ { value: 'Junior', label: 'Junior' }, { value: 'Mid', label: 'Mid' }, { value: 'Senior', label: 'Senior' } ] },
-  { key: 'skills' as keyof Candidate, label: 'Skills', type: 'text' as const, placeholder: 'e.g. BLS Certified' },
+  {
+    key: "role" as keyof Candidate,
+    label: "Role",
+    type: 'text' as const,
+    placeholder: "e.g. Nurse"
+  },
+  {
+    key: "specializations" as keyof Candidate,
+    label: "Specialization",
+    type: 'text' as const,
+    placeholder: "e.g. Pediatrics"
+  },
+  {
+    key: "languages" as keyof Candidate,
+    label: "Language",
+    type: 'text' as const,
+    placeholder: "e.g. Spanish"
+  },
+  {
+    key: "experienceLevel" as keyof Candidate,
+    label: "Experience Level",
+    type: 'select' as const,
+    options: [
+      { value: "Junior", label: "Junior" },
+      { value: "Mid", label: "Mid" },
+      { value: "Senior", label: "Senior" }
+    ]
+  },
+  {
+    key: "skills" as keyof Candidate,
+    label: "Skills",
+    type: 'text' as const,
+    placeholder: "e.g. BLS Certified"
+  }
 ];
 
-export default function ClientTalentPoolPage() {
-
+// CandidateTeaserCard compacto reutilizable
+function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onClick: () => void }) {
   return (
-    <div className="space-y-6">
-      <PageTitle title="Talent Pool" />
-      
-      {/* Top Matches Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {topMatches.map((candidate) => (
-          <CandidateCard
-            key={candidate.id}
-            candidate={candidate}
-            variant="featured"
-            onViewProfile={() => {}}
-          />
+    <button
+      type="button"
+      onClick={onClick}
+      className="group w-full h-full min-h-[210px] bg-white border border-border rounded-xl shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+      style={{ minWidth: 0 }}
+    >
+      <div className="flex items-center gap-2 w-full mb-1">
+        <Avatar name={candidate.name} src={candidate.avatarUrl} className="w-10 h-10 text-lg" />
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-base text-foreground truncate">{candidate.role}</div>
+          <div className="text-sm text-muted-foreground truncate">Senior Level</div>
+        </div>
+        <span className="text-yellow-400 text-xl ml-1">★</span>
+      </div>
+      <div className="flex flex-wrap gap-1 mb-2">
+        {candidate.languages.map(l => (
+          <span key={l} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{l}</span>
+        ))}
+        {candidate.specializations.map(s => (
+          <span key={s} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{s}</span>
         ))}
       </div>
+      <div className="bg-yellow-50 rounded px-2 py-1 text-yellow-700 font-semibold text-xs mb-2 w-fit">
+        Top Skill: {candidate.skills[0]}
+      </div>
+      <div className="mt-auto w-full">
+        <div className="bg-blue-50 rounded px-2 py-3 text-center font-bold text-xl text-[#1976a2] w-full">
+          ${candidate.pricePerMonth.toLocaleString()}<span className="font-normal text-base text-gray-500"> /mo</span>
+        </div>
+      </div>
+    </button>
+  );
+}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Candidates</CardTitle>
-        </CardHeader>
-        <CardContent>
+export default function ClientTalentPoolPage() {
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+
+  const handleViewProfile = (candidate: Candidate) => {
+    setSelectedCandidate(candidate);
+    setProfileOpen(true);
+  };
+
+  // Top Talent: primeros 3 Senior
+  const topTalent = candidates.filter(c => c.experienceLevel === 'Senior').slice(0, 3);
+
+  return (
+    <div className="min-h-screen bg-background p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        <PageTitle title="Talent Pool" subtitle="Browse and discover talented healthcare professionals" />
+      
+        {/* Top Talent Section */}
+        <div className="mb-8">
+          <div className="font-bold text-lg mb-2 text-primary">Top Talent</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
+            {topTalent.map(candidate => (
+              <CandidateTeaserCard key={candidate.id} candidate={candidate} onClick={() => { setSelectedCandidate(candidate); setProfileOpen(true); }} />
+        ))}
+          </div>
+      </div>
+
           <AdvancedTable
             data={candidates}
             columns={columns}
+          title=""
+          searchPlaceholder="Search by name, role, or skills..."
             filters={filters}
-            defaultPageSize={10}
+          onViewDetails={handleViewProfile}
             showPagination={true}
+          showPageSize={true}
             showSearch={true}
             showFilters={true}
-            showPageSize={true}
-            searchPlaceholder="Search candidates..."
+          pageSizeOptions={[5, 10, 20, 50]}
+          defaultPageSize={5}
             emptyMessage="No candidates found."
-          />
-        </CardContent>
+          className="mb-8"
+        />
+
+        {/* Candidate Profile Sheet (lateral) */}
+        <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
+          <SheetContent side="right" className="w-[40vw] min-w-[400px] max-w-[48rem] p-0">
+            {selectedCandidate && (
+              <div className="relative h-full flex flex-col">
+                <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 shadow-sm border-b flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-4">
+                    <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
+                    <div>
+                      <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
+                      <div className="text-lg text-muted-foreground font-medium">{selectedCandidate.role}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button className="gap-2" variant="default" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
+                      Request Interview
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
+                  <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
+                    {/* Info principal */}
+                    <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
+                      <div className="text-muted-foreground text-lg text-center md:text-left">{selectedCandidate.role}</div>
+                      <div className="mt-1 text-base font-semibold text-primary text-center md:text-left">
+                        {selectedCandidate.currency === "USD" ? "$" : selectedCandidate.currency}
+                        {selectedCandidate.pricePerMonth.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/month</span>
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">
+                        {selectedCandidate.languages.map((lang) => (
+                          <Badge key={lang} variant="outline">{lang}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="flex-1">
+                      <div className="mb-2 font-semibold text-foreground">Specialization</div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedCandidate.specializations.map((spec) => (
+                          <Badge key={spec} variant="secondary">{spec}</Badge>
+                        ))}
+                      </div>
+                      <div className="mb-2 font-semibold text-foreground">Skills & Certifications</div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedCandidate.skills.map((skill) => (
+                          <Badge key={skill} variant="outline">{skill}</Badge>
+                        ))}
+                      </div>
+                      <div className="mb-2 font-semibold text-foreground">About Me</div>
+                      <div className="text-sm text-muted-foreground mb-4">
+                        {selectedCandidate.about}
+                      </div>
+                    </div>
+                  </div>
+                  <Tabs defaultValue="education" className="w-full">
+                    <TabsList className="mb-2">
+                      <TabsTrigger value="education">Education</TabsTrigger>
+                      <TabsTrigger value="experience">Experience</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="education">
+                      <div className="flex flex-col gap-2">
+                        {selectedCandidate.education.map((edu, idx) => (
+                          <Card key={idx} className="p-3 flex flex-col gap-1">
+                            <div className="font-semibold">{edu.degree}</div>
+                            <div className="text-sm text-muted-foreground">{edu.institution}</div>
+                            <div className="text-xs text-muted-foreground">{edu.startYear} - {edu.endYear}</div>
+                          </Card>
+                        ))}
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="experience">
+                      <div className="flex flex-col gap-2">
+                        {selectedCandidate.experience.map((exp, idx) => (
+                          <Card key={idx} className="p-3 flex flex-col gap-1">
+                            <div className="font-semibold">{exp.role}</div>
+                            <div className="text-sm text-muted-foreground">{exp.company}</div>
+                            <div className="text-xs text-muted-foreground">{exp.startYear} - {exp.endYear || "Present"}</div>
+                            {exp.description && <div className="text-xs text-muted-foreground mt-1">{exp.description}</div>}
       </Card>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </div>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </div>
   );
 } 

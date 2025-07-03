@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Filter, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Avatar } from "@/components/ui/avatar";
 import { 
   Table, 
   TableBody, 
@@ -31,6 +32,7 @@ export interface TableColumn<T> {
     variant: 'default' | 'secondary' | 'outline' | 'destructive';
     className?: string;
   };
+  render?: (value: T[keyof T], item: T) => React.ReactNode;
 }
 
 export interface StatusConfig {
@@ -177,7 +179,7 @@ export function AdvancedTable<T extends { id: string }>({
         if (Array.isArray(value)) {
           return (
             <div className="w-full h-full flex items-center justify-center flex-wrap gap-1">
-              {value.map((item: string, index: number) => (
+              {(value as string[]).map((item, index) => (
                 <span
                   key={index}
                   className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${config.className || ''}`}
@@ -224,6 +226,17 @@ export function AdvancedTable<T extends { id: string }>({
         return (
           <div className="font-semibold text-center">
             {typeof value === 'number' ? `$${value.toLocaleString()}` : String(value)}
+          </div>
+        );
+      case 'avatar':
+        // For avatar type, we expect the value to be the name and we need to get avatarUrl from the item
+        const avatarUrl = (item as { avatarUrl?: string }).avatarUrl;
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar name={String(value)} src={avatarUrl} className="w-8 h-8" />
+            <div className="font-semibold text-foreground leading-tight">
+              {String(value)}
+            </div>
           </div>
         );
       case 'date':
@@ -335,7 +348,7 @@ export function AdvancedTable<T extends { id: string }>({
                         }
                         style={{ width: column.width || undefined }}
                       >
-                        {renderCellContent(column, item[column.key], item)}
+                        {column.render ? column.render(item[column.key], item) : renderCellContent(column, item[column.key], item)}
                       </TableCell>
                     ))}
                     {onViewDetails && (
@@ -374,7 +387,7 @@ export function AdvancedTable<T extends { id: string }>({
                   <div className="flex-1">
                     {columns.slice(0, 2).map((column) => (
                       <div key={String(column.key)} className="font-semibold text-foreground leading-tight">
-                        {renderCellContent(column, item[column.key], item)}
+                        {column.render ? column.render(item[column.key], item) : renderCellContent(column, item[column.key], item)}
                       </div>
                     ))}
                   </div>

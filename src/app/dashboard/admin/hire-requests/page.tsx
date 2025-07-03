@@ -334,13 +334,12 @@ const AI_TOP_10 = [
 ];
 
 // Columns for candidate tables
-const candidateColumns: TableColumn<Candidate & { action: React.ReactNode }>[] = [
+const candidateColumns: TableColumn<Candidate>[] = [
   { key: 'name', header: 'Name', searchable: true, type: 'text' },
   { key: 'role', header: 'Role', searchable: true, type: 'text' },
-  { key: 'action', header: '', type: 'action' },
 ];
 
-const aiTop10Columns: TableColumn<AICandidate & { action: React.ReactNode }>[] = [
+const aiTop10Columns: TableColumn<AICandidate>[] = [
   { key: 'rank', header: '#', type: 'text' },
   { key: 'name', header: 'Name', searchable: true, type: 'text' },
   { key: 'role', header: 'Role', searchable: true, type: 'text' },
@@ -348,7 +347,6 @@ const aiTop10Columns: TableColumn<AICandidate & { action: React.ReactNode }>[] =
   { key: 'experience', header: 'Experience', type: 'text' },
   { key: 'location', header: 'Location', type: 'text' },
   { key: 'availability', header: 'Availability', type: 'text' },
-  { key: 'action', header: '', type: 'action' },
 ];
 
 export default function HireRequestsWorkflow() {
@@ -744,10 +742,11 @@ export default function HireRequestsWorkflow() {
                     </TabsList>
                     <TabsContent value="ai">
                       <AdvancedTable
-                        data={AI_TOP_10.map(c => ({ ...c, action: <Button size="icon" className="bg-primary/10 hover:bg-primary/20 text-primary" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
+                        data={AI_TOP_10}
                         columns={aiTop10Columns}
                         title={undefined}
                         statusKey={undefined}
+                        onViewDetails={(candidate) => setCandidateModal({ open: true, candidate })}
                         showPagination={false}
                         showSearch={false}
                         showFilters={false}
@@ -760,10 +759,11 @@ export default function HireRequestsWorkflow() {
                     </TabsContent>
                     <TabsContent value="panel">
                       <AdvancedTable
-                        data={(selectedRequest.candidates || []).map((c) => ({ ...c, action: <Button size="icon" className="bg-primary/10 hover:bg-primary/20 text-primary" onClick={() => setCandidateModal({ open: true, candidate: c })}><Eye className="w-5 h-5" /></Button> }))}
+                        data={selectedRequest.candidates || []}
                         columns={candidateColumns}
                         title={undefined}
                         statusKey={undefined}
+                        onViewDetails={(candidate) => setCandidateModal({ open: true, candidate })}
                         showPagination={false}
                         showSearch={false}
                         showFilters={false}

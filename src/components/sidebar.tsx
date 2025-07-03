@@ -1,6 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   Home,
   ListChecks,
@@ -17,7 +18,7 @@ import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-type UserRole = "PROSPECT" | "ACTIVE_CLIENT" | "ADMIN";
+type UserRole = "PROSPECT" | "PROSPECT_V2" | "ACTIVE_CLIENT" | "ADMIN";
 
 type NavItem = {
   href: string;
@@ -43,6 +44,22 @@ const NAV_ITEMS: NavItem[] = [
     label: "Talent Pool",
     icon: <Users2 size={20} />, roles: ["PROSPECT"]
   },
+  // Prospect V2
+  {
+    href: "/dashboard/prospect-v2",
+    label: "Dashboard",
+    icon: <Home size={20} />, roles: ["PROSPECT_V2"]
+  },
+  {
+    href: "/dashboard/prospect-v2/hire-requests",
+    label: "My Hire Requests",
+    icon: <ListChecks size={20} />, roles: ["PROSPECT_V2"]
+  },
+  {
+    href: "/dashboard/prospect-v2/talent-pool",
+    label: "Talent Pool",
+    icon: <Users2 size={20} />, roles: ["PROSPECT_V2"]
+  },
   // Active Client
   {
     href: "/dashboard/client",
@@ -61,7 +78,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     href: "/dashboard/client/talent-pool",
-    label: "Explore Talent Pool",
+    label: "Talent Pool",
     icon: <Users2 size={20} />, roles: ["ACTIVE_CLIENT"]
   },
   // Admin
@@ -111,6 +128,8 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
     switch (userRole) {
       case "PROSPECT":
         return "/dashboard/prospect/profile";
+      case "PROSPECT_V2":
+        return "/dashboard/prospect-v2/profile";
       case "ACTIVE_CLIENT":
         return "/dashboard/client/profile";
       case "ADMIN":
@@ -134,7 +153,7 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 className={`w-full flex items-center gap-3 font-medium text-foreground text-sm rounded-[6px] px-3 py-2 transition-colors hover:bg-muted ${
-                  isActive ? "bg-muted text-foreground" : ""
+                  isActive ? "sidebar-active" : ""
                 }`}
               >
                 {item.icon}
@@ -156,13 +175,14 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
             </span>
             <span className="font-medium text-xs text-muted-foreground">
               {userRole === "PROSPECT" ? "Prospect" : 
+               userRole === "PROSPECT_V2" ? "Prospect V2" :
                userRole === "ACTIVE_CLIENT" ? "Active Client" : 
                "Super Admin"}
             </span>
           </div>
-          <button className="cursor-pointer">
+          <Button variant="ghost" size="icon" className="h-auto p-0">
             <LogOut size={16} className="text-muted-foreground" />
-          </button>
+          </Button>
         </Link>
       </div>
     </aside>

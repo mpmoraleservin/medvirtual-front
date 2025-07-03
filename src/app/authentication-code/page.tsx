@@ -70,16 +70,25 @@ export default function AuthenticationCode() {
                 {wrongCode && (<p className="w-full text-center font-semibold text-destructive mb-10">Wrong code, please try again</p>)}
 
                 <div className="w-full flex flex-col gap-4 mb-8">
-                    <Button className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8" disabled={code.length < 6} onClick={sendCode}>
+                    <Button 
+                        size="lg" 
+                        className="w-full text-xl font-bold py-4 rounded-xl" 
+                        disabled={code.length < 6} 
+                        onClick={sendCode}
+                    >
                         Verify
                     </Button>
                 </div>
 
                 <div className="w-full">
-                    <button className={`w-full font-semibold ${sendAgainTimer === 0 ? "text-primary cursor-pointer" : "text-muted-foreground"}`} disabled={!(sendAgainTimer === 0)}>
+                    <Button 
+                        variant="ghost" 
+                        className={`w-full font-semibold ${sendAgainTimer === 0 ? "text-primary" : "text-muted-foreground"}`} 
+                        disabled={!(sendAgainTimer === 0)}
+                    >
                         Send code again
                         {sendAgainTimer != 0 && (<span className="font-medium"> - {sendAgainTimer}</span>)}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

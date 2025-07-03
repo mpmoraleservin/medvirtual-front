@@ -455,6 +455,7 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
 export default function ProspectTalentPoolPage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const hasPandaDocLink = false;
 
   const handleViewProfile = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
@@ -468,6 +469,16 @@ export default function ProspectTalentPoolPage() {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <PageTitle title="Talent Pool" subtitle="Browse and discover talented healthcare professionals" />
+
+        {/* Info disclaimer igual que en hire-requests */}
+        <div className="mb-8 p-4 border-yellow-400 bg-yellow-50 rounded">
+          <div className="flex items-start gap-3">
+            <svg className="h-5 w-5 mt-0.5 flex-shrink-0 text-yellow-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+            <div className="text-yellow-800">
+              <strong>Info:</strong> Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
+            </div>
+          </div>
+        </div>
 
         {/* Top Talent Section */}
         <div className="mb-8">
@@ -505,12 +516,25 @@ export default function ProspectTalentPoolPage() {
                   <div className="flex items-center gap-4">
                     <Avatar name={selectedCandidate.name} src={selectedCandidate.avatarUrl} className="w-14 h-14 text-2xl" />
                     <div>
-                      <div className="filter blur-sm pointer-events-none select-none">
+                      {/* Si no hay PandaDoc, nombre borroso */}
+                      {hasPandaDocLink ? (
                         <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
-                      </div>
+                      ) : (
+                        <div className="filter blur-sm pointer-events-none select-none">
+                          <h2 className="text-2xl font-bold">{selectedCandidate.name}</h2>
+                        </div>
+                      )}
                       <div className="text-lg text-muted-foreground font-medium">{selectedCandidate.role}</div>
                     </div>
                   </div>
+                  {/* Si no hay PandaDoc, oculta el botón de Request Interview */}
+                  {hasPandaDocLink && (
+                    <div className="flex items-center gap-2">
+                      <Button className="gap-2" variant="default" onClick={() => alert(`Request interview with ${selectedCandidate.name}`)}>
+                        Request Interview
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 overflow-y-auto px-6 pb-6 pt-2">
                   {/* Info principal visible */}
@@ -540,13 +564,14 @@ export default function ProspectTalentPoolPage() {
                     </div>
                   </div>
                   
-                  {/* CTA y contenido borroso */}
-                  <div className="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex flex-col items-center">
-                    <span className="font-bold text-primary text-lg mb-1">Unlock Full Candidate Details</span>
-                    <span className="text-primary text-sm mb-2 text-center">Sign the PandaDoc to see full candidate info.</span>
-                    <Button variant="default" onClick={() => alert('Redirigir a firma de PandaDoc')}>Sign PandaDoc</Button>
-                  </div>
-                  <div className="filter blur-sm pointer-events-none select-none">
+                  {/* CTA y contenido borroso si no hay PandaDoc */}
+                  {!hasPandaDocLink && (
+                    <div className="mb-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg flex flex-col items-center">
+                      <span className="font-bold text-yellow-800 text-lg mb-1">Unlock Full Candidate Details</span>
+                      <span className="text-yellow-800 text-sm mb-2 text-center">Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!</span>
+                    </div>
+                  )}
+                  <div className={hasPandaDocLink ? "" : "filter blur-sm pointer-events-none select-none"}>
                     <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-2">
                       <div className="flex-1 flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">
                         <div className="mt-1 flex flex-wrap gap-2 text-sm justify-center md:justify-start">

@@ -338,7 +338,7 @@ const columns: TableColumn<Candidate>[] = [
     key: "name",
     header: "Name",
     searchable: true,
-    type: "text"
+    type: "avatar"
   },
   {
     key: "role",

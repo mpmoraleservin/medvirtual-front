@@ -174,3 +174,72 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Sidebar active state with better contrast */
+.sidebar-active {
+  background-color: rgba(7, 121, 153, 0.12) !important;
+  color: #077999 !important;
+  font-weight: 600 !important;
+  border-left: 3px solid #077999 !important;
+  padding-left: calc(0.75rem - 3px) !important;
+}
+
+.sidebar-active:hover {
+  background-color: rgba(7, 121, 153, 0.18) !important;
+}
+
+/* Dark mode adjustments for sidebar active state */
+.dark .sidebar-active {
+  background-color: rgba(34, 178, 160, 0.22) !important;
+  color: #fff !important;
+}
+
+.dark .sidebar-active:hover {
+  background-color: rgba(34, 178, 160, 0.32) !important;
+}
+
+/* Inputs, selects, textareas: fondo blanco y alto contraste en cualquier contexto */
+input, select, textarea,
+.DialogContent input, .DialogContent select, .DialogContent textarea,
+[role="dialog"] input, [role="dialog"] select, [role="dialog"] textarea,
+[role="menu"] input, [role="menu"] select, [role="menu"] textarea {
+  background-color: #fff !important;
+  border: 1px solid #D1D5DB !important;
+  color: #18181B;
+  border-radius: 12px;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus,
+.DialogContent input:focus, .DialogContent select:focus, .DialogContent textarea:focus,
+[role="dialog"] input:focus, [role="dialog"] select:focus, [role="dialog"] textarea:focus,
+[role="menu"] input:focus, [role="menu"] select:focus, [role="menu"] textarea:focus {
+  border-color: #077999 !important;
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder,
+.DialogContent input::placeholder, .DialogContent textarea::placeholder,
+[role="dialog"] input::placeholder, [role="dialog"] textarea::placeholder,
+[role="menu"] input::placeholder, [role="menu"] textarea::placeholder {
+  color: #374151 !important;
+  opacity: 1 !important;
+}
+
+.dark input, .dark select, .dark textarea,
+.dark .DialogContent input, .dark .DialogContent select, .dark .DialogContent textarea,
+.dark [role="dialog"] input, .dark [role="dialog"] select, .dark [role="dialog"] textarea,
+.dark [role="menu"] input, .dark [role="menu"] select, .dark [role="menu"] textarea {
+  background-color: #23272F !important;
+  border: 1px solid #374151 !important;
+  color: #F3F4F6;
+}
+
+.dark input::placeholder, .dark textarea::placeholder,
+.dark .DialogContent input::placeholder, .dark .DialogContent textarea::placeholder,
+.dark [role="dialog"] input::placeholder, .dark [role="dialog"] textarea::placeholder,
+.dark [role="menu"] input::placeholder, .dark [role="menu"] textarea::placeholder {
+  color: #A1A1AA !important;
+}

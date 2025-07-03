@@ -74,12 +74,23 @@ export default function Login() {
                 </div>
 
                 <div className="w-full flex flex-col gap-4 mb-14">
-                    <Button className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8" disabled={!validateInputs(email, password)}>
+                    <Button 
+                        size="lg" 
+                        className="w-full text-xl font-bold py-4 rounded-xl" 
+                        disabled={!validateInputs(email, password)}
+                    >
                         Log In
                     </Button>
-                    {viewport < 640 ? <a href="/signup" className="w-full text-center font-bold text-primary text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
-                        Sign up
-                    </a> : null}
+                    {viewport < 640 ? (
+                        <Button 
+                            variant="outline" 
+                            size="lg" 
+                            className="w-full text-xl font-bold py-4 rounded-xl" 
+                            asChild
+                        >
+                            <a href="/signup">Sign up</a>
+                        </Button>
+                    ) : null}
                 </div>
 
 
@@ -87,12 +98,20 @@ export default function Login() {
                     <Separator className="flex-1" /><span className="opacity-60">Or log in with</span><Separator className="flex-1" />
                 </div>
 
-                <Button className="h-max w-full font-semibold text-foreground text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-border cursor-pointer mb-2 hover:bg-muted">
+                <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="w-full font-semibold py-4 rounded-xl mb-2"
+                >
                     <img src="/google.png" alt="google logo" />
                     Continue with Google
                 </Button>
 
-                <Button className="h-max w-full font-semibold text-foreground text-sm leading-[100%] px-4 py-4 rounded-xl bg-transparent border-[1px] border-border cursor-pointer hover:bg-muted mb-8">
+                <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="w-full font-semibold py-4 rounded-xl mb-8"
+                >
                     <img src="/facebook.png" alt="facebook logo" />
                     Continue with Facebook
                 </Button>

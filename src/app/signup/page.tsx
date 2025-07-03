@@ -132,12 +132,23 @@ export default function Signup() {
                 </div>
 
                 <div className="w-full flex flex-col gap-4 mb-14">
-                    <Button className="h-max w-full font-bold text-primary-foreground text-xl leading-[100%] px-4 py-4 rounded-xl bg-primary cursor-pointer hover:opacity-0.8" disabled={!isInfoComplete()}>
+                    <Button 
+                        size="lg" 
+                        className="w-full text-xl font-bold py-4 rounded-xl" 
+                        disabled={!isInfoComplete()}
+                    >
                         Sign Up
                     </Button>
-                    {viewport < 640 ? <a href="/login" className="w-full text-center font-bold text-primary text-xl leading-[100%] px-6 py-4 rounded-xl bg-transparent cursor-pointer">
-                        Log in
-                    </a> : null}
+                    {viewport < 640 ? (
+                        <Button 
+                            variant="outline" 
+                            size="lg" 
+                            className="w-full text-xl font-bold py-4 rounded-xl" 
+                            asChild
+                        >
+                            <a href="/login">Log in</a>
+                        </Button>
+                    ) : null}
                 </div>
             </div>
         </div>
