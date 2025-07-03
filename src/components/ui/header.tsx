@@ -9,7 +9,7 @@ import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import SubmitHireRequestForm from "@/components/ui/submit-hire-request-form";
 
-type UserRole = "PROSPECT" | "ACTIVE_CLIENT" | "ADMIN";
+type UserRole = "PROSPECT" | "PROSPECT_V2" | "ACTIVE_CLIENT" | "ADMIN";
 
 interface HeaderProps {
   userRole: UserRole;
@@ -152,10 +152,17 @@ export default function Header({ userRole }: HeaderProps) {
           </Dialog>
         </div>
       )}
-      {userRole === "PROSPECT" && (
+      {userRole === "PROSPECT" || userRole === "PROSPECT_V2" ? (
         <div className="flex gap-2 items-center">
           <Dialog open={open} onOpenChange={setOpen}>
-            <Button size="lg" className="gap-2" variant="default" aria-label="Submit Hire Request" onClick={() => setOpen(true)}>
+            <Button
+              size="lg"
+              className="gap-2"
+              variant="default"
+              aria-label="Submit Hire Request"
+              onClick={() => setOpen(true)}
+              disabled={userRole === "PROSPECT_V2"}
+            >
               <Plus className="w-5 h-5" />
               <span className="hidden sm:inline">Submit Your First Hire Request</span>
             </Button>
@@ -169,7 +176,7 @@ export default function Header({ userRole }: HeaderProps) {
             </DialogContent>
           </Dialog>
         </div>
-      )}
+      ) : null}
       {userRole === "ADMIN" && (
         <div className="flex gap-2 items-center">
           <Button 

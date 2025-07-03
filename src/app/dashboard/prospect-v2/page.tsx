@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import { UserCheck, Mail, Phone } from "lucide-react"
 import React, { useState } from "react"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { StepperProspectHireRequest } from "@/components/ui/header";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card as UICard } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
@@ -100,7 +98,6 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
 export default function ProspectDashboard() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [hireDialogOpen, setHireDialogOpen] = useState(false);
 
   // Convierte TalentCard a Candidate
   const mapTalentToCandidate = (t: TalentCard, idx: number): Candidate => ({
@@ -155,22 +152,6 @@ export default function ProspectDashboard() {
                 <li className="flex items-start gap-2"><span className="shrink-0 bg-primary-foreground/20 p-1 rounded-full"><UserCheck className="w-4 h-4 text-primary-foreground" /></span> 30+ specialized roles</li>
                 <li className="flex items-start gap-2"><span className="shrink-0 bg-primary-foreground/20 p-1 rounded-full"><UserCheck className="w-4 h-4 text-primary-foreground" /></span> Quick turnaround</li>
               </ul>
-              <Dialog open={hireDialogOpen} onOpenChange={setHireDialogOpen}>
-                <Button
-                  className="font-semibold text-sm md:text-base hover:bg-primary-foreground hover:text-primary transition-colors bg-background text-primary"
-                  onClick={() => setHireDialogOpen(true)}
-                >
-                  Submit a Hire Request
-                </Button>
-                <DialogContent className="max-w-2xl w-full min-h-[540px] flex flex-col">
-                  <div className="flex flex-col flex-1 min-h-[480px]">
-                    <DialogHeader className="mb-2">
-                      <DialogTitle>Submit Your First Hire Request</DialogTitle>
-                    </DialogHeader>
-                    <StepperProspectHireRequest onClose={() => setHireDialogOpen(false)} />
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
           </div>
         </Card>
