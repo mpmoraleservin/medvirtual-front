@@ -17,23 +17,30 @@ import {
   X,
   MessageSquare,
   AlertTriangle,
-  FileText
+  FileText,
+  Plus,
+  MoreHorizontal,
+  ArrowLeft,
+  ArrowRight,
+  RotateCcw
 } from "lucide-react"
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Avatar } from "@/components/ui/avatar"
 import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table'
+import { Textarea } from '@/components/ui/textarea'
 
 // --- TypeScript interfaces ---
 interface Ticket {
   id: string
   clientName: string
-  type: "Bonus" | "Termination" | "Interview Request"
+  type: "Bonus" | "Termination" | "Interview Request" | "Support"
   subject: string
   dateRaised: string
-  status: "New" | "In Review" | "In Progress" | "Awaiting Response" | "Resolved" | "Closed"
+  status: "New" | "In Progress" | "Resolved" | "Closed"
   description: string
   priority: "Low" | "Medium" | "High"
   assignedTo?: string
@@ -74,7 +81,7 @@ const mockTickets: Ticket[] = [
     type: "Termination",
     subject: "James Wilson - Termination Request",
     dateRaised: "2024-05-31",
-    status: "In Review",
+    status: "In Progress",
     description: "Request to terminate James Wilson due to repeated policy violations and poor performance. Multiple warnings have been issued over the past 2 months with no improvement.",
     priority: "High",
     assignedTo: "HR Manager",
@@ -129,7 +136,7 @@ const mockTickets: Ticket[] = [
     type: "Interview Request",
     subject: "Sarah Martinez - Interview Request",
     dateRaised: "2024-05-28",
-    status: "Awaiting Response",
+    status: "In Progress",
     description: "Request to interview Sarah Martinez for the Medical Assistant position. She has relevant experience and good communication skills.",
     priority: "Medium",
     assignedTo: "Recruitment Team",
@@ -185,7 +192,7 @@ const mockTickets: Ticket[] = [
     type: "Bonus",
     subject: "Jennifer Lee - Performance Bonus Request",
     dateRaised: "2024-05-25",
-    status: "In Review",
+    status: "In Progress",
     description: "Performance bonus request for Jennifer Lee who has consistently exceeded expectations in patient care and team collaboration.",
     priority: "Medium",
     assignedTo: "HR Manager",
@@ -240,9 +247,7 @@ const mockTickets: Ticket[] = [
 // --- Status Configuration ---
 const statusConfig = {
   "New": { label: "New", color: "bg-muted-foreground text-primary-foreground", count: 0, description: "Ticket just created" },
-"In Review": { label: "In Review", color: "bg-primary text-primary-foreground", count: 0, description: "Under review by the team" },
-"In Progress": { label: "In Progress", color: "bg-chart-3 text-primary-foreground", count: 0, description: "Working on the solution" },
-"Awaiting Response": { label: "Awaiting Response", color: "bg-chart-5 text-primary-foreground", count: 0, description: "Waiting for client response" },
+"In Progress": { label: "In Progress", color: "bg-yellow-500 text-primary-foreground", count: 0, description: "Working on the solution" },
 "Resolved": { label: "Resolved", color: "bg-chart-2 text-primary-foreground", count: 0, description: "Ticket resolved" },
 "Closed": { label: "Closed", color: "bg-destructive text-primary-foreground", count: 0, description: "Ticket closed" },
 }
@@ -250,7 +255,8 @@ const statusConfig = {
 const typeConfig = {
   "Bonus": "bg-chart-3/10 text-chart-3 border-chart-3/20",
 "Termination": "bg-destructive/10 text-destructive border-destructive/20",
-"Interview Request": "bg-primary/10 text-primary border-primary/20"
+"Interview Request": "bg-primary/10 text-primary border-primary/20",
+"Support": "bg-chart-4/10 text-chart-4 border-chart-4/20"
 }
 
 const priorityColors = {
@@ -261,9 +267,7 @@ const priorityColors = {
 
 const allStatuses = [
   "New",
-  "In Review", 
   "In Progress",
-  "Awaiting Response",
   "Resolved",
   "Closed"
 ]
@@ -296,6 +300,23 @@ export default function TicketsWorkflow() {
     return allStatuses
   })
   const [showColumnDialog, setShowColumnDialog] = useState(false)
+  const [createTicketModal, setCreateTicketModal] = useState(false)
+  const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null)
+  const [reassignModal, setReassignModal] = useState<{ open: boolean; ticket: Ticket | null }>({ open: false, ticket: null })
+  const [reassignTo, setReassignTo] = useState("")
+  const [newTicket, setNewTicket] = useState({
+    clientName: "",
+    type: "Bonus" as Ticket["type"],
+    subject: "",
+    description: "",
+    priority: "Medium" as Ticket["priority"],
+    assignedTo: "",
+    staffName: "",
+    candidateName: "",
+    department: "",
+    location: "",
+    category: ""
+  })
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -317,9 +338,7 @@ export default function TicketsWorkflow() {
     })
     const grouped: Record<string, Ticket[]> = {
       "New": [],
-      "In Review": [],
       "In Progress": [],
-      "Awaiting Response": [],
       "Resolved": [],
       "Closed": [],
     }
@@ -332,9 +351,7 @@ export default function TicketsWorkflow() {
 
   const statusOrder = [
     "New",
-    "In Review",
     "In Progress", 
-    "Awaiting Response",
     "Resolved",
     "Closed"
   ]
@@ -377,12 +394,8 @@ export default function TicketsWorkflow() {
     switch (status) {
       case "New":
         return <FileText className="w-4 h-4" />
-      case "In Review":
-        return <Eye className="w-4 h-4" />
       case "In Progress":
         return <Clock className="w-4 h-4" />
-      case "Awaiting Response":
-        return <MessageSquare className="w-4 h-4" />
       case "Resolved":
         return <CheckCircle className="w-4 h-4" />
       case "Closed":
@@ -400,6 +413,8 @@ export default function TicketsWorkflow() {
         return <AlertTriangle className="w-3 h-3" />
       case "Interview Request":
         return <User className="w-3 h-3" />
+      case "Support":
+        return <MessageSquare className="w-3 h-3" />
       default:
         return <FileText className="w-3 h-3" />
     }
@@ -421,15 +436,97 @@ export default function TicketsWorkflow() {
     })
   }
 
+  // Handle status changes
+  const handleStatusChange = (ticketId: string, newStatus: Ticket["status"]) => {
+    setTickets(prev => prev.map(ticket => 
+      ticket.id === ticketId 
+        ? { ...ticket, status: newStatus, lastUpdated: new Date().toLocaleString() }
+        : ticket
+    ))
+    setActionMenuOpen(null)
+  }
+
+  // Handle reassignment
+  const handleReassign = (ticket: Ticket) => {
+    setReassignModal({ open: true, ticket })
+    setReassignTo(ticket.assignedTo || "")
+    setActionMenuOpen(null)
+  }
+
+  const handleConfirmReassign = () => {
+    if (reassignModal.ticket && reassignTo) {
+      setTickets(prev => prev.map(ticket => 
+        ticket.id === reassignModal.ticket!.id 
+          ? { ...ticket, assignedTo: reassignTo, lastUpdated: new Date().toLocaleString() }
+          : ticket
+      ))
+      setReassignModal({ open: false, ticket: null })
+      setReassignTo("")
+      alert(`Ticket reassigned to ${reassignTo}`)
+    }
+  }
+
+  // Get available actions for a ticket based on its current status
+  const getAvailableActions = (ticket: Ticket) => {
+    const actions = []
+    
+    // Add reassign action for all statuses
+    actions.push(
+      { label: "Reassign", action: () => handleReassign(ticket), icon: <User className="w-4 h-4" /> }
+    )
+    
+    switch (ticket.status) {
+      case "New":
+        actions.push(
+          { label: "Start Progress", action: () => handleStatusChange(ticket.id, "In Progress"), icon: <ArrowRight className="w-4 h-4" /> },
+          { label: "Mark as Resolved", action: () => handleStatusChange(ticket.id, "Resolved"), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Close Ticket", action: () => handleStatusChange(ticket.id, "Closed"), icon: <XCircle className="w-4 h-4" /> }
+        )
+        break
+      case "In Progress":
+        actions.push(
+          { label: "Back to New", action: () => handleStatusChange(ticket.id, "New"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Mark as Resolved", action: () => handleStatusChange(ticket.id, "Resolved"), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Close Ticket", action: () => handleStatusChange(ticket.id, "Closed"), icon: <XCircle className="w-4 h-4" /> }
+        )
+        break
+      case "Resolved":
+        actions.push(
+          { label: "Back to In Progress", action: () => handleStatusChange(ticket.id, "In Progress"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Close Ticket", action: () => handleStatusChange(ticket.id, "Closed"), icon: <XCircle className="w-4 h-4" /> },
+          { label: "Reopen as New", action: () => handleStatusChange(ticket.id, "New"), icon: <RotateCcw className="w-4 h-4" /> }
+        )
+        break
+      case "Closed":
+        actions.push(
+          { label: "Reopen as New", action: () => handleStatusChange(ticket.id, "New"), icon: <RotateCcw className="w-4 h-4" /> },
+          { label: "Reopen as In Progress", action: () => handleStatusChange(ticket.id, "In Progress"), icon: <RotateCcw className="w-4 h-4" /> }
+        )
+        break
+    }
+    
+    return actions
+  }
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Support Tickets</h1>
-            <Button variant="ghost" size="icon" onClick={() => setShowColumnDialog(true)} title="Show/Hide Columns" aria-label="Show/Hide Columns">
-              <Filter className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="default" 
+                onClick={() => setCreateTicketModal(true)}
+                className="gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create Ticket
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => setShowColumnDialog(true)} title="Show/Hide Columns" aria-label="Show/Hide Columns">
+                <Filter className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
           <p className="text-muted-foreground mb-6">Manage and review all client support tickets</p>
           
@@ -492,6 +589,7 @@ export default function TicketsWorkflow() {
                 <SelectItem value="Bonus">Bonus</SelectItem>
                 <SelectItem value="Termination">Termination</SelectItem>
                 <SelectItem value="Interview Request">Interview Request</SelectItem>
+                <SelectItem value="Support">Support</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -533,24 +631,55 @@ export default function TicketsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-background border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                  {/* Header with view button on top right */}
+                                <Card className="p-4 flex flex-col gap-2 bg-white border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                  {/* Header with view button and action menu on top right */}
                                   <div className="flex items-start justify-between mb-1">
                                     <div className="flex flex-col gap-0.5">
                                       <span className="font-semibold text-base text-foreground line-clamp-1">{ticket.clientName}</span>
                                       <span className="text-xs text-muted-foreground">{ticket.subject}</span>
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
-                                      <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        title="View"
-                                        aria-label="View"
-                                        className="hover:bg-primary/10"
-                                        onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
-                                      >
-                                        <Eye className="w-5 h-5" />
-                                      </Button>
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          title="View"
+                                          aria-label="View"
+                                          className="hover:bg-primary/10"
+                                          onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
+                                        >
+                                          <Eye className="w-5 h-5" />
+                                        </Button>
+                                        <Popover open={actionMenuOpen === ticket.id} onOpenChange={(open) => setActionMenuOpen(open ? ticket.id : null)}>
+                                          <PopoverTrigger asChild>
+                                            <Button
+                                              size="icon"
+                                              variant="ghost"
+                                              title="Actions"
+                                              aria-label="Actions"
+                                              className="hover:bg-primary/10"
+                                            >
+                                              <MoreHorizontal className="w-5 h-5" />
+                                            </Button>
+                                          </PopoverTrigger>
+                                          <PopoverContent className="w-48 p-1" align="end">
+                                            <div className="space-y-1">
+                                              {getAvailableActions(ticket).map((action, index) => (
+                                                <Button
+                                                  key={index}
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="w-full justify-start gap-2 h-8 text-sm"
+                                                  onClick={action.action}
+                                                >
+                                                  {action.icon}
+                                                  {action.label}
+                                                </Button>
+                                              ))}
+                                            </div>
+                                          </PopoverContent>
+                                        </Popover>
+                                      </div>
                                       <Badge variant="outline" className={`text-xs px-2 py-0.5 ${priorityColors[ticket.priority]}`}>
                                         {ticket.priority}
                                       </Badge>
@@ -576,14 +705,6 @@ export default function TicketsWorkflow() {
                                       <span>{formatDate(ticket.dateRaised)}</span>
                                       <span className="text-chart-5">({getDaysSinceSubmitted(ticket.dateRaised)}d ago)</span>
                                     </div>
-                                    {ticket.attachments && ticket.attachments.length > 0 && (
-                                      <div className="flex items-center gap-1">
-                                        <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px]">
-                                          {ticket.attachments.length}
-                                        </span>
-                                        <span>attachments</span>
-                                      </div>
-                                    )}
                                   </div>
                                 </Card>
                               </div>
@@ -704,7 +825,8 @@ export default function TicketsWorkflow() {
                     {(selectedTicket.staffName || selectedTicket.candidateName) && (
                       <div>
                         <div className="font-semibold text-sm text-foreground mb-1">
-                          {selectedTicket.type === "Interview Request" ? "Candidate" : "Staff Member"}
+                          {selectedTicket.type === "Interview Request" ? "Candidate" : 
+                           selectedTicket.type === "Support" ? "Contact Person" : "Staff Member"}
                         </div>
                         <div className="font-normal text-base text-muted-foreground">
                           {selectedTicket.staffName || selectedTicket.candidateName}
@@ -814,6 +936,254 @@ export default function TicketsWorkflow() {
           </SheetContent>
         </Sheet>
       )}
+
+      {/* Create Ticket Modal */}
+      <Dialog open={createTicketModal} onOpenChange={setCreateTicketModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle>Create New Support Ticket</DialogTitle>
+          <DialogDescription className="mb-6">
+            Fill in the details below to create a new support ticket.
+          </DialogDescription>
+          
+          <div className="space-y-6">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Client Name *</label>
+                <Input
+                  value={newTicket.clientName}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, clientName: e.target.value }))}
+                  placeholder="Enter client name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Ticket Type *</label>
+                <Select value={newTicket.type} onValueChange={(value: Ticket["type"]) => setNewTicket(prev => ({ ...prev, type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Bonus">Bonus</SelectItem>
+                    <SelectItem value="Termination">Termination</SelectItem>
+                    <SelectItem value="Interview Request">Interview Request</SelectItem>
+                    <SelectItem value="Support">Support</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Subject *</label>
+              <Input
+                value={newTicket.subject}
+                onChange={(e) => setNewTicket(prev => ({ ...prev, subject: e.target.value }))}
+                placeholder="Enter ticket subject"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Description *</label>
+              <Textarea
+                value={newTicket.description}
+                onChange={(e) => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Provide detailed description of the issue or request"
+                rows={4}
+                required
+              />
+            </div>
+
+            {/* Priority and Assignment */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Priority *</label>
+                <Select value={newTicket.priority} onValueChange={(value: Ticket["priority"]) => setNewTicket(prev => ({ ...prev, priority: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Assign To</label>
+                <Select value={newTicket.assignedTo} onValueChange={(value) => setNewTicket(prev => ({ ...prev, assignedTo: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select assignee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HR Manager">HR Manager</SelectItem>
+                    <SelectItem value="Recruitment Team">Recruitment Team</SelectItem>
+                    <SelectItem value="Admin Team">Admin Team</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Staff/Candidate Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  {newTicket.type === "Interview Request" ? "Candidate Name" : 
+                   newTicket.type === "Support" ? "Contact Person" : "Staff Name"}
+                </label>
+                <Input
+                  value={newTicket.type === "Interview Request" ? newTicket.candidateName : 
+                         newTicket.type === "Support" ? newTicket.staffName : newTicket.staffName}
+                  onChange={(e) => {
+                    if (newTicket.type === "Interview Request") {
+                      setNewTicket(prev => ({ ...prev, candidateName: e.target.value }));
+                    } else {
+                      setNewTicket(prev => ({ ...prev, staffName: e.target.value }));
+                    }
+                  }}
+                  placeholder={`Enter ${newTicket.type === "Interview Request" ? "candidate" : 
+                               newTicket.type === "Support" ? "contact person" : "staff"} name`}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Department</label>
+                <Input
+                  value={newTicket.department}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, department: e.target.value }))}
+                  placeholder="Enter department"
+                />
+              </div>
+            </div>
+
+            {/* Location and Category */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Location</label>
+                <Input
+                  value={newTicket.location}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Enter location"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">Category</label>
+                <Input
+                  value={newTicket.category}
+                  onChange={(e) => setNewTicket(prev => ({ ...prev, category: e.target.value }))}
+                  placeholder="Enter category"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => {
+              setCreateTicketModal(false);
+              setNewTicket({
+                clientName: "",
+                type: "Bonus",
+                subject: "",
+                description: "",
+                priority: "Medium",
+                assignedTo: "",
+                staffName: "",
+                candidateName: "",
+                department: "",
+                location: "",
+                category: ""
+              });
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={() => {
+              // Validate required fields
+              if (!newTicket.clientName || !newTicket.subject || !newTicket.description) {
+                alert("Please fill in all required fields (Client Name, Subject, and Description)");
+                return;
+              }
+
+              // Create new ticket
+              const ticket: Ticket = {
+                id: `TKT-${String(tickets.length + 1).padStart(3, '0')}`,
+                clientName: newTicket.clientName,
+                type: newTicket.type,
+                subject: newTicket.subject,
+                dateRaised: new Date().toISOString().split('T')[0],
+                status: "New",
+                description: newTicket.description,
+                priority: newTicket.priority,
+                assignedTo: newTicket.assignedTo || undefined,
+                lastUpdated: new Date().toLocaleString(),
+                staffName: newTicket.staffName || undefined,
+                candidateName: newTicket.candidateName || undefined,
+                department: newTicket.department || undefined,
+                location: newTicket.location || undefined,
+                requestedBy: "Admin",
+                estimatedResolution: "3-5 business days",
+                category: newTicket.category || undefined
+              };
+
+              // Add to tickets list
+              setTickets(prev => [ticket, ...prev]);
+
+              // Reset form and close modal
+              setNewTicket({
+                clientName: "",
+                type: "Bonus",
+                subject: "",
+                description: "",
+                priority: "Medium",
+                assignedTo: "",
+                staffName: "",
+                candidateName: "",
+                department: "",
+                location: "",
+                category: ""
+              });
+              setCreateTicketModal(false);
+
+              alert("Ticket created successfully!");
+            }}>
+              Create Ticket
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reassign Modal */}
+      <Dialog open={reassignModal.open} onOpenChange={(open) => setReassignModal({ open, ticket: open ? reassignModal.ticket : null })}>
+        <DialogContent className="max-w-md">
+          <DialogTitle>Reassign Ticket</DialogTitle>
+          <DialogDescription className="space-y-3">
+            <p>
+              Reassign ticket <strong>{reassignModal.ticket?.id}</strong> to a different team member.
+            </p>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Assign To</label>
+              <Select value={reassignTo} onValueChange={setReassignTo}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="HR Manager">HR Manager</SelectItem>
+                  <SelectItem value="Recruitment Team">Recruitment Team</SelectItem>
+                  <SelectItem value="Admin Team">Admin Team</SelectItem>
+                  <SelectItem value="Support Team">Support Team</SelectItem>
+                  <SelectItem value="Unassigned">Unassigned</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogDescription>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReassignModal({ open: false, ticket: null })}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmReassign} disabled={!reassignTo}>
+              Confirm Reassignment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

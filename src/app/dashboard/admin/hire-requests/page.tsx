@@ -5,14 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck, AlertCircle, CheckSquare } from "lucide-react";
+import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck, AlertCircle, CheckSquare, Users, MoreHorizontal, ArrowLeft, RotateCcw } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar } from "@/components/ui/avatar";
 import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
+
 
 // Import the create-panel component dynamically (without SSR)
 const CreatePanelModal = dynamic(() => import('./[id]/create-panel/page'), {
@@ -59,10 +61,10 @@ interface HireRequest {
   dateSubmitted: string;
   assignedTo: string;
   status: HireRequestStatus;
-  priority: "High" | "Medium" | "Low";
   candidatesCount?: number;
   panelDate?: string;
   interviewDate?: string;
+  interviewTime?: string;
   candidates?: Candidate[];
   description?: string;
   department?: string;
@@ -73,6 +75,8 @@ interface HireRequest {
   roleTitle?: string;
   requiredSkills?: string[];
   keyResponsibilities?: string;
+  decisionDeadline?: string;
+  winner?: Candidate;
 }
 
 // --- Mock Data ---
@@ -105,10 +109,13 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
 
   // interviewDate: 5-10 days after dateSubmitted, only for some
   let interviewDate: string | undefined = undefined;
+  let interviewTime: string | undefined = undefined;
   if (i % 4 === 0) {
     const d = new Date(dateSubmitted);
     d.setDate(d.getDate() + 5 + (i % 6));
     interviewDate = formatDate(d);
+    // Siempre asigna una hora para interviewTime si hay interviewDate
+    interviewTime = `${9 + (i % 8)}:00`;
   }
 
   // Mock extra fields
@@ -123,10 +130,10 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
     dateSubmitted: formatDate(dateSubmitted),
     assignedTo: ["Admin A", "Admin B", "Admin C", "Unassigned"][i % 4],
     status: (["New", "Sourcing", "Panel Ready", "Interview Scheduled", "Awaiting Decision", "Placement Complete", "Canceled"] as HireRequest["status"][])[i % 7],
-    priority: (["High", "Medium", "Low"] as HireRequest["priority"][])[i % 3],
     candidatesCount: 7 + (i % 5),
     panelDate,
-    interviewDate: interviewDate || formatDate(new Date(dateSubmitted.getTime() + 7 * 24 * 60 * 60 * 1000)),
+    interviewDate,
+    interviewTime, // SIEMPRE presente si hay interviewDate
     candidates: i % 2 === 0 ? mockCandidates.slice(0, 3) : mockCandidates.slice(2, 5),
     description: `This is a mock description for the role of ${["Registered Nurse", "Medical Assistant", "Lab Technician", "Receptionist", "Physician"][i % 5]}.`,
     department: departments[i % departments.length],
@@ -137,6 +144,8 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
     roleTitle: ["Registered Nurse", "Medical Assistant", "Lab Technician", "Receptionist", "Physician"][i % 5],
     requiredSkills: ["Teamwork", "Empathy", "Attention to Detail", "Communication", "Problem Solving"].slice(0, (i % 5) + 1),
     keyResponsibilities: `Key responsibilities for this role include: ${["Patient care", "Lab work", "Reception duties", "Medical assistance", "Scheduling"][i % 5]}.`,
+    decisionDeadline: i % 2 === 0 ? formatDate(new Date(today.getTime() + (i % 10) * 24 * 60 * 60 * 1000)) : undefined,
+    winner: i % 2 === 0 ? mockCandidates[Math.floor(Math.random() * mockCandidates.length)] : undefined,
   };
 });
 
@@ -190,12 +199,6 @@ const statusConfig = {
     count: 0, 
     description: "Request canceled" 
   },
-};
-
-const priorityColors = {
-  "High": "bg-destructive/10 text-destructive border-destructive/20",
-  "Medium": "bg-chart-3/10 text-chart-3 border-chart-3/20",
-  "Low": "bg-chart-2/10 text-chart-2 border-chart-2/20",
 };
 
 const allStatuses = [
@@ -333,11 +336,7 @@ const AI_TOP_10 = [
   }
 ];
 
-// Columns for candidate tables
-const candidateColumns: TableColumn<Candidate>[] = [
-  { key: 'name', header: 'Name', searchable: true, type: 'text' },
-  { key: 'role', header: 'Role', searchable: true, type: 'text' },
-];
+
 
 const aiTop10Columns: TableColumn<AICandidate>[] = [
   { key: 'rank', header: '#', type: 'text' },
@@ -349,10 +348,21 @@ const aiTop10Columns: TableColumn<AICandidate>[] = [
   { key: 'availability', header: 'Availability', type: 'text' },
 ];
 
+// Configuración de columnas y filtros para la talent pool (igual que All Candidates)
+const candidateTableColumns: TableColumn<Candidate>[] = [
+  { key: "name", header: "Name", searchable: true, type: "text" },
+  { key: "role", header: "Role", searchable: true, type: "text" },
+];
+const candidateTableFilters = [
+  { key: "name" as keyof Candidate, label: "Name", type: "text" as const, placeholder: "e.g. Ana" },
+  { key: "role" as keyof Candidate, label: "Role", type: "text" as const, placeholder: "e.g. Nurse" },
+];
+
+
+
 export default function HireRequestsWorkflow() {
   const [search, setSearch] = useState("");
   const [assignedFilter, setAssignedFilter] = useState("All");
-  const [priorityFilter, setPriorityFilter] = useState("All");
   const [requests, setRequests] = useState<HireRequest[]>(hireRequests);
   const [selectedRequest, setSelectedRequest] = useState<HireRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -371,6 +381,19 @@ export default function HireRequestsWorkflow() {
   const [panelModalOpen, setPanelModalOpen] = useState(false);
   const [panelRequestId, setPanelRequestId] = useState<string | null>(null);
   const [candidateModal, setCandidateModal] = useState<{ open: boolean, candidate: (Candidate | AICandidate) | null }>({ open: false, candidate: null });
+  const [reassignModal, setReassignModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
+  const [scheduleModal, setScheduleModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
+
+  const [seePanelModal, setSeePanelModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
+  const [readyDecisionModal, setReadyDecisionModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
+  const [panelReadyModal, setPanelReadyModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
+  const [reassignAssignee, setReassignAssignee] = useState<string>("");
+  const [actionMenuOpen, setActionMenuOpen] = useState<string | null>(null);
+  const [scheduleDate, setScheduleDate] = useState<string>("");
+  const [scheduleTime, setScheduleTime] = useState<string>("");
+  const [decisionDeadline, setDecisionDeadline] = useState<string>("");
+  const [panelReadyVisible, setPanelReadyVisible] = useState<boolean>(true);
+  const [editPanelCandidates, setEditPanelCandidates] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -385,8 +408,7 @@ export default function HireRequestsWorkflow() {
         request.clientName.toLowerCase().includes(search.toLowerCase()) ||
         request.role.toLowerCase().includes(search.toLowerCase());
       const matchesAssigned = assignedFilter === "All" || request.assignedTo === assignedFilter;
-      const matchesPriority = priorityFilter === "All" || request.priority === priorityFilter;
-      return matchesSearch && matchesAssigned && matchesPriority;
+      return matchesSearch && matchesAssigned;
     });
     const grouped: Record<string, HireRequest[]> = {
       "Pending Signature": [],
@@ -403,7 +425,7 @@ export default function HireRequestsWorkflow() {
       statusConfig[status as keyof typeof statusConfig].count = grouped[status as keyof typeof grouped].length;
     });
     return grouped;
-  }, [requests, search, assignedFilter, priorityFilter]);
+  }, [requests, search, assignedFilter]);
 
   const statusOrder = [
     "Pending Signature",
@@ -442,13 +464,7 @@ export default function HireRequestsWorkflow() {
     });
   }
 
-  const getDaysSinceSubmitted = (dateSubmitted: string) => {
-    const submitted = new Date(dateSubmitted);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - submitted.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+
 
   const getStatusIcon = (status: HireRequestStatus) => {
     switch (status) {
@@ -480,6 +496,155 @@ export default function HireRequestsWorkflow() {
         : [...prev, status]
     );
   }
+
+  // Contador para Awaiting Decision
+  const AwaitingDecisionCountdown = ({ deadline }: { deadline: string }) => {
+    const [timeLeft, setTimeLeft] = useState<number>(() => {
+      const now = new Date();
+      const end = new Date(deadline);
+      return Math.max(0, end.getTime() - now.getTime());
+    });
+    useEffect(() => {
+      if (timeLeft <= 0) return;
+      const interval = setInterval(() => {
+        setTimeLeft(t => Math.max(0, t - 1000));
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [timeLeft]);
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    return (
+      <div className={`rounded-lg px-3 py-1 text-sm font-semibold flex items-center gap-2 ${timeLeft === 0 ? 'bg-red-100 text-red-700' : 'bg-chart-4/10 text-chart-4'}`}>
+        <Clock className="w-4 h-4" />
+        {timeLeft === 0 ? 'Expired' : `${hours}h ${minutes}m ${seconds}s`}
+      </div>
+    );
+  };
+
+  // Reassign logic
+  const handleReassignConfirm = () => {
+    if (!reassignModal.request) return;
+    setRequests(prev => prev.map(r => r.id === reassignModal.request!.id ? { ...r, assignedTo: reassignAssignee } : r));
+    setReassignModal({ open: false, request: null });
+    setReassignAssignee("");
+  };
+
+  // See Panel logic (edit candidates)
+  const handleEditPanelConfirm = () => {
+    if (!seePanelModal.request) return;
+    const selectedCandidates = mockCandidates.filter(c => editPanelCandidates.includes(c.id));
+    setRequests(prev => prev.map(r => r.id === seePanelModal.request!.id ? { ...r, candidates: selectedCandidates } : r));
+    setSeePanelModal({ open: false, request: null });
+    setEditPanelCandidates([]);
+  };
+
+  // Panel Ready logic
+  const handlePanelReadyConfirm = () => {
+    if (!panelReadyModal.request) return;
+    setRequests(prev => prev.map(r => r.id === panelReadyModal.request!.id ? { ...r, status: "Panel Ready" } : r));
+    setPanelReadyModal({ open: false, request: null });
+    setPanelReadyVisible(true);
+  };
+
+  // Schedule Interview logic
+  const handleScheduleConfirm = () => {
+    if (!scheduleModal.request) return;
+    setRequests(prev => prev.map(r => r.id === scheduleModal.request!.id ? { ...r, interviewDate: scheduleDate, interviewTime: scheduleTime, status: "Interview Scheduled" } : r));
+    setScheduleModal({ open: false, request: null });
+    setScheduleDate("");
+    setScheduleTime("");
+  };
+
+  // Ready for Decision logic
+  const handleReadyDecisionConfirm = () => {
+    if (!readyDecisionModal.request) return;
+    setRequests(prev => prev.map(r => r.id === readyDecisionModal.request!.id ? { ...r, decisionDeadline, status: "Awaiting Decision" } : r));
+    setReadyDecisionModal({ open: false, request: null });
+    setDecisionDeadline("");
+  };
+
+  // Handle status changes
+  const handleStatusChange = (requestId: string, newStatus: HireRequest["status"]) => {
+    setRequests(prev => prev.map(request => 
+      request.id === requestId 
+        ? { ...request, status: newStatus }
+        : request
+    ));
+    setActionMenuOpen(null);
+  };
+
+  // Get available actions for a request based on its current status
+  const getAvailableActions = (request: HireRequest) => {
+    const actions = [];
+    
+    // Add reassign action for all statuses that support it
+    if (["Pending Signature", "New", "Sourcing", "Panel Ready", "Interview Scheduled"].includes(request.status)) {
+      actions.push(
+        { label: "Reassign", action: () => setReassignModal({ open: true, request }), icon: <User className="w-4 h-4" /> }
+      );
+    }
+    
+    switch (request.status) {
+      case "Pending Signature":
+        actions.push(
+          { label: "Move to New", action: () => handleStatusChange(request.id, "New"), icon: <ArrowRight className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "New":
+        actions.push(
+          { label: "Start Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <ArrowRight className="w-4 h-4" /> },
+          { label: "Create Interview Panel", action: () => { setPanelModalOpen(true); setPanelRequestId(request.id); }, icon: <Users className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "Sourcing":
+        actions.push(
+          { label: "Back to New", action: () => handleStatusChange(request.id, "New"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "See Panel", action: () => setSeePanelModal({ open: true, request }), icon: <Eye className="w-4 h-4" /> },
+          { label: "Mark Panel Ready", action: () => setPanelReadyModal({ open: true, request }), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "Panel Ready":
+        actions.push(
+          { label: "Back to Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "See Panel", action: () => setSeePanelModal({ open: true, request }), icon: <Eye className="w-4 h-4" /> },
+          { label: "Schedule Interview", action: () => setScheduleModal({ open: true, request }), icon: <Calendar className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "Interview Scheduled":
+        actions.push(
+          { label: "Back to Panel Ready", action: () => handleStatusChange(request.id, "Panel Ready"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Ready for Decision", action: () => setReadyDecisionModal({ open: true, request }), icon: <ArrowRight className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "Awaiting Decision":
+        actions.push(
+          { label: "Back to Interview Scheduled", action: () => handleStatusChange(request.id, "Interview Scheduled"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Mark Complete", action: () => handleStatusChange(request.id, "Placement Complete"), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+        );
+        break;
+      case "Placement Complete":
+        actions.push(
+          { label: "Back to Awaiting Decision", action: () => handleStatusChange(request.id, "Awaiting Decision"), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Reopen as New", action: () => handleStatusChange(request.id, "New"), icon: <RotateCcw className="w-4 h-4" /> }
+        );
+        break;
+      case "Canceled":
+        actions.push(
+          { label: "Reopen as New", action: () => handleStatusChange(request.id, "New"), icon: <RotateCcw className="w-4 h-4" /> },
+          { label: "Reopen as Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <RotateCcw className="w-4 h-4" /> }
+        );
+        break;
+    }
+    
+    return actions;
+  };
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -530,17 +695,6 @@ export default function HireRequestsWorkflow() {
                 <SelectItem value="Unassigned">Unassigned</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="sm:w-48">
-                <SelectValue placeholder="Filter by priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Priorities</SelectItem>
-                <SelectItem value="High">High Priority</SelectItem>
-                <SelectItem value="Medium">Medium Priority</SelectItem>
-                <SelectItem value="Low">Low Priority</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
         {/* Workflow Board - horizontal scroll */}
@@ -578,63 +732,83 @@ export default function HireRequestsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-background border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                  {/* Header with view button on top right */}
+                                <Card className="p-4 flex flex-col gap-2 bg-white border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                  {/* Header with view button and action menu on top right */}
                                   <div className="flex items-center justify-between mb-4">
                                     <div className="flex flex-col gap-0.5">
                                       <span className="font-semibold text-base text-foreground line-clamp-1">{request.clientName}</span>
                                       <span className="text-xs text-muted-foreground">{request.role}</span>
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
-                                      <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        title="View"
-                                        aria-label="View"
-                                        className="hover:bg-primary/10"
-                                        onClick={() => { setSelectedRequest(request); setModalOpen(true); }}
-                                      >
-                                        <Eye className="w-5 h-5" />
-                                      </Button>
-                                      <Badge variant="outline" className={`text-xs px-2 py-0.5 ${priorityColors[request.priority]}`}>{request.priority}</Badge>
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          title="View"
+                                          aria-label="View"
+                                          className="hover:bg-primary/10"
+                                          onClick={() => { setSelectedRequest(request); setModalOpen(true); }}
+                                        >
+                                          <Eye className="w-5 h-5" />
+                                        </Button>
+                                        <Popover open={actionMenuOpen === request.id} onOpenChange={(open) => setActionMenuOpen(open ? request.id : null)}>
+                                          <PopoverTrigger asChild>
+                                            <Button
+                                              size="icon"
+                                              variant="ghost"
+                                              title="Actions"
+                                              aria-label="Actions"
+                                              className="hover:bg-primary/10"
+                                            >
+                                              <MoreHorizontal className="w-5 h-5" />
+                                            </Button>
+                                          </PopoverTrigger>
+                                          <PopoverContent className="w-48 p-1" align="end">
+                                            <div className="space-y-1">
+                                              {getAvailableActions(request).map((action, index) => (
+                                                <Button
+                                                  key={index}
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  className="w-full justify-start gap-2 h-8 text-sm"
+                                                  onClick={action.action}
+                                                >
+                                                  {action.icon}
+                                                  {action.label}
+                                                </Button>
+                                              ))}
+                                            </div>
+                                          </PopoverContent>
+                                        </Popover>
+                                      </div>
                                     </div>
                                   </div>
-                                  {/* Details */}
+                                  {/* Details (sin cantidad de candidatos ni fecha) */}
                                   <div className="flex flex-col gap-1 text-xs text-muted-foreground mb-1">
                                     <div className="flex items-center gap-1">
                                       <User className="w-3 h-3" />
                                       <span>{request.assignedTo}</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="w-3 h-3" />
-                                      <span>{request.dateSubmitted}</span>
-                                      <span className="text-chart-5">({getDaysSinceSubmitted(request.dateSubmitted)}d ago)</span>
-                                    </div>
-                                    {request.candidatesCount && (
-                                      <div className="flex items-center gap-1">
-                                        <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-[10px]">{request.candidatesCount}</span>
-                                        <span>candidates</span>
-                                      </div>
-                                    )}
+                                    {/* Si hay entrevista, mostrar solo eso */}
                                     {request.interviewDate && (
                                       <div className="flex items-center gap-1 text-chart-2">
                                         <Clock className="w-3 h-3" />
-                                        <span>Interview: {request.interviewDate}</span>
+                                        <span>Interview: {request.interviewDate}{request.interviewTime ? ` ${request.interviewTime}` : ""}</span>
                                       </div>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-2 pt-2 border-t border-border mt-2">
-                                    {status === "Panel Ready" && (
-                                      <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        title="Schedule Interview"
-                                        aria-label="Schedule Interview"
-                                        className="hover:bg-chart-2/10"
-                                        onClick={() => { setPanelRequestId(request.id); setPanelModalOpen(true); }}
-                                      >
-                                        <ArrowRight className="w-5 h-5" />
-                                      </Button>
+                                  {/* Status-specific information */}
+                                  <div className="flex items-center gap-2 pt-2 mt-2 justify-end">
+                                    {/* Awaiting Decision: contador */}
+                                    {request.status === "Awaiting Decision" && (
+                                      <AwaitingDecisionCountdown deadline={request.decisionDeadline || ''} />
+                                    )}
+                                    {/* Placement Complete: mostrar ganador */}
+                                    {request.status === "Placement Complete" && request.winner && (
+                                      <div className="flex items-center gap-2">
+                                        <CheckCircle className="w-5 h-5 text-green-600" />
+                                        <span className="font-semibold text-green-700">Winner: {request.winner.name}</span>
+                                      </div>
                                     )}
                                   </div>
                                 </Card>
@@ -759,17 +933,21 @@ export default function HireRequestsWorkflow() {
                     </TabsContent>
                     <TabsContent value="panel">
                       <AdvancedTable
-                        data={selectedRequest.candidates || []}
-                        columns={candidateColumns}
-                        title={undefined}
-                        statusKey={undefined}
-                        onViewDetails={(candidate) => setCandidateModal({ open: true, candidate })}
-                        showPagination={false}
-                        showSearch={false}
-                        showFilters={false}
-                        showPageSize={false}
-                        emptyMessage="No candidates assigned."
-                        className="mt-4"
+                        data={mockCandidates}
+                        columns={candidateTableColumns}
+                        filters={candidateTableFilters}
+                        showPagination={true}
+                        showSearch={true}
+                        showFilters={true}
+                        showPageSize={true}
+                        pageSizeOptions={[5, 10, 20, 50]}
+                        defaultPageSize={5}
+                        emptyMessage="No candidates found."
+                        onViewDetails={(candidate: Candidate) => {
+                          if (!editPanelCandidates.includes(candidate.id) && editPanelCandidates.length < 5) {
+                            setEditPanelCandidates(prev => [...prev, candidate.id]);
+                          }
+                        }}
                       />
                     </TabsContent>
                   </Tabs>
@@ -800,6 +978,85 @@ export default function HireRequestsWorkflow() {
           </DialogContent>
         </Dialog>
       )}
+      {/* Modals para cada acción */}
+      {/* Reassign */}
+      <Dialog open={reassignModal.open} onOpenChange={open => { setReassignModal({ open, request: open ? reassignModal.request : null }); setReassignAssignee(reassignModal.request?.assignedTo || ""); }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Reassign Request</DialogTitle>
+          <div className="mt-4">
+            <Select value={reassignAssignee} onValueChange={setReassignAssignee}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Select assignee" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Admin A">Admin A</SelectItem>
+                <SelectItem value="Admin B">Admin B</SelectItem>
+                <SelectItem value="Admin C">Admin C</SelectItem>
+                <SelectItem value="Unassigned">Unassigned</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex justify-end mt-4">
+              <Button disabled={!reassignAssignee} onClick={handleReassignConfirm}>Confirm</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* See Panel (edit candidates) */}
+      <Dialog open={seePanelModal.open} onOpenChange={open => { setSeePanelModal({ open, request: open ? seePanelModal.request : null }); setEditPanelCandidates(seePanelModal.request?.candidates?.map(c => c.id) || []); }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Edit Panel</DialogTitle>
+          <div className="mt-4 flex flex-col gap-2">
+            {mockCandidates.map(c => (
+              <label key={c.id} className="flex items-center gap-2">
+                <input type="checkbox" checked={editPanelCandidates.includes(c.id)} onChange={e => {
+                  if (e.target.checked) setEditPanelCandidates(prev => prev.length < 5 ? [...prev, c.id] : prev);
+                  else setEditPanelCandidates(prev => prev.filter(id => id !== c.id));
+                }} disabled={!editPanelCandidates.includes(c.id) && editPanelCandidates.length >= 5} />
+                <span>{c.name} ({c.role})</span>
+              </label>
+            ))}
+            <div className="flex justify-end mt-4">
+              <Button disabled={editPanelCandidates.length < 1} onClick={handleEditPanelConfirm}>Save</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Panel Ready */}
+      <Dialog open={panelReadyModal.open} onOpenChange={open => { setPanelReadyModal({ open, request: open ? panelReadyModal.request : null }); setPanelReadyVisible(true); }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Confirm Panel Ready</DialogTitle>
+          <div className="mt-4 flex items-center gap-2">
+            <input type="checkbox" checked={panelReadyVisible} onChange={e => setPanelReadyVisible(e.target.checked)} />
+            <span>Client can see the panel</span>
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button onClick={handlePanelReadyConfirm}>Confirm</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Schedule Interview */}
+      <Dialog open={scheduleModal.open} onOpenChange={open => { setScheduleModal({ open, request: open ? scheduleModal.request : null }); setScheduleDate(""); setScheduleTime(""); }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Schedule Interview</DialogTitle>
+          <div className="mt-4 flex flex-col gap-2">
+            <label>Date: <Input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)} /></label>
+            <label>Time: <Input type="time" value={scheduleTime} onChange={e => setScheduleTime(e.target.value)} /></label>
+            <div className="flex justify-end mt-4">
+              <Button disabled={!scheduleDate || !scheduleTime} onClick={handleScheduleConfirm}>Confirm</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Ready for Decision */}
+      <Dialog open={readyDecisionModal.open} onOpenChange={open => { setReadyDecisionModal({ open, request: open ? readyDecisionModal.request : null }); setDecisionDeadline(""); }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Set Decision Deadline</DialogTitle>
+          <div className="mt-4 flex flex-col gap-2">
+            <label>Decision Deadline: <Input type="date" value={decisionDeadline} onChange={e => setDecisionDeadline(e.target.value)} /></label>
+            <div className="flex justify-end mt-4">
+              <Button disabled={!decisionDeadline} onClick={handleReadyDecisionConfirm}>Confirm</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 
