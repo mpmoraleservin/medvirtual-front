@@ -421,7 +421,7 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
     <button
       type="button"
       onClick={onClick}
-      className="group w-full h-full min-h-[210px] bg-white border border-border rounded-xl shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+      className="group w-full h-full min-h-[210px] bg-card border border-border rounded-xl shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
       style={{ minWidth: 0 }}
     >
       <div className="flex items-center gap-2 w-full mb-1">
@@ -430,22 +430,22 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
           <div className="font-semibold text-base text-foreground truncate">{candidate.role}</div>
           <div className="text-sm text-muted-foreground truncate">Senior Level</div>
         </div>
-        <span className="text-yellow-400 text-xl ml-1">★</span>
+        <span className="text-chart-5 text-xl ml-1">★</span>
       </div>
       <div className="flex flex-wrap gap-1 mb-2">
         {candidate.languages.map(l => (
-          <span key={l} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{l}</span>
+          <span key={l} className="bg-muted rounded-full px-2 py-0.5 text-xs text-foreground">{l}</span>
         ))}
         {candidate.specializations.map(s => (
-          <span key={s} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{s}</span>
+          <span key={s} className="bg-muted rounded-full px-2 py-0.5 text-xs text-foreground">{s}</span>
         ))}
       </div>
-      <div className="bg-yellow-50 rounded px-2 py-1 text-yellow-700 font-semibold text-xs mb-2 w-fit">
+      <div className="bg-chart-5/10 rounded px-2 py-1 text-chart-5 font-semibold text-xs mb-2 w-fit">
         Top Skill: {candidate.skills[0]}
       </div>
       <div className="mt-auto w-full">
-        <div className="bg-blue-50 rounded px-2 py-3 text-center font-bold text-xl text-[#1976a2] w-full">
-          ${candidate.pricePerMonth.toLocaleString()}<span className="font-normal text-base text-gray-500"> /mo</span>
+        <div className="bg-primary/10 rounded px-2 py-3 text-center font-bold text-xl text-primary w-full">
+          ${candidate.pricePerMonth.toLocaleString()}<span className="font-normal text-base text-muted-foreground"> /mo</span>
         </div>
       </div>
     </button>
@@ -541,9 +541,9 @@ export default function ProspectTalentPoolPage() {
                   </div>
                   
                   {/* CTA y contenido borroso */}
-                  <div className="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex flex-col items-center">
-                    <span className="font-bold text-primary text-lg mb-1">Unlock Full Candidate Details</span>
-                    <span className="text-primary text-sm mb-2 text-center">Sign the PandaDoc to see full candidate info.</span>
+                  <div className="mb-4 p-4 bg-highlight-yellow-bg border border-highlight-yellow-border rounded-lg flex flex-col items-center">
+                    <span className="font-bold text-highlight-yellow text-lg mb-1">Unlock Full Candidate Details</span>
+                    <span className="text-highlight-yellow-border text-sm mb-2 text-center">Sign the PandaDoc to see full candidate info.</span>
                     <Button variant="default" onClick={() => alert('Redirigir a firma de PandaDoc')}>Sign PandaDoc</Button>
                   </div>
                   <div className="filter blur-sm pointer-events-none select-none">

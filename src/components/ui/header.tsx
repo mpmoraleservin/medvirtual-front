@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, UserPlus } from "lucide-react";
+import { Plus, UserPlus, Moon, Sun } from "lucide-react";
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import SubmitHireRequestForm from "@/components/ui/submit-hire-request-form";
+import { useViewportStore } from "@/stores/viewport";
 
 type UserRole = "PROSPECT" | "PROSPECT_V2" | "ACTIVE_CLIENT" | "ADMIN";
 
@@ -23,6 +24,9 @@ export default function Header({ userRole }: HeaderProps) {
   const [referEmail, setReferEmail] = useState("");
   const [referMsg, setReferMsg] = useState("");
   const [referError, setReferError] = useState<{name?: string, email?: string}>({});
+  
+  // Dark mode state
+  const { isDarkMode, toggleDarkMode } = useViewportStore();
   
   // New Client form state
   const [firstName, setFirstName] = useState("");
@@ -103,6 +107,24 @@ export default function Header({ userRole }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 w-full h-16 z-40 bg-background border-b border-border flex items-center justify-between px-4 sm:px-8">
       <img src="/logo.png" alt="company logo" className="h-8" />
+      
+      {/* Dark Mode Toggle for Mobile */}
+      <div className="flex items-center gap-2 sm:hidden">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={toggleDarkMode}
+          aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          className="h-8 w-8"
+        >
+          {isDarkMode ? (
+            <Sun size={16} className="text-muted-foreground" />
+          ) : (
+            <Moon size={16} className="text-muted-foreground" />
+          )}
+        </Button>
+      </div>
+      
       {userRole === "ACTIVE_CLIENT" && (
         <div className="flex gap-2 items-center">
           <Button size="lg" variant="secondary" className="gap-2" onClick={() => setReferOpen(true)} aria-label="Refer Someone">

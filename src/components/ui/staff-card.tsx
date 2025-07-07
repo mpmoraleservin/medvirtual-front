@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -123,7 +125,7 @@ export function StaffCard({
             <Button
               variant="ghost"
               size="icon"
-              className="bg-blue-100 hover:bg-blue-200 text-blue-700 border-none flex-1"
+              className="bg-primary/10 hover:bg-primary/20 text-primary border-none flex-1"
               title="View Details"
               aria-label="View Details"
               onClick={() => onView(member)}
@@ -135,7 +137,7 @@ export function StaffCard({
             <Button
               variant="ghost"
               size="icon"
-              className="bg-green-100 hover:bg-green-200 text-green-700 border-none flex-1"
+              className="bg-chart-2/10 hover:bg-chart-2/20 text-chart-2 border-none flex-1"
               title="Add Bonus"
               aria-label="Add Bonus"
               onClick={() => onBonus(member)}
@@ -147,7 +149,7 @@ export function StaffCard({
             <Button
               variant="ghost"
               size="icon"
-              className="bg-red-100 hover:bg-red-200 text-red-700 border-none flex-1"
+              className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-none flex-1"
               title="Terminate"
               aria-label="Terminate"
               onClick={() => onTerminate(member)}

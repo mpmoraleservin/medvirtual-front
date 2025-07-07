@@ -247,7 +247,7 @@ const mockTickets: Ticket[] = [
 // --- Status Configuration ---
 const statusConfig = {
   "New": { label: "New", color: "bg-muted-foreground text-primary-foreground", count: 0, description: "Ticket just created" },
-"In Progress": { label: "In Progress", color: "bg-yellow-500 text-primary-foreground", count: 0, description: "Working on the solution" },
+"In Progress": { label: "In Progress", color: "bg-chart-5 text-primary-foreground", count: 0, description: "Working on the solution" },
 "Resolved": { label: "Resolved", color: "bg-chart-2 text-primary-foreground", count: 0, description: "Ticket resolved" },
 "Closed": { label: "Closed", color: "bg-destructive text-primary-foreground", count: 0, description: "Ticket closed" },
 }
@@ -631,7 +631,7 @@ export default function TicketsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-white border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
                                   {/* Header with view button and action menu on top right */}
                                   <div className="flex items-start justify-between mb-1">
                                     <div className="flex flex-col gap-0.5">

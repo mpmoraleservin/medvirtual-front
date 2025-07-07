@@ -421,7 +421,7 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
     <button
       type="button"
       onClick={onClick}
-      className="group w-full h-full min-h-[210px] bg-white border border-border rounded-xl shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+      className="group w-full h-full min-h-[210px] bg-card border border-border rounded-xl shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
       style={{ minWidth: 0 }}
     >
       <div className="flex items-center gap-2 w-full mb-1">
@@ -430,22 +430,22 @@ function CandidateTeaserCard({ candidate, onClick }: { candidate: Candidate, onC
           <div className="font-semibold text-base text-foreground truncate">{candidate.role}</div>
           <div className="text-sm text-muted-foreground truncate">Senior Level</div>
         </div>
-        <span className="text-yellow-400 text-xl ml-1">★</span>
+        <span className="text-chart-5 text-xl ml-1">★</span>
       </div>
       <div className="flex flex-wrap gap-1 mb-2">
         {candidate.languages.map(l => (
-          <span key={l} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{l}</span>
+          <span key={l} className="bg-muted rounded-full px-2 py-0.5 text-xs text-foreground">{l}</span>
         ))}
         {candidate.specializations.map(s => (
-          <span key={s} className="bg-gray-100 rounded-full px-2 py-0.5 text-xs">{s}</span>
+          <span key={s} className="bg-muted rounded-full px-2 py-0.5 text-xs text-foreground">{s}</span>
         ))}
       </div>
-      <div className="bg-yellow-50 rounded px-2 py-1 text-yellow-700 font-semibold text-xs mb-2 w-fit">
+      <div className="bg-chart-5/10 rounded px-2 py-1 text-chart-5 font-semibold text-xs mb-2 w-fit">
         Top Skill: {candidate.skills[0]}
       </div>
       <div className="mt-auto w-full">
-        <div className="bg-blue-50 rounded px-2 py-3 text-center font-bold text-xl text-[#1976a2] w-full">
-          ${candidate.pricePerMonth.toLocaleString()}<span className="font-normal text-base text-gray-500"> /mo</span>
+        <div className="bg-primary/10 rounded px-2 py-3 text-center font-bold text-xl text-primary w-full">
+          ${candidate.pricePerMonth.toLocaleString()}<span className="font-normal text-base text-muted-foreground"> /mo</span>
         </div>
       </div>
     </button>
@@ -471,10 +471,10 @@ export default function ProspectTalentPoolPage() {
         <PageTitle title="Talent Pool" subtitle="Browse and discover talented healthcare professionals" />
 
         {/* Info disclaimer igual que en hire-requests */}
-        <div className="mb-8 p-4 border-yellow-400 bg-yellow-50 rounded">
+        <div className="mb-8 p-4 border-highlight-yellow-border bg-highlight-yellow-bg rounded">
           <div className="flex items-start gap-3">
-            <svg className="h-5 w-5 mt-0.5 flex-shrink-0 text-yellow-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
-            <div className="text-yellow-800">
+            <svg className="h-5 w-5 mt-0.5 flex-shrink-0 text-highlight-yellow" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+            <div className="text-highlight-yellow-border">
               <strong>Info:</strong> Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!
             </div>
           </div>
@@ -566,9 +566,9 @@ export default function ProspectTalentPoolPage() {
                   
                   {/* CTA y contenido borroso si no hay PandaDoc */}
                   {!hasPandaDocLink && (
-                    <div className="mb-4 p-4 bg-yellow-50 border border-yellow-400 rounded-lg flex flex-col items-center">
-                      <span className="font-bold text-yellow-800 text-lg mb-1">Unlock Full Candidate Details</span>
-                      <span className="text-yellow-800 text-sm mb-2 text-center">Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!</span>
+                    <div className="mb-4 p-4 bg-highlight-yellow-bg border border-highlight-yellow-border rounded-lg flex flex-col items-center">
+                      <span className="font-bold text-highlight-yellow text-lg mb-1">Unlock Full Candidate Details</span>
+                      <span className="text-highlight-yellow-border text-sm mb-2 text-center">Your MedVirtual Concierge is preparing your service agreement. You will receive a PandaDoc to sign soon. We're working on your request!</span>
                     </div>
                   )}
                   <div className={hasPandaDocLink ? "" : "filter blur-sm pointer-events-none select-none"}>

@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import PasswordRequirement from "@/components/password-requirement";
 import { isPasswordCompliant } from "@/utils/validators";
-import { useViewportStore } from "@/stores/viewport";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export default function Signup() {
@@ -20,7 +19,7 @@ export default function Signup() {
     const [showPassword, setShowPassword] = useState(false)
     const [agreedToTerms, setAgreedToTerms] = useState(false)
 
-    const { viewport, setViewport } = useViewportStore()
+    const [viewport, setViewport] = useState(0)
 
     function isInfoComplete(): boolean {
         const pwd = isPasswordCompliant(password);
@@ -52,10 +51,12 @@ export default function Signup() {
 
     useEffect(() => {
         setViewport(getViewportWidth())
-        window.addEventListener("resize", () => {
+        const handleResize = () => {
             setViewport(getViewportWidth())
-        })
-    }, [setViewport])
+        }
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
 
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">

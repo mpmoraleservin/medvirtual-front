@@ -1,9 +1,8 @@
 "use client"
-import { useEffect } from "react";
-import { useViewportStore } from "@/stores/viewport";
+import { useEffect, useState } from "react";
 
 export default function ExpiredInvite() {
-    const { viewport, setViewport } = useViewportStore()
+    const [viewport, setViewport] = useState(0)
 
     function getViewportWidth() {
         return window.innerWidth
@@ -11,10 +10,12 @@ export default function ExpiredInvite() {
 
     useEffect(() => {
         setViewport(getViewportWidth())
-        window.addEventListener("resize", () => {
+        const handleResize = () => {
             setViewport(getViewportWidth())
-        })
-    }, [setViewport])
+        }
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
 
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">

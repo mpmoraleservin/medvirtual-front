@@ -1,19 +1,21 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 
-interface ViewportState {
-  viewport: number
-  setViewport: (size: number) => void
+interface ViewportStore {
+  isDarkMode: boolean
+  toggleDarkMode: () => void
+  setDarkMode: (isDark: boolean) => void
 }
 
-export const useViewportStore = create<ViewportState>()(
-  devtools(
-      (set) => ({
-        viewport: 1920,
-        setViewport: (size) => set(() => ({ viewport: size })),
-      }),
-      {
-        name: 'viewport-storage',
-      },
-  ),
+export const useViewportStore = create<ViewportStore>()(
+  persist(
+    (set) => ({
+      isDarkMode: false,
+      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+      setDarkMode: (isDark) => set({ isDarkMode: isDark }),
+    }),
+    {
+      name: 'dark-mode-storage',
+    }
+  )
 )

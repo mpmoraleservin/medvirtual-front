@@ -566,7 +566,7 @@ function ClientsAdvancedTable({
         {/* Mobile Cards */}
         <div className="flex flex-col gap-3 sm:hidden">
           {paginatedData.map((item) => (
-            <div key={item.id} className="rounded-lg border bg-background p-4 flex flex-col gap-2 shadow-sm">
+            <div key={item.id} className="rounded-lg border bg-popover border-border dark:border-white/10 p-4 flex flex-col gap-2 shadow-lg hover:shadow-xl transition-shadow">
               <div className="flex items-center gap-3">
                 <div className="flex-1">
                   {columns.slice(0, 2).map((column) => (
@@ -797,12 +797,12 @@ export default function ClientsPage() {
   };
 
   // Define columns after the functions are defined
-  const columns = [
-    {
-      key: 'name' as keyof Client,
-      header: 'Company Name',
-      sortable: true,
-      searchable: true,
+const columns = [
+  {
+    key: 'name' as keyof Client,
+    header: 'Company Name',
+    sortable: true,
+    searchable: true,
       type: 'avatar' as const,
     },
     {
@@ -812,26 +812,26 @@ export default function ClientsPage() {
       searchable: true,
       type: 'status' as const,
       statusColors,
-    },
-    {
-      key: 'industry' as keyof Client,
-      header: 'Industry',
-      sortable: true,
-      searchable: true,
+  },
+  {
+    key: 'industry' as keyof Client,
+    header: 'Industry',
+    sortable: true,
+    searchable: true,
       type: 'status' as const,
       statusColors,
-    },
-    {
-      key: 'contact' as keyof Client,
-      header: 'Contact Person',
-      sortable: true,
-      searchable: true,
-    },
-    {
-      key: 'status' as keyof Client,
-      header: 'Status',
-      sortable: true,
-      type: 'status' as const,
+  },
+  {
+    key: 'contact' as keyof Client,
+    header: 'Contact Person',
+    sortable: true,
+    searchable: true,
+  },
+  {
+    key: 'status' as keyof Client,
+    header: 'Status',
+    sortable: true,
+    type: 'status' as const,
       statusColors,
     },
   ];
@@ -977,7 +977,7 @@ export default function ClientsPage() {
                     </TabsList>
                     <TabsContent value="organization">
                       <div className="flex flex-col gap-4">
-                        <Card className="p-3 flex flex-col gap-1">
+                        <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
                           <div className="font-semibold">Company Details</div>
                           <div className="text-sm text-muted-foreground space-y-2">
                             <div className="flex items-center gap-2">
@@ -1023,7 +1023,7 @@ export default function ClientsPage() {
                           </div>
                         </Card>
                         {selectedClient.specialties && selectedClient.specialties.length > 0 && (
-                          <Card className="p-3 flex flex-col gap-1">
+                          <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
                             <div className="font-semibold">Specialties</div>
                             <div className="flex flex-wrap gap-2">
                               {selectedClient.specialties.map((specialty) => (
@@ -1038,7 +1038,7 @@ export default function ClientsPage() {
                       <div className="flex flex-col gap-2">
                         {selectedClient.services && selectedClient.services.length > 0 ? (
                           selectedClient.services.map((service, idx) => (
-                            <Card key={idx} className="p-3 flex flex-col gap-1">
+                            <Card key={idx} className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
                               <div className="font-semibold">{service}</div>
       </Card>
                           ))

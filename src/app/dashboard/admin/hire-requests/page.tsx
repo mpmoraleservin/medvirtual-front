@@ -515,7 +515,7 @@ export default function HireRequestsWorkflow() {
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
     return (
-      <div className={`rounded-lg px-3 py-1 text-sm font-semibold flex items-center gap-2 ${timeLeft === 0 ? 'bg-red-100 text-red-700' : 'bg-chart-4/10 text-chart-4'}`}>
+              <div className={`rounded-lg px-3 py-1 text-sm font-semibold flex items-center gap-2 ${timeLeft === 0 ? 'bg-destructive/10 text-destructive' : 'bg-chart-4/10 text-chart-4'}`}>
         <Clock className="w-4 h-4" />
         {timeLeft === 0 ? 'Expired' : `${hours}h ${minutes}m ${seconds}s`}
       </div>
@@ -732,7 +732,7 @@ export default function HireRequestsWorkflow() {
                                 {...provided.dragHandleProps}
                                 className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
                               >
-                                <Card className="p-4 flex flex-col gap-2 bg-white border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
                                   {/* Header with view button and action menu on top right */}
                                   <div className="flex items-center justify-between mb-4">
                                     <div className="flex flex-col gap-0.5">
@@ -806,8 +806,8 @@ export default function HireRequestsWorkflow() {
                                     {/* Placement Complete: mostrar ganador */}
                                     {request.status === "Placement Complete" && request.winner && (
                                       <div className="flex items-center gap-2">
-                                        <CheckCircle className="w-5 h-5 text-green-600" />
-                                        <span className="font-semibold text-green-700">Winner: {request.winner.name}</span>
+                                        <CheckCircle className="w-5 h-5 text-chart-2" />
+                                        <span className="font-semibold text-chart-2">Winner: {request.winner.name}</span>
                                       </div>
                                     )}
                                   </div>

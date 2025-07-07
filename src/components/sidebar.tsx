@@ -10,13 +10,13 @@ import {
   UserPlus,
   Ticket,
   Users2,
-  PanelLeft,
   ClipboardList,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { DarkModeToggle } from "@/components/ui/dark-mode-toggle";
 
 type UserRole = "PROSPECT" | "PROSPECT_V2" | "ACTIVE_CLIENT" | "ADMIN";
 
@@ -98,11 +98,6 @@ const NAV_ITEMS: NavItem[] = [
     icon: <ClipboardList size={20} />, roles: ["ADMIN"]
   },
   {
-    href: "/dashboard/admin/panels",
-    label: "Candidate Panels",
-    icon: <PanelLeft size={20} />, roles: ["ADMIN"]
-  },
-  {
     href: "/dashboard/admin/candidates",
     label: "All Candidates",
     icon: <UserPlus size={20} />, roles: ["ADMIN"]
@@ -169,6 +164,11 @@ export default function Sidebar({ userRole, className }: SidebarProps) {
         </nav>
       </div>
       <div className="w-full flex flex-col gap-2">
+        <Separator />
+        {/* Dark Mode Toggle */}
+        <div className="px-2">
+          <DarkModeToggle />
+        </div>
         <Separator />
         <Link href={getProfileLink()} className="flex items-center justify-center p-2 hover:bg-muted transition-colors">
           <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-base flex items-center justify-center mr-4">

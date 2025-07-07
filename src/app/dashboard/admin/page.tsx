@@ -1,7 +1,7 @@
 import { AdvancedTable, TableColumn } from "@/components/ui/advanced-table"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ClipboardList, CalendarCheck, Hourglass, Ticket, Users, TrendingUp, AlertTriangle } from "lucide-react"
+import { ClipboardList, CalendarCheck, Hourglass, Ticket, TrendingUp, AlertTriangle } from "lucide-react"
 import React from "react"
 import Link from "next/link"
 
@@ -114,49 +114,49 @@ const StatsOverview = () => {
       {/* New Requests */}
       <Card className="p-6 border border-border flex flex-col justify-between rounded-2xl shadow-none">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#E6F2F7]">
-            <ClipboardList className="w-6 h-6 text-[#217DAF]" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-accent">
+            <ClipboardList className="w-6 h-6 text-primary" />
           </div>
-          <span className="text-base font-medium text-[#6B7280]">New Requests</span>
+          <span className="text-base font-medium text-muted-foreground">New Requests</span>
         </div>
         <div className="flex w-full justify-end">
-          <span className="text-3xl font-bold text-[#18181B]">{dashboardStats.newHireRequests}</span>
+          <span className="text-3xl font-bold text-foreground">{dashboardStats.newHireRequests}</span>
         </div>
       </Card>
       {/* Panels to Schedule */}
       <Card className="p-6 border border-border flex flex-col justify-between rounded-2xl shadow-none">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#FDE7F2]">
-            <CalendarCheck className="w-6 h-6 text-[#E15BA6]" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-chart-3/10">
+            <CalendarCheck className="w-6 h-6 text-chart-3" />
           </div>
-          <span className="text-base font-medium text-[#6B7280]">Panels to Schedule</span>
+          <span className="text-base font-medium text-muted-foreground">Panels to Schedule</span>
         </div>
         <div className="flex w-full justify-end">
-          <span className="text-3xl font-bold text-[#18181B]">{dashboardStats.panelsToSchedule}</span>
+          <span className="text-3xl font-bold text-foreground">{dashboardStats.panelsToSchedule}</span>
         </div>
       </Card>
       {/* Pending Decisions */}
       <Card className="p-6 border border-border flex flex-col justify-between rounded-2xl shadow-none">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#E6F7F2]">
-            <Hourglass className="w-6 h-6 text-[#3AC7A7]" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-chart-4/10">
+            <Hourglass className="w-6 h-6 text-chart-4" />
           </div>
-          <span className="text-base font-medium text-[#6B7280]">Pending Decisions</span>
+          <span className="text-base font-medium text-muted-foreground">Pending Decisions</span>
         </div>
         <div className="flex w-full justify-end">
-          <span className="text-3xl font-bold text-[#18181B]">{dashboardStats.pendingClientDecisions}</span>
+          <span className="text-3xl font-bold text-foreground">{dashboardStats.pendingClientDecisions}</span>
         </div>
       </Card>
       {/* Open Tickets */}
       <Card className="p-6 border border-border flex flex-col justify-between rounded-2xl shadow-none">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#FDE7E7]">
-            <Ticket className="w-6 h-6 text-[#E13B3B]" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10">
+            <Ticket className="w-6 h-6 text-destructive" />
           </div>
-          <span className="text-base font-medium text-[#6B7280]">Open Tickets</span>
+          <span className="text-base font-medium text-muted-foreground">Open Tickets</span>
         </div>
         <div className="flex w-full justify-end">
-          <span className="text-3xl font-bold text-[#18181B]">{dashboardStats.openSupportTickets}</span>
+          <span className="text-3xl font-bold text-foreground">{dashboardStats.openSupportTickets}</span>
         </div>
       </Card>
     </div>
@@ -182,21 +182,6 @@ const QuickActions = () => {
             </div>
           </Card>
         </Link>
-        
-        <Link href="/dashboard/admin/panels">
-          <Card className="p-6 border border-border hover:shadow-md transition-shadow cursor-pointer">
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="p-3 bg-chart-3/10 rounded-lg">
-                <Users className="w-6 h-6 text-chart-3" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground">Candidate Panels</h3>
-                <p className="text-sm text-muted-foreground">Schedule interviews</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-        
         <Link href="/dashboard/admin/candidates">
           <Card className="p-6 border border-border hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex flex-col items-center text-center gap-3">
@@ -210,7 +195,6 @@ const QuickActions = () => {
             </div>
           </Card>
         </Link>
-        
         <Link href="/dashboard/admin/tickets">
           <Card className="p-6 border border-border hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex flex-col items-center text-center gap-3">

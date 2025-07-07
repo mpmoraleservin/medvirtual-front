@@ -7,14 +7,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { isValidEmail } from "@/utils/validators";
-import { useViewportStore } from "@/stores/viewport";
-
 export default function Login() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-
-    const { viewport, setViewport } = useViewportStore()
+    const [viewport, setViewport] = useState(0)
 
     const validateInputs = (email: string, password: string) => {
         return isValidEmail(email) && password.length > 8
@@ -26,10 +23,12 @@ export default function Login() {
 
     useEffect(() => {
         setViewport(getViewportWidth())
-        window.addEventListener("resize", () => {
+        const handleResize = () => {
             setViewport(getViewportWidth())
-        })
-    }, [setViewport])
+        }
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
 
     return (
         <div className="relative w-full max-w-[1440px] flex flex-col  items-center p-4">
