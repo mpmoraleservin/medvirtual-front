@@ -5,22 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck, AlertCircle, CheckSquare, Users, MoreHorizontal, ArrowLeft, RotateCcw } from "lucide-react";
+import { Eye, Calendar, User, Clock, ArrowRight, CheckCircle, XCircle, Filter, X, UserCheck, AlertCircle, CheckSquare, MoreHorizontal, ArrowLeft, RotateCcw, Trash, Edit } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar } from "@/components/ui/avatar";
 import { AdvancedTable, TableColumn } from '@/components/ui/advanced-table';
+import { AnimatePresence, motion } from "framer-motion";
+import { Textarea } from '@/components/ui/textarea';
+// import { useViewportStore } from '@/stores/viewport';
 
 
 // Import the create-panel component dynamically (without SSR)
-const CreatePanelModal = dynamic(() => import('./[id]/create-panel/page'), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
-});
+// const CreatePanelModal = dynamic(() => import('./[id]/create-panel/page'), {
+//   ssr: false,
+//   loading: () => <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+// });
 
 // --- TypeScript interfaces ---
 interface Candidate {
@@ -28,6 +30,9 @@ interface Candidate {
   name: string;
   role: string;
   avatarUrl?: string;
+  experience?: string;
+  languages?: string[];
+  specializations?: string[];
 }
 
 interface AICandidate {
@@ -76,7 +81,7 @@ interface HireRequest {
   requiredSkills?: string[];
   keyResponsibilities?: string;
   decisionDeadline?: string;
-  winner?: Candidate;
+  winner?: string | null;
 }
 
 // --- Mock Data ---
@@ -86,6 +91,11 @@ const mockCandidates: Candidate[] = [
   { id: '3', name: 'Emily Brown', role: 'Lab Technician' },
   { id: '4', name: 'Carlos Ruiz', role: 'Physician Assistant' },
   { id: '5', name: 'Sofia Martinez', role: 'Receptionist' },
+  { id: '6', name: 'David Kim', role: 'X-Ray Technician' },
+  { id: '7', name: 'Maria Lopez', role: 'Billing Coordinator' },
+  { id: '8', name: 'Patricia Gomez', role: 'Medical Biller' },
+  { id: '9', name: 'John Smith', role: 'Nurse Practitioner' },
+  { id: '10', name: 'Lisa Anderson', role: 'Registered Nurse' },
 ];
 
 // Fecha base: hoy es 2025-06-25
@@ -107,10 +117,12 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
     panelDate = formatDate(d);
   }
 
-  // interviewDate: 5-10 days after dateSubmitted, only for some
+  // interviewDate: 5-10 days after dateSubmitted, para todos los Interview Scheduled
   let interviewDate: string | undefined = undefined;
   let interviewTime: string | undefined = undefined;
-  if (i % 4 === 0) {
+  const status = (["New", "Sourcing", "Panel Ready", "Interview Scheduled", "Awaiting Decision", "Placement Complete", "Canceled"] as HireRequest["status"][])[i % 7];
+  
+  if (status === "Interview Scheduled") {
     const d = new Date(dateSubmitted);
     d.setDate(d.getDate() + 5 + (i % 6));
     interviewDate = formatDate(d);
@@ -123,13 +135,30 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
   const locations = ["Miami, FL", "Orlando, FL", "Tampa, FL", "Jacksonville, FL", "Fort Lauderdale, FL"];
   const requestedBys = ["Dr. Smith", "Dr. Lee", "Dr. Patel", "Dr. Gomez", "Dr. Johnson"];
 
+  // Asignar ganador solo para Placement Complete
+  const winner = status === "Placement Complete" ? `panel-${(i % 5) + 1}` : undefined;
+  
+  // Asignar decisionDeadline solo para Awaiting Decision (1-24 horas en el futuro, excepto una que está expired)
+  let decisionDeadline: string | undefined = undefined;
+  if (status === "Awaiting Decision") {
+    const deadline = new Date();
+    if (i % 3 === 0) {
+      // Una de cada 3 tarjetas Awaiting Decision estará expired (deadline en el pasado)
+      deadline.setHours(deadline.getHours() - 2); // 2 horas en el pasado
+    } else {
+      // Las demás tendrán deadlines futuros
+      deadline.setHours(deadline.getHours() + 1 + (i % 24)); // 1-24 horas en el futuro
+    }
+    decisionDeadline = deadline.toISOString();
+  }
+
   return {
     id: (i + 1).toString(),
     clientName: ["Dr. Smith", "Health Clinic", "Wellness Center", "Family Care", "Pediatrics Group"][i % 5],
     role: ["Registered Nurse", "Medical Assistant", "Lab Technician", "Receptionist", "Physician"][i % 5],
     dateSubmitted: formatDate(dateSubmitted),
     assignedTo: ["Admin A", "Admin B", "Admin C", "Unassigned"][i % 4],
-    status: (["New", "Sourcing", "Panel Ready", "Interview Scheduled", "Awaiting Decision", "Placement Complete", "Canceled"] as HireRequest["status"][])[i % 7],
+    status,
     candidatesCount: 7 + (i % 5),
     panelDate,
     interviewDate,
@@ -144,8 +173,8 @@ const hireRequests: HireRequest[] = Array.from({ length: 20 }).map((_, i) => {
     roleTitle: ["Registered Nurse", "Medical Assistant", "Lab Technician", "Receptionist", "Physician"][i % 5],
     requiredSkills: ["Teamwork", "Empathy", "Attention to Detail", "Communication", "Problem Solving"].slice(0, (i % 5) + 1),
     keyResponsibilities: `Key responsibilities for this role include: ${["Patient care", "Lab work", "Reception duties", "Medical assistance", "Scheduling"][i % 5]}.`,
-    decisionDeadline: i % 2 === 0 ? formatDate(new Date(today.getTime() + (i % 10) * 24 * 60 * 60 * 1000)) : undefined,
-    winner: i % 2 === 0 ? mockCandidates[Math.floor(Math.random() * mockCandidates.length)] : undefined,
+    decisionDeadline,
+    winner,
   };
 });
 
@@ -341,11 +370,7 @@ const AI_TOP_10 = [
 const aiTop10Columns: TableColumn<AICandidate>[] = [
   { key: 'rank', header: '#', type: 'text' },
   { key: 'name', header: 'Name', searchable: true, type: 'text' },
-  { key: 'role', header: 'Role', searchable: true, type: 'text' },
   { key: 'matchScore', header: 'Match %', type: 'text' },
-  { key: 'experience', header: 'Experience', type: 'text' },
-  { key: 'location', header: 'Location', type: 'text' },
-  { key: 'availability', header: 'Availability', type: 'text' },
 ];
 
 // Configuración de columnas y filtros para la talent pool (igual que All Candidates)
@@ -353,10 +378,10 @@ const candidateTableColumns: TableColumn<Candidate>[] = [
   { key: "name", header: "Name", searchable: true, type: "text" },
   { key: "role", header: "Role", searchable: true, type: "text" },
 ];
-const candidateTableFilters = [
-  { key: "name" as keyof Candidate, label: "Name", type: "text" as const, placeholder: "e.g. Ana" },
-  { key: "role" as keyof Candidate, label: "Role", type: "text" as const, placeholder: "e.g. Nurse" },
-];
+// const candidateTableFilters = [
+//   { key: "name" as keyof Candidate, label: "Name", type: "text" as const, placeholder: "e.g. Ana" },
+//   { key: "role" as keyof Candidate, label: "Role", type: "text" as const, placeholder: "e.g. Nurse" },
+// ];
 
 
 
@@ -378,8 +403,8 @@ export default function HireRequestsWorkflow() {
     return allStatuses;
   });
   const [showColumnDialog, setShowColumnDialog] = useState(false);
-  const [panelModalOpen, setPanelModalOpen] = useState(false);
-  const [panelRequestId, setPanelRequestId] = useState<string | null>(null);
+  // const [panelModalOpen, setPanelModalOpen] = useState(false);
+  // const [panelRequestId, setPanelRequestId] = useState<string | null>(null);
   const [candidateModal, setCandidateModal] = useState<{ open: boolean, candidate: (Candidate | AICandidate) | null }>({ open: false, candidate: null });
   const [reassignModal, setReassignModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
   const [scheduleModal, setScheduleModal] = useState<{ open: boolean, request: HireRequest | null }>({ open: false, request: null });
@@ -394,6 +419,73 @@ export default function HireRequestsWorkflow() {
   const [decisionDeadline, setDecisionDeadline] = useState<string>("");
   const [panelReadyVisible, setPanelReadyVisible] = useState<boolean>(true);
   const [editPanelCandidates, setEditPanelCandidates] = useState<string[]>([]);
+
+  // Start Sourcing Modal State
+  const [startSourcingModal, setStartSourcingModal] = useState<{ open: boolean; request: HireRequest | null }>({ open: false, request: null });
+  const [panelCandidates, setPanelCandidates] = useState<Candidate[]>([]);
+  const [candidateSearch, setCandidateSearch] = useState<string>("");
+
+  // Mock data for candidate browser (30+ candidates)
+  const allCandidates: Candidate[] = Array.from({ length: 35 }).map((_, i) => ({
+    id: (i + 1).toString(),
+    name: [
+      "Ana Torres", "Luis Fernández", "Emily Brown", "Carlos Ruiz", "Sofia Martinez",
+      "David Kim", "Maria Lopez", "Patricia Gomez", "John Smith", "Lisa Anderson",
+      "Michael Johnson", "Sarah Wilson", "Robert Davis", "Jennifer Garcia", "William Rodriguez",
+      "Linda Martinez", "James Anderson", "Barbara Taylor", "Richard Moore", "Elizabeth Jackson",
+      "Thomas White", "Susan Harris", "Christopher Martin", "Jessica Thompson", "Daniel Garcia",
+      "Amanda Martinez", "Mark Robinson", "Stephanie Clark", "Paul Lewis", "Nicole Lee",
+      "Kevin Walker", "Rebecca Hall", "Brian Allen", "Sharon Young", "Jason King"
+    ][i],
+    role: [
+      "Registered Nurse", "Medical Assistant", "Lab Technician", "Receptionist", "Physician Assistant",
+      "X-Ray Technician", "Billing Coordinator", "Medical Biller", "Nurse Practitioner", "Registered Nurse",
+      "Lab Technician", "Medical Assistant", "Receptionist", "Registered Nurse", "Physician Assistant",
+      "Medical Biller", "Lab Technician", "Receptionist", "Registered Nurse", "Medical Assistant",
+      "Physician Assistant", "Lab Technician", "Receptionist", "Medical Assistant", "Registered Nurse",
+      "Medical Biller", "Lab Technician", "Receptionist", "Medical Assistant", "Registered Nurse",
+      "Physician Assistant", "Lab Technician", "Receptionist", "Medical Assistant", "Registered Nurse"
+    ][i],
+    experience: `${2 + (i % 8)} years`,
+    languages: ["English", "Spanish", "French", "German"].filter((_, idx) => (i + idx) % 2 === 0),
+    specializations: ["Pediatrics", "Emergency Care", "Family Medicine", "Internal Medicine", "Surgery"].filter((_, idx) => (i + idx) % 2 === 0),
+  }));
+
+  // Filtered candidates based on search
+  const filteredCandidates = useMemo(() => {
+    return allCandidates.filter(candidate => 
+      !panelCandidates.some(pc => pc.id === candidate.id) &&
+      (candidate.name.toLowerCase().includes(candidateSearch.toLowerCase()) ||
+       candidate.role.toLowerCase().includes(candidateSearch.toLowerCase()) ||
+       (candidate.languages?.some(lang => lang.toLowerCase().includes(candidateSearch.toLowerCase())) || false) ||
+       (candidate.specializations?.some(spec => spec.toLowerCase().includes(candidateSearch.toLowerCase())) || false))
+    );
+  }, [candidateSearch, panelCandidates, allCandidates]);
+
+  // Add candidate to panel
+  const handleAddToPanel = (candidate: Candidate) => {
+    if (panelCandidates.length < 5 && !panelCandidates.some(c => c.id === candidate.id)) {
+      setPanelCandidates([...panelCandidates, candidate]);
+    }
+  };
+
+  // Remove candidate from panel
+  const handleRemoveFromPanel = (candidateId: string) => {
+    setPanelCandidates(panelCandidates.filter(c => c.id !== candidateId));
+  };
+
+  // Confirm panel and change status to Sourcing
+  const handleConfirmPanel = () => {
+    if (startSourcingModal.request) {
+      setRequests(prev => prev.map(r => 
+        r.id === startSourcingModal.request!.id 
+          ? { ...r, status: "Sourcing", candidates: panelCandidates }
+          : r
+      ));
+      setStartSourcingModal({ open: false, request: null });
+      setPanelCandidates([]);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -445,26 +537,101 @@ export default function HireRequestsWorkflow() {
     const destStatus = destination.droppableId;
     if (sourceStatus === destStatus && source.index === destination.index) return;
 
-    setRequests(prev => {
-      // Find the dragged request
-      const dragged = prev.find(r => r.id === draggableId);
-      if (!dragged) return prev;
-      // Remove from old position
-      const newList = prev.filter(r => r.id !== draggableId);
-      // Update status
-      const updated = { ...dragged, status: destStatus as HireRequest["status"] };
-      // Find the index to insert in destination
-      const destRequests = newList.filter(r => r.status === destStatus);
-      const before = newList.filter(r => r.status !== destStatus);
-      destRequests.splice(destination.index, 0, updated);
-      return [
-        ...before,
-        ...destRequests
-      ];
-    });
+    console.log('Drag detected:', { sourceStatus, destStatus, draggableId });
+
+    // Find the dragged request
+    const dragged = requests.find(r => r.id === draggableId);
+    if (!dragged) return;
+
+    // Check if this transition requires confirmation
+    const requiresConfirmation = checkTransitionRequiresConfirmation(sourceStatus, destStatus);
+    console.log('Requires confirmation:', requiresConfirmation);
+    
+    if (requiresConfirmation) {
+      // Show appropriate confirmation modal based on transition
+      console.log('Showing confirmation modal for transition:', sourceStatus, '->', destStatus);
+      showTransitionConfirmation(dragged, sourceStatus, destStatus);
+    } else {
+      // Direct status change
+      console.log('Direct status change:', sourceStatus, '->', destStatus);
+      updateRequestStatus(dragged.id, destStatus as HireRequest["status"]);
+    }
   }
 
+  // Function to check if a transition requires confirmation
+  const checkTransitionRequiresConfirmation = (sourceStatus: string, destStatus: string): boolean => {
+    // Simplified list of transitions that need confirmation
+    const transitionsRequiringConfirmation = [
+      // Cancel transitions
+      { from: "Pending Signature", to: "Canceled" },
+      { from: "New", to: "Canceled" },
+      { from: "Sourcing", to: "Canceled" },
+      { from: "Panel Ready", to: "Canceled" },
+      { from: "Interview Scheduled", to: "Canceled" },
+      { from: "Awaiting Decision", to: "Canceled" },
+      // Mark as Complete transitions
+      { from: "Panel Ready", to: "Placement Complete" },
+      { from: "Interview Scheduled", to: "Placement Complete" },
+      { from: "Awaiting Decision", to: "Placement Complete" },
+      // Back to transitions
+      { from: "Sourcing", to: "New" },
+      { from: "Panel Ready", to: "Sourcing" },
+      { from: "Interview Scheduled", to: "Panel Ready" },
+      { from: "Awaiting Decision", to: "Panel Ready" },
+      { from: "Placement Complete", to: "Panel Ready" },
+      { from: "Placement Complete", to: "New" },
+      { from: "Canceled", to: "New" },
+      { from: "Canceled", to: "Sourcing" },
+    ];
 
+    const requiresConfirmation = transitionsRequiringConfirmation.some(
+      transition => transition.from === sourceStatus && transition.to === destStatus
+    );
+    
+    console.log('Checking transition:', sourceStatus, '->', destStatus, 'requires confirmation:', requiresConfirmation);
+    return requiresConfirmation;
+  };
+
+  // Function to show appropriate confirmation modal
+  const showTransitionConfirmation = (request: HireRequest, sourceStatus: string, destStatus: string) => {
+    console.log('Showing confirmation for:', sourceStatus, '->', destStatus);
+    
+    // Cancel transitions
+    if (destStatus === "Canceled") {
+      console.log('Opening cancel modal');
+      setCancelModal({ open: true, requestId: request.id });
+    }
+    // Mark as Complete transitions
+    else if (destStatus === "Placement Complete") {
+      console.log('Opening complete modal');
+      setCompleteModal({ open: true, requestId: request.id, selectedWinner: request.winner || null });
+    }
+    // Back to transitions
+    else if (destStatus === "New" && ["Sourcing", "Placement Complete", "Canceled"].includes(sourceStatus)) {
+      console.log('Opening back modal to New');
+      setBackModal({ open: true, requestId: request.id, targetStatus: "New" });
+    } else if (destStatus === "Sourcing" && ["Panel Ready", "Canceled"].includes(sourceStatus)) {
+      console.log('Opening back modal to Sourcing');
+      setBackModal({ open: true, requestId: request.id, targetStatus: "Sourcing" });
+    } else if (destStatus === "Panel Ready" && ["Interview Scheduled", "Awaiting Decision", "Placement Complete"].includes(sourceStatus)) {
+      console.log('Opening back modal to Panel Ready');
+      setBackModal({ open: true, requestId: request.id, targetStatus: "Panel Ready" });
+    }
+    // Direct transitions (no confirmation needed)
+    else {
+      console.log('Direct transition, updating status');
+      updateRequestStatus(request.id, destStatus as HireRequest["status"]);
+    }
+  };
+
+  // Function to update request status directly
+  const updateRequestStatus = (requestId: string, newStatus: HireRequest["status"]) => {
+    setRequests(prev => prev.map(request => 
+      request.id === requestId 
+        ? { ...request, status: newStatus }
+        : request
+    ));
+  };
 
   const getStatusIcon = (status: HireRequestStatus) => {
     switch (status) {
@@ -589,61 +756,206 @@ export default function HireRequestsWorkflow() {
       case "Pending Signature":
         actions.push(
           { label: "Move to New", action: () => handleStatusChange(request.id, "New"), icon: <ArrowRight className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "New":
         actions.push(
-          { label: "Start Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <ArrowRight className="w-4 h-4" /> },
-          { label: "Create Interview Panel", action: () => { setPanelModalOpen(true); setPanelRequestId(request.id); }, icon: <Users className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Start Sourcing", action: () => { setStartSourcingModal({ open: true, request }); setPanelCandidates([]); }, icon: <ArrowRight className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "Sourcing":
         actions.push(
-          { label: "Back to New", action: () => handleStatusChange(request.id, "New"), icon: <ArrowLeft className="w-4 h-4" /> },
-          { label: "See Panel", action: () => setSeePanelModal({ open: true, request }), icon: <Eye className="w-4 h-4" /> },
+          { label: "Back to New", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "New" }), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Edit Panel", action: () => { setEditPanelModal({ open: true, request }); setPanelCandidates([]); }, icon: <Edit className="w-4 h-4" /> },
           { label: "Mark Panel Ready", action: () => setPanelReadyModal({ open: true, request }), icon: <CheckCircle className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "Panel Ready":
         actions.push(
-          { label: "Back to Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <ArrowLeft className="w-4 h-4" /> },
-          { label: "See Panel", action: () => setSeePanelModal({ open: true, request }), icon: <Eye className="w-4 h-4" /> },
+          { label: "Back to Sourcing", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "Sourcing" }), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "View Panel", action: () => setViewPanelModal({ open: true, request }), icon: <Eye className="w-4 h-4" /> },
           { label: "Schedule Interview", action: () => setScheduleModal({ open: true, request }), icon: <Calendar className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Awaiting Decision", action: () => setAwaitingDecisionModal({ open: true, request }), icon: <Clock className="w-4 h-4" /> },
+          { label: "Mark as Complete", action: () => setCompleteModal({ open: true, requestId: request.id, selectedWinner: request.winner || null }), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "Interview Scheduled":
         actions.push(
-          { label: "Back to Panel Ready", action: () => handleStatusChange(request.id, "Panel Ready"), icon: <ArrowLeft className="w-4 h-4" /> },
-          { label: "Ready for Decision", action: () => setReadyDecisionModal({ open: true, request }), icon: <ArrowRight className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Back to Panel Ready", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "Panel Ready" }), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Awaiting Decision", action: () => setAwaitingDecisionModal({ open: true, request }), icon: <Clock className="w-4 h-4" /> },
+          { label: "Mark as Complete", action: () => setCompleteModal({ open: true, requestId: request.id, selectedWinner: request.winner || null }), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "Awaiting Decision":
         actions.push(
-          { label: "Back to Interview Scheduled", action: () => handleStatusChange(request.id, "Interview Scheduled"), icon: <ArrowLeft className="w-4 h-4" /> },
-          { label: "Mark Complete", action: () => handleStatusChange(request.id, "Placement Complete"), icon: <CheckCircle className="w-4 h-4" /> },
-          { label: "Cancel Request", action: () => handleStatusChange(request.id, "Canceled"), icon: <XCircle className="w-4 h-4" /> }
+          { label: "Back to Panel Ready", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "Panel Ready" }), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Allow More Time", action: () => setAwaitingDecisionModal({ open: true, request }), icon: <Clock className="w-4 h-4" /> },
+          { label: "Mark as Complete", action: () => setCompleteModal({ open: true, requestId: request.id, selectedWinner: request.winner || null }), icon: <CheckCircle className="w-4 h-4" /> },
+          { label: "Cancel Request", action: () => setCancelModal({ open: true, requestId: request.id }), icon: <XCircle className="w-4 h-4" /> }
         );
         break;
       case "Placement Complete":
         actions.push(
-          { label: "Back to Awaiting Decision", action: () => handleStatusChange(request.id, "Awaiting Decision"), icon: <ArrowLeft className="w-4 h-4" /> },
-          { label: "Reopen as New", action: () => handleStatusChange(request.id, "New"), icon: <RotateCcw className="w-4 h-4" /> }
+          { label: "Back to Panel Ready", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "Panel Ready" }), icon: <ArrowLeft className="w-4 h-4" /> },
+          { label: "Change Winner", action: () => setChangeWinnerModal({ open: true, requestId: request.id, selectedWinner: request.winner || null }), icon: <UserCheck className="w-4 h-4" /> },
+          { label: "Reopen as New", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "New" }), icon: <RotateCcw className="w-4 h-4" /> }
         );
         break;
       case "Canceled":
         actions.push(
-          { label: "Reopen as New", action: () => handleStatusChange(request.id, "New"), icon: <RotateCcw className="w-4 h-4" /> },
-          { label: "Reopen as Sourcing", action: () => handleStatusChange(request.id, "Sourcing"), icon: <RotateCcw className="w-4 h-4" /> }
+          { label: "Reopen as New", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "New" }), icon: <RotateCcw className="w-4 h-4" /> },
+          { label: "Reopen as Sourcing", action: () => setBackModal({ open: true, requestId: request.id, targetStatus: "Sourcing" }), icon: <RotateCcw className="w-4 h-4" /> }
         );
         break;
     }
     
     return actions;
+  };
+
+  const [cancelModal, setCancelModal] = useState<{ open: boolean; requestId: string | null }>({ open: false, requestId: null });
+  const [completeModal, setCompleteModal] = useState<{ open: boolean; requestId: string | null; selectedWinner: string | null }>({ open: false, requestId: null, selectedWinner: null });
+
+  // Agrega la función para editar campos
+  // const handleFieldEdit = (field: keyof HireRequest, value: string | number | string[] | undefined) => {
+  //   setRequests(prev =>
+  //     prev.map(r =>
+  //       r.id === selectedRequest?.id
+  //         ? { ...r, [field]: value }
+  //         : r
+  //     )
+  //   );
+  //   setSelectedRequest(prev =>
+  //     prev ? { ...prev, [field]: value } : prev
+  //   );
+  // };
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBuffer, setEditBuffer] = useState<HireRequest | null>(null);
+
+  const startEdit = () => {
+    if (!selectedRequest) return;
+    setEditBuffer({
+      id: selectedRequest.id,
+      clientName: selectedRequest.clientName || '',
+      role: selectedRequest.role || '',
+      dateSubmitted: selectedRequest.dateSubmitted || '',
+      assignedTo: selectedRequest.assignedTo || '',
+      status: selectedRequest.status,
+      candidatesCount: selectedRequest.candidatesCount,
+      panelDate: selectedRequest.panelDate,
+      interviewDate: selectedRequest.interviewDate,
+      interviewTime: selectedRequest.interviewTime,
+      candidates: selectedRequest.candidates,
+      description: selectedRequest.description,
+      department: selectedRequest.department,
+      location: selectedRequest.location || '',
+      requestedBy: selectedRequest.requestedBy || '',
+      practiceArea: selectedRequest.practiceArea || '',
+      scheduleNeeds: selectedRequest.scheduleNeeds || '',
+      roleTitle: selectedRequest.roleTitle || '',
+      requiredSkills: selectedRequest.requiredSkills || [],
+      keyResponsibilities: selectedRequest.keyResponsibilities || '',
+      decisionDeadline: selectedRequest.decisionDeadline,
+      winner: selectedRequest.winner,
+    });
+    setIsEditing(true);
+  };
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setEditBuffer(null);
+  };
+  const saveEdit = () => {
+    if (!editBuffer) return;
+    setRequests(prev => prev.map(r => r.id === editBuffer.id ? { ...editBuffer } : r));
+    setSelectedRequest({ ...editBuffer });
+    setIsEditing(false);
+    setEditBuffer(null);
+  };
+  const handleEditBufferChange = (field: keyof HireRequest, value: string | number | string[] | undefined) => {
+    setEditBuffer(prev => prev ? { ...prev, [field]: value } : prev);
+  };
+
+  const [backModal, setBackModal] = useState<{ open: boolean, requestId: string | null, targetStatus: HireRequestStatus | null }>({ open: false, requestId: null, targetStatus: null });
+
+  // Mock panel candidates data
+  const mockPanelCandidates: Candidate[] = [
+    { id: 'panel-1', name: 'Ana Torres', role: 'Registered Nurse', experience: '5' },
+    { id: 'panel-2', name: 'Luis Fernández', role: 'Medical Assistant', experience: '3' },
+    { id: 'panel-3', name: 'Emily Brown', role: 'Lab Technician', experience: '4' },
+    { id: 'panel-4', name: 'Carlos Ruiz', role: 'Physician Assistant', experience: '6' },
+    { id: 'panel-5', name: 'Sofia Martinez', role: 'Receptionist', experience: '2' },
+  ];
+
+  // Agrega el modal de Edit Panel
+  const [editPanelModal, setEditPanelModal] = useState<{ open: boolean; request: HireRequest | null }>({ open: false, request: null });
+
+  const handleConfirmEditPanel = () => {
+    if (editPanelModal.request) {
+      setRequests(prev => prev.map(r => 
+        r.id === editPanelModal.request!.id 
+          ? { ...r, candidates: panelCandidates }
+          : r
+      ));
+      setEditPanelModal({ open: false, request: null });
+      setPanelCandidates([]);
+    }
+  };
+
+  // Agrega el modal de View Panel
+  const [viewPanelModal, setViewPanelModal] = useState<{ open: boolean; request: HireRequest | null }>({ open: false, request: null });
+
+  // Agrega el modal de Awaiting Decision
+  const [awaitingDecisionModal, setAwaitingDecisionModal] = useState<{ open: boolean; request: HireRequest | null }>({ open: false, request: null });
+  const [decisionDeadlineDate, setDecisionDeadlineDate] = useState<string>("");
+  const [decisionDeadlineTime, setDecisionDeadlineTime] = useState<string>("");
+
+  // Función para manejar la confirmación de Awaiting Decision
+  const handleAwaitingDecisionConfirm = () => {
+    if (awaitingDecisionModal.request && decisionDeadlineDate && decisionDeadlineTime) {
+      const deadline = `${decisionDeadlineDate}T${decisionDeadlineTime}`;
+      setRequests(prev => prev.map(r => 
+        r.id === awaitingDecisionModal.request!.id 
+          ? { ...r, status: "Awaiting Decision", decisionDeadline: deadline }
+          : r
+      ));
+      setAwaitingDecisionModal({ open: false, request: null });
+      setDecisionDeadlineDate("");
+      setDecisionDeadlineTime("");
+    }
+  };
+
+  // Función para establecer fecha por defecto (24 horas)
+  const setDefaultDeadline = () => {
+    const now = new Date();
+    now.setHours(now.getHours() + 24);
+    
+    const date = now.toISOString().slice(0, 10);
+    const time = now.toTimeString().slice(0, 5);
+    
+    setDecisionDeadlineDate(date);
+    setDecisionDeadlineTime(time);
+  };
+
+  // Agrega el modal de Change Winner
+  const [changeWinnerModal, setChangeWinnerModal] = useState<{ open: boolean; requestId: string | null; selectedWinner: string | null }>({ open: false, requestId: null, selectedWinner: null });
+
+  // Función para manejar el cambio de ganador
+  const handleChangeWinnerConfirm = () => {
+    if (changeWinnerModal.selectedWinner && changeWinnerModal.requestId) {
+      // Update the request with the new winner
+      const updatedRequests = requests.map(req => 
+        req.id === changeWinnerModal.requestId 
+          ? { ...req, winner: changeWinnerModal.selectedWinner || undefined }
+          : req
+      );
+      setRequests(updatedRequests);
+      setChangeWinnerModal({ open: false, requestId: null, selectedWinner: null });
+    }
   };
 
   return (
@@ -723,99 +1035,109 @@ export default function HireRequestsWorkflow() {
                       </div>
                       {/* Column Content */}
                       <div className="flex flex-col gap-3">
-                        {groupedRequests[status].map((request, idx) => (
-                          <Draggable draggableId={request.id} index={idx} key={request.id}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
-                              >
-                                <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-                                  {/* Header with view button and action menu on top right */}
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex flex-col gap-0.5">
-                                      <span className="font-semibold text-base text-foreground line-clamp-1">{request.clientName}</span>
-                                      <span className="text-xs text-muted-foreground">{request.role}</span>
-                                    </div>
-                                    <div className="flex flex-col items-end gap-1">
-                                      <div className="flex items-center gap-1">
-                                        <Button
-                                          size="icon"
-                                          variant="ghost"
-                                          title="View"
-                                          aria-label="View"
-                                          className="hover:bg-primary/10"
-                                          onClick={() => { setSelectedRequest(request); setModalOpen(true); }}
-                                        >
-                                          <Eye className="w-5 h-5" />
-                                        </Button>
-                                        <Popover open={actionMenuOpen === request.id} onOpenChange={(open) => setActionMenuOpen(open ? request.id : null)}>
-                                          <PopoverTrigger asChild>
+                        <AnimatePresence initial={false}>
+                          {groupedRequests[status].map((request, idx) => (
+                            <Draggable draggableId={request.id} index={idx} key={request.id}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`mb-0 ${snapshot.isDragging ? 'opacity-80' : ''}`}
+                                >
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                    layout
+                                  >
+                                    <Card className="p-3 flex flex-col gap-1 bg-popover border border-border dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow">
+                                      {/* Header with view button and action menu on top right */}
+                                      <div className="flex items-center justify-between mb-4">
+                                        <div className="flex flex-col gap-0.5">
+                                          <span className="font-semibold text-base text-foreground line-clamp-1">{request.clientName}</span>
+                                          <span className="text-xs text-muted-foreground">{request.role}</span>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-1">
+                                          <div className="flex items-center gap-1">
                                             <Button
                                               size="icon"
                                               variant="ghost"
-                                              title="Actions"
-                                              aria-label="Actions"
+                                              title="View"
+                                              aria-label="View"
                                               className="hover:bg-primary/10"
+                                              onClick={() => { setSelectedRequest(request); setModalOpen(true); }}
                                             >
-                                              <MoreHorizontal className="w-5 h-5" />
+                                              <Eye className="w-5 h-5" />
                                             </Button>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-48 p-1" align="end">
-                                            <div className="space-y-1">
-                                              {getAvailableActions(request).map((action, index) => (
+                                            <Popover open={actionMenuOpen === request.id} onOpenChange={(open) => setActionMenuOpen(open ? request.id : null)}>
+                                              <PopoverTrigger asChild>
                                                 <Button
-                                                  key={index}
+                                                  size="icon"
                                                   variant="ghost"
-                                                  size="sm"
-                                                  className="w-full justify-start gap-2 h-8 text-sm"
-                                                  onClick={action.action}
+                                                  title="Actions"
+                                                  aria-label="Actions"
+                                                  className="hover:bg-primary/10"
                                                 >
-                                                  {action.icon}
-                                                  {action.label}
+                                                  <MoreHorizontal className="w-5 h-5" />
                                                 </Button>
-                                              ))}
-                                            </div>
-                                          </PopoverContent>
-                                        </Popover>
+                                              </PopoverTrigger>
+                                              <PopoverContent className="w-48 p-1" align="end">
+                                                <div className="space-y-1">
+                                                  {getAvailableActions(request).map((action, index) => (
+                                                    <Button
+                                                      key={index}
+                                                      variant="ghost"
+                                                      size="sm"
+                                                      className="w-full justify-start gap-2 h-8 text-sm"
+                                                      onClick={action.action}
+                                                    >
+                                                      {action.icon}
+                                                      {action.label}
+                                                    </Button>
+                                                  ))}
+                                                </div>
+                                              </PopoverContent>
+                                            </Popover>
+                                          </div>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                  {/* Details (sin cantidad de candidatos ni fecha) */}
-                                  <div className="flex flex-col gap-1 text-xs text-muted-foreground mb-1">
-                                    <div className="flex items-center gap-1">
-                                      <User className="w-3 h-3" />
-                                      <span>{request.assignedTo}</span>
-                                    </div>
-                                    {/* Si hay entrevista, mostrar solo eso */}
-                                    {request.interviewDate && (
-                                      <div className="flex items-center gap-1 text-chart-2">
-                                        <Clock className="w-3 h-3" />
-                                        <span>Interview: {request.interviewDate}{request.interviewTime ? ` ${request.interviewTime}` : ""}</span>
+                                      {/* Details (sin cantidad de candidatos ni fecha) */}
+                                      <div className="flex flex-col gap-1 text-xs text-muted-foreground mb-1">
+                                        <div className="flex items-center gap-1">
+                                          <User className="w-3 h-3" />
+                                          <span>{request.assignedTo}</span>
+                                        </div>
+                                        {/* Si hay entrevista, mostrar solo eso */}
+                                        {request.interviewDate && (
+                                          <div className="flex items-center gap-1 text-chart-2">
+                                            <Clock className="w-3 h-3" />
+                                            <span>Interview: {request.interviewDate}{request.interviewTime ? ` ${request.interviewTime}` : ""}</span>
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                  {/* Status-specific information */}
-                                  <div className="flex items-center gap-2 pt-2 mt-2 justify-end">
-                                    {/* Awaiting Decision: contador */}
-                                    {request.status === "Awaiting Decision" && (
-                                      <AwaitingDecisionCountdown deadline={request.decisionDeadline || ''} />
-                                    )}
-                                    {/* Placement Complete: mostrar ganador */}
-                                    {request.status === "Placement Complete" && request.winner && (
-                                      <div className="flex items-center gap-2">
-                                        <CheckCircle className="w-5 h-5 text-chart-2" />
-                                        <span className="font-semibold text-chart-2">Winner: {request.winner.name}</span>
+                                      {/* Status-specific information */}
+                                      <div className="flex items-center gap-2 pt-2 mt-2 justify-end">
+                                        {/* Awaiting Decision: contador */}
+                                        {request.status === "Awaiting Decision" && (
+                                          <AwaitingDecisionCountdown deadline={request.decisionDeadline || ''} />
+                                        )}
+                                        {/* Placement Complete: mostrar ganador */}
+                                        {request.status === "Placement Complete" && request.winner && (
+                                          <div className="flex items-center gap-2">
+                                            <CheckCircle className="w-5 h-5 text-chart-2" />
+                                            <span className="font-semibold text-chart-2">Winner: {request.winner}</span>
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                </Card>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                                    </Card>
+                                  </motion.div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        </AnimatePresence>
                         {provided.placeholder}
                         {groupedRequests[status].length === 0 && (
                           <div className="flex items-center justify-center h-32 text-muted-foreground text-sm border-2 border-dashed border-muted-foreground/30 rounded-lg">
@@ -846,9 +1168,15 @@ export default function HireRequestsWorkflow() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="gap-2" variant="default" onClick={() => alert(`Request interview with ${selectedRequest.clientName}`)}>
-                      <UserCheck className="w-4 h-4" /> Interview
-                    </Button>
+                    {!isEditing && (
+                      <Button size="sm" variant="outline" onClick={startEdit}>Editar</Button>
+                    )}
+                    {isEditing && (
+                      <>
+                        <Button size="sm" variant="default" onClick={saveEdit}>Guardar</Button>
+                        <Button size="sm" variant="outline" onClick={cancelEdit}>Cancelar</Button>
+                      </>
+                    )}
                     <Button size="icon" variant="ghost" aria-label="Close" onClick={() => setModalOpen(false)} className="mt-1">
                       <X className="w-6 h-6" />
                     </Button>
@@ -859,44 +1187,109 @@ export default function HireRequestsWorkflow() {
                     {/* Client */}
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Client</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.clientName}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.clientName || ''}
+                          onChange={e => handleEditBufferChange('clientName', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.clientName}</div>
+                      )}
                     </div>
                     {/* Role Title */}
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Role Title</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.roleTitle}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.roleTitle || ''}
+                          onChange={e => handleEditBufferChange('roleTitle', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.roleTitle}</div>
+                      )}
                     </div>
                     {/* Practice Area | Schedule Needs */}
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Practice Area</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.practiceArea}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.practiceArea || ''}
+                          onChange={e => handleEditBufferChange('practiceArea', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.practiceArea}</div>
+                      )}
                     </div>
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Schedule Needs</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.scheduleNeeds}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.scheduleNeeds || ''}
+                          onChange={e => handleEditBufferChange('scheduleNeeds', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.scheduleNeeds}</div>
+                      )}
                     </div>
                     {/* Required Skills */}
                     <div className="md:col-span-2">
                       <div className="font-semibold text-sm text-foreground mb-1">Required Skills</div>
-                      <div className="flex flex-wrap gap-2">
-                        {(selectedRequest.requiredSkills || []).map(skill => (
-                          <span key={skill} className="inline-block bg-muted text-foreground rounded px-2 py-0.5 text-xs font-medium">{skill}</span>
-                        ))}
-                      </div>
+                      {isEditing ? (
+                        <Textarea
+                          value={(editBuffer?.requiredSkills || []).join(', ')}
+                          onChange={e => handleEditBufferChange('requiredSkills', e.target.value.split(',').map(s => s.trim()))}
+                          className="font-normal text-base text-muted-foreground"
+                          placeholder="Comma separated skills"
+                        />
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {(selectedRequest.requiredSkills || []).map(skill => (
+                            <span key={skill} className="inline-block bg-muted text-foreground rounded px-2 py-0.5 text-xs font-medium">{skill}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     {/* Key Responsibilities */}
                     <div className="md:col-span-2">
                       <div className="font-semibold text-sm text-foreground mb-1">Key Responsibilities</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.keyResponsibilities}</div>
+                      {isEditing ? (
+                        <Textarea
+                          value={editBuffer?.keyResponsibilities || ''}
+                          onChange={e => handleEditBufferChange('keyResponsibilities', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.keyResponsibilities}</div>
+                      )}
                     </div>
                     {/* Location | Contact */}
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Location</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.location}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.location || ''}
+                          onChange={e => handleEditBufferChange('location', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.location}</div>
+                      )}
                     </div>
                     <div>
                       <div className="font-semibold text-sm text-foreground mb-1">Contact</div>
-                      <div className="font-normal text-base text-muted-foreground">{selectedRequest.requestedBy}</div>
+                      {isEditing ? (
+                        <Input
+                          value={editBuffer?.requestedBy || ''}
+                          onChange={e => handleEditBufferChange('requestedBy', e.target.value)}
+                          className="font-normal text-base text-muted-foreground"
+                        />
+                      ) : (
+                        <div className="font-normal text-base text-muted-foreground">{selectedRequest.requestedBy}</div>
+                      )}
                     </div>
                     {/* Status | Created */}
                     <div>
@@ -909,11 +1302,30 @@ export default function HireRequestsWorkflow() {
                     </div>
                   </div>
                   {/* Tabs for Candidates Assigned and AI Top 10 */}
-                  <Tabs defaultValue="ai" className="w-full mt-6">
+                  <Tabs defaultValue="panel" className="w-full mt-6">
                     <TabsList className="w-full grid grid-cols-2">
-                      <TabsTrigger value="ai" className="w-full">AI Top 10</TabsTrigger>
                       <TabsTrigger value="panel" className="w-full">Panel</TabsTrigger>
+                      <TabsTrigger value="ai" className="w-full">AI Top 10</TabsTrigger>
                     </TabsList>
+                    <TabsContent value="panel">
+                      <AdvancedTable
+                        data={mockCandidates.slice(0, 5)}
+                        columns={candidateTableColumns}
+                        title={undefined}
+                        statusKey={undefined}
+                        onViewDetails={(candidate: Candidate) => {
+                          if (!editPanelCandidates.includes(candidate.id) && editPanelCandidates.length < 5) {
+                            setEditPanelCandidates(prev => [...prev, candidate.id]);
+                          }
+                        }}
+                        showPagination={false}
+                        showSearch={false}
+                        showFilters={false}
+                        showPageSize={false}
+                        emptyMessage="No candidates found."
+                        className="mt-4"
+                      />
+                    </TabsContent>
                     <TabsContent value="ai">
                       <AdvancedTable
                         data={AI_TOP_10}
@@ -925,29 +1337,10 @@ export default function HireRequestsWorkflow() {
                         showSearch={false}
                         showFilters={false}
                         showPageSize={false}
-                        defaultPageSize={5}
-                        pageSizeOptions={[5]}
+                        defaultPageSize={10}
+                        pageSizeOptions={[10]}
                         emptyMessage="No AI candidates."
-                        className="mt-4 h-[600px]"
-                      />
-                    </TabsContent>
-                    <TabsContent value="panel">
-                      <AdvancedTable
-                        data={mockCandidates}
-                        columns={candidateTableColumns}
-                        filters={candidateTableFilters}
-                        showPagination={true}
-                        showSearch={true}
-                        showFilters={true}
-                        showPageSize={true}
-                        pageSizeOptions={[5, 10, 20, 50]}
-                        defaultPageSize={5}
-                        emptyMessage="No candidates found."
-                        onViewDetails={(candidate: Candidate) => {
-                          if (!editPanelCandidates.includes(candidate.id) && editPanelCandidates.length < 5) {
-                            setEditPanelCandidates(prev => [...prev, candidate.id]);
-                          }
-                        }}
+                        className="mt-4"
                       />
                     </TabsContent>
                   </Tabs>
@@ -957,12 +1350,6 @@ export default function HireRequestsWorkflow() {
           </SheetContent>
         </Sheet>
       )}
-      {/* Modal Dialog para Create Panel */}
-      <Dialog open={panelModalOpen} onOpenChange={open => { setPanelModalOpen(open); if (!open) setPanelRequestId(null); }}>
-        <DialogContent className="w-screen h-screen max-w-5xl max-h-[95vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
-          {panelRequestId && <CreatePanelModal key={panelRequestId} />}
-        </DialogContent>
-      </Dialog>
       {/* Modal simple para ver registro de candidato */}
       {candidateModal.open && candidateModal.candidate && (
         <Dialog open={candidateModal.open} onOpenChange={open => setCandidateModal({ open, candidate: open ? candidateModal.candidate : null })}>
@@ -1023,12 +1410,19 @@ export default function HireRequestsWorkflow() {
       <Dialog open={panelReadyModal.open} onOpenChange={open => { setPanelReadyModal({ open, request: open ? panelReadyModal.request : null }); setPanelReadyVisible(true); }}>
         <DialogContent className="max-w-md w-full">
           <DialogTitle>Confirm Panel Ready</DialogTitle>
-          <div className="mt-4 flex items-center gap-2">
-            <input type="checkbox" checked={panelReadyVisible} onChange={e => setPanelReadyVisible(e.target.checked)} />
-            <span>Client can see the panel</span>
-          </div>
-          <div className="flex justify-end mt-4">
-            <Button onClick={handlePanelReadyConfirm}>Confirm</Button>
+          <div className="mt-4 space-y-4">
+            <div className="flex items-center gap-2">
+              <input type="checkbox" checked={panelReadyVisible} onChange={e => setPanelReadyVisible(e.target.checked)} />
+              <span>Client can see the panel</span>
+            </div>
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                <strong>Note:</strong> If this checkbox is checked, the client will be able to see all the candidate records within the panel, including their profiles, experience, and qualifications.
+              </p>
+            </div>
+            <div className="flex justify-end mt-4">
+              <Button onClick={handlePanelReadyConfirm}>Confirm</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -1054,6 +1448,524 @@ export default function HireRequestsWorkflow() {
             <div className="flex justify-end mt-4">
               <Button disabled={!decisionDeadline} onClick={handleReadyDecisionConfirm}>Confirm</Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Start Sourcing Modal */}
+      <Dialog open={startSourcingModal.open} onOpenChange={open => { 
+        setStartSourcingModal({ open, request: open ? startSourcingModal.request : null }); 
+        if (open) {
+          setPanelCandidates([]);
+          setCandidateSearch("");
+        }
+      }}>
+        <DialogContent className="!w-[70vw] !max-w-none h-screen max-h-[95vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
+          <div className="flex-1 flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Interview Panel</h2>
+                <p className="text-muted-foreground">Select 5 candidates for the interview panel</p>
+              </div>
+            </div>
+
+            {/* Main content: two columns on desktop, stacked on mobile */}
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              {/* Left: Panel Slots */}
+              <section className="md:w-1/2 p-6 border-b md:border-b-0 md:border-r flex flex-col">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Panel Slots</h3>
+                  <p className="text-sm text-muted-foreground">{panelCandidates.length}/5 candidates selected</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <Card
+                      key={idx}
+                      className={`relative p-2 min-h-[48px] flex flex-col w-full ${
+                        panelCandidates[idx] 
+                          ? "bg-primary/10 border-primary" 
+                          : "bg-muted border-dashed border-muted-foreground/30"
+                      }`}
+                    >
+                      {panelCandidates[idx] ? (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Remove candidate"
+                            className="absolute top-1.5 right-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                            onClick={() => handleRemoveFromPanel(panelCandidates[idx].id)}
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-foreground text-sm leading-tight">{panelCandidates[idx].name}</h4>
+                            <p className="text-xs text-muted-foreground leading-tight">{panelCandidates[idx].role}</p>
+                            {panelCandidates[idx].experience && (
+                              <p className="text-xs text-muted-foreground leading-tight">{panelCandidates[idx].experience}</p>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-muted-foreground text-xs">Empty Slot</span>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+                <div className="flex justify-end mt-auto">
+                  <Button
+                    onClick={handleConfirmPanel}
+                    className="px-8"
+                  >
+                    Confirm Panel
+                  </Button>
+                </div>
+              </section>
+
+              {/* Right: Candidate Browser */}
+              <section className="md:w-1/2 p-6 flex flex-col overflow-hidden">
+                <div className="mb-4">
+                  <Input
+                    type="text"
+                    placeholder="Search candidates by name, role, language, or specialization..."
+                    value={candidateSearch}
+                    onChange={(e) => setCandidateSearch(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[600px] pr-2">
+                  {filteredCandidates.map(candidate => (
+                    <Card key={candidate.id} className="p-4 hover:shadow-md transition-shadow w-full">
+                      <div className="mb-3">
+                        <h4 className="font-semibold text-foreground">{candidate.name}</h4>
+                        <p className="text-sm text-muted-foreground">{candidate.role}</p>
+                        {candidate.experience && (
+                          <p className="text-xs text-muted-foreground">{candidate.experience}</p>
+                        )}
+                      </div>
+                      {candidate.languages && candidate.languages.length > 0 && (
+                        <div className="mb-2">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Languages:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {candidate.languages.map(lang => (
+                              <Badge key={lang} variant="secondary" className="text-xs">{lang}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {candidate.specializations && candidate.specializations.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Specializations:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {candidate.specializations.map(spec => (
+                              <Badge key={spec} variant="outline" className="text-xs">{spec}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => handleAddToPanel(candidate)}
+                        disabled={panelCandidates.length >= 5}
+                        className="w-full"
+                      >
+                        + Add to Panel
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
+                {filteredCandidates.length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    No candidates found matching your search.
+                  </div>
+                )}
+              </section>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Cancel Request */}
+      <Dialog open={cancelModal.open} onOpenChange={open => setCancelModal({ open, requestId: open ? cancelModal.requestId : null })}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Cancel Request</DialogTitle>
+          <p>Are you sure you want to cancel this request? This action cannot be undone.</p>
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline" onClick={() => setCancelModal({ open: false, requestId: null })}>No, go back</Button>
+            <Button variant="destructive" onClick={() => { if (cancelModal.requestId) handleStatusChange(cancelModal.requestId, "Canceled"); setCancelModal({ open: false, requestId: null }); }}>Yes, cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Back Modal */}
+      <Dialog open={backModal.open} onOpenChange={open => setBackModal({ open, requestId: open ? backModal.requestId : null, targetStatus: open ? backModal.targetStatus : null })}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Confirm Status Change</DialogTitle>
+          <p>Are you sure you want to {backModal.targetStatus === 'New' && (backModal.requestId && (requests.find(r => r.id === backModal.requestId)?.status === 'Placement Complete' || requests.find(r => r.id === backModal.requestId)?.status === 'Canceled')) ? 'reopen this request as New' : backModal.targetStatus === 'New' ? 'move this request back to New' : backModal.targetStatus === 'Sourcing' && (backModal.requestId && requests.find(r => r.id === backModal.requestId)?.status === 'Canceled') ? 'reopen this request as Sourcing' : backModal.targetStatus === 'Sourcing' ? 'back to Sourcing' : backModal.targetStatus === 'Panel Ready' ? 'back to Panel Ready' : backModal.targetStatus === 'Interview Scheduled' ? 'Interview Scheduled' : ''}? This action will update the workflow status.</p>
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline" onClick={() => setBackModal({ open: false, requestId: null, targetStatus: null })}>No, go back</Button>
+            <Button variant="destructive" onClick={() => { if (backModal.requestId && backModal.targetStatus) handleStatusChange(backModal.requestId, backModal.targetStatus); setBackModal({ open: false, requestId: null, targetStatus: null }); }}>Yes, confirm</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Mark as Complete Modal */}
+      <Dialog open={completeModal.open} onOpenChange={(open) => setCompleteModal({ open, requestId: null, selectedWinner: null })}>
+        <DialogContent className="max-w-2xl w-full">
+          <DialogTitle>Mark Request as Complete</DialogTitle>
+          <div className="space-y-4">
+            <p>Select the winning candidate to complete this hire request:</p>
+            
+                          <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
+              {mockPanelCandidates.map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className={`p-2 border rounded-lg cursor-pointer transition-all ${
+                    completeModal.selectedWinner === candidate.id
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setCompleteModal(prev => ({ ...prev, selectedWinner: candidate.id }))}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${
+                      completeModal.selectedWinner === candidate.id
+                        ? 'border-primary bg-primary'
+                        : 'border-muted-foreground'
+                    }`}>
+                      {completeModal.selectedWinner === candidate.id && (
+                        <div className="w-1 h-1 bg-white rounded-full" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">{candidate.name}</h4>
+                      <p className="text-xs text-muted-foreground">{candidate.role} • {candidate.experience} years experience</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {!completeModal.selectedWinner && (
+              <p className="text-sm text-destructive">Please select a winning candidate to continue.</p>
+            )}
+          </div>
+          
+          <div className="flex justify-end gap-2 mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setCompleteModal({ open: false, requestId: null, selectedWinner: null })}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (completeModal.selectedWinner && completeModal.requestId) {
+                  // Update the request with the winner and change status
+                  const updatedRequests = requests.map(req => 
+                    req.id === completeModal.requestId 
+                      ? { ...req, winner: completeModal.selectedWinner || undefined, status: "Placement Complete" as const }
+                      : req
+                  );
+                  setRequests(updatedRequests);
+                  setCompleteModal({ open: false, requestId: null, selectedWinner: null });
+                }
+              }}
+              disabled={!completeModal.selectedWinner}
+            >
+              Mark as Complete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Edit Panel Modal */}
+      <Dialog open={editPanelModal.open} onOpenChange={open => { 
+        setEditPanelModal({ open, request: open ? editPanelModal.request : null }); 
+        if (open) {
+          setPanelCandidates([]);
+          setCandidateSearch("");
+        }
+      }}>
+        <DialogContent className="!w-[70vw] !max-w-none h-screen max-h-[95vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden p-0">
+          <div className="flex-1 flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Edit Interview Panel</h2>
+                <p className="text-muted-foreground">Select 5 candidates for the interview panel</p>
+              </div>
+            </div>
+
+            {/* Main content: two columns on desktop, stacked on mobile */}
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              {/* Left: Panel Slots */}
+              <section className="md:w-1/2 p-6 border-b md:border-b-0 md:border-r flex flex-col">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Panel Slots</h3>
+                  <p className="text-sm text-muted-foreground">{panelCandidates.length}/5 candidates selected</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <Card
+                      key={idx}
+                      className={`relative p-2 min-h-[48px] flex flex-col w-full ${
+                        panelCandidates[idx] 
+                          ? "bg-primary/10 border-primary" 
+                          : "bg-muted border-dashed border-muted-foreground/30"
+                      }`}
+                    >
+                      {panelCandidates[idx] ? (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Remove candidate"
+                            className="absolute top-1.5 right-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                            onClick={() => handleRemoveFromPanel(panelCandidates[idx].id)}
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-foreground text-sm leading-tight">{panelCandidates[idx].name}</h4>
+                            <p className="text-xs text-muted-foreground leading-tight">{panelCandidates[idx].role}</p>
+                            {panelCandidates[idx].experience && (
+                              <p className="text-xs text-muted-foreground leading-tight">{panelCandidates[idx].experience}</p>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center">
+                          <span className="text-muted-foreground text-xs">Empty Slot</span>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+                <div className="flex justify-end mt-auto">
+                  <Button
+                    onClick={handleConfirmEditPanel}
+                    className="px-8"
+                  >
+                    Confirm Panel
+                  </Button>
+                </div>
+              </section>
+
+              {/* Right: Candidate Browser */}
+              <section className="md:w-1/2 p-6 flex flex-col overflow-hidden">
+                <div className="mb-4">
+                  <Input
+                    type="text"
+                    placeholder="Search candidates by name, role, language, or specialization..."
+                    value={candidateSearch}
+                    onChange={(e) => setCandidateSearch(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[600px] pr-2">
+                  {filteredCandidates.map(candidate => (
+                    <Card key={candidate.id} className="p-4 hover:shadow-md transition-shadow w-full">
+                      <div className="mb-3">
+                        <h4 className="font-semibold text-foreground">{candidate.name}</h4>
+                        <p className="text-sm text-muted-foreground">{candidate.role}</p>
+                        {candidate.experience && (
+                          <p className="text-xs text-muted-foreground">{candidate.experience}</p>
+                        )}
+                      </div>
+                      {candidate.languages && candidate.languages.length > 0 && (
+                        <div className="mb-2">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Languages:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {candidate.languages.map(lang => (
+                              <Badge key={lang} variant="secondary" className="text-xs">{lang}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {candidate.specializations && candidate.specializations.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Specializations:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {candidate.specializations.map(spec => (
+                              <Badge key={spec} variant="outline" className="text-xs">{spec}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => handleAddToPanel(candidate)}
+                        disabled={panelCandidates.length >= 5}
+                        className="w-full"
+                      >
+                        + Add to Panel
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
+                {filteredCandidates.length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    No candidates found matching your search.
+                  </div>
+                )}
+              </section>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* View Panel Modal */}
+      <Dialog open={viewPanelModal.open} onOpenChange={(open) => setViewPanelModal({ open, request: null })}>
+        <DialogContent className="max-w-2xl w-full">
+          <DialogTitle>Interview Panel - {viewPanelModal.request?.clientName}</DialogTitle>
+          <div className="space-y-4">
+            <p>Review the candidates selected for this interview panel:</p>
+            
+                  <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
+        {mockPanelCandidates.map((candidate) => (
+          <div
+            key={candidate.id}
+            className="p-2 border rounded-lg transition-all border-border hover:border-primary/50"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h4 className="font-medium text-sm">{candidate.name}</h4>
+                <p className="text-xs text-muted-foreground">{candidate.role} • {candidate.experience} years experience</p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs px-2 py-1 h-7"
+                onClick={() => {
+                  // Aquí se abriría el modal del perfil del candidato
+                  console.log('View profile for:', candidate.name);
+                }}
+              >
+                <Eye className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        ))}
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-medium">Total Candidates:</span> 5
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <span className="font-medium">Panel Status:</span> Ready for Client Review
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-2 mt-6">
+            <Button variant="outline" onClick={() => setViewPanelModal({ open: false, request: null })}>
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Awaiting Decision Modal */}
+      <Dialog open={awaitingDecisionModal.open} onOpenChange={open => { 
+        setAwaitingDecisionModal({ open, request: open ? awaitingDecisionModal.request : null }); 
+        if (open) {
+          setDefaultDeadline();
+        }
+      }}>
+        <DialogContent className="max-w-md w-full">
+          <DialogTitle>Set Decision Deadline</DialogTitle>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Set a deadline for the client to make their decision. The default is 24 hours from now.
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium">Date:</label>
+                <Input 
+                  type="date" 
+                  value={decisionDeadlineDate} 
+                  onChange={(e) => setDecisionDeadlineDate(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium">Time:</label>
+                <Input 
+                  type="time" 
+                  value={decisionDeadlineTime} 
+                  onChange={(e) => setDecisionDeadlineTime(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setAwaitingDecisionModal({ open: false, request: null })}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAwaitingDecisionConfirm}
+                disabled={!decisionDeadlineDate || !decisionDeadlineTime}
+              >
+                Set Deadline
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Change Winner Modal */}
+      <Dialog open={changeWinnerModal.open} onOpenChange={(open) => setChangeWinnerModal({ open, requestId: null, selectedWinner: null })}>
+        <DialogContent className="max-w-2xl w-full">
+          <DialogTitle>Change Winner</DialogTitle>
+          <div className="space-y-4">
+            <p>Select the new winning candidate for this hire request:</p>
+            
+            <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
+              {mockPanelCandidates.map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className={`p-2 border rounded-lg cursor-pointer transition-all ${
+                    changeWinnerModal.selectedWinner === candidate.id
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setChangeWinnerModal(prev => ({ ...prev, selectedWinner: candidate.id }))}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${
+                      changeWinnerModal.selectedWinner === candidate.id
+                        ? 'border-primary bg-primary'
+                        : 'border-muted-foreground'
+                    }`}>
+                      {changeWinnerModal.selectedWinner === candidate.id && (
+                        <div className="w-1 h-1 bg-white rounded-full" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">{candidate.name}</h4>
+                      <p className="text-xs text-muted-foreground">{candidate.role} • {candidate.experience} years experience</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {!changeWinnerModal.selectedWinner && (
+              <p className="text-sm text-destructive">Please select a new winning candidate to continue.</p>
+            )}
+          </div>
+          
+          <div className="flex justify-end gap-2 mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setChangeWinnerModal({ open: false, requestId: null, selectedWinner: null })}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleChangeWinnerConfirm}
+              disabled={!changeWinnerModal.selectedWinner}
+            >
+              Change Winner
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

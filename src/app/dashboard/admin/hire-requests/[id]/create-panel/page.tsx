@@ -72,7 +72,7 @@ export default function CreatePanelPage() {
     <div className="h-full bg-background flex flex-col">
       <main className="flex-1 p-4 md:p-10 w-full h-full flex flex-col">
         <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Create Interview Panel</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Interview Panel</h1>
           <p className="text-muted-foreground">Select 5 candidates and schedule the panel interview</p>
         </div>
         <div className="flex flex-col h-full gap-4 overflow-y-auto max-h-full">
