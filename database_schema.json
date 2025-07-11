@@ -1,0 +1,1166 @@
+[
+  {
+    "name": "users",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "email",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "password",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "first_name",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "last_name",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "role",
+        "type": "user_role_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "status",
+        "type": "user_status_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "last_login",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "clients",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "user_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "company_name",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "industry",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "location",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "phone",
+        "type": "VARCHAR(20)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "website",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "employees",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "founded",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "specialties",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "services",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "client_role",
+        "type": "client_role_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  },
+  {
+    "name": "candidates",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "name",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "email",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "phone",
+        "type": "VARCHAR(20)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "avatar_url",
+        "type": "VARCHAR(500)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "role",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "price_per_month",
+        "type": "DECIMAL(10,2)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "currency",
+        "type": "VARCHAR(3)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "languages",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "specializations",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "skills",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "about",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "experience_level",
+        "type": "experience_level_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "certifications",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "availability",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "notes",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  },
+  {
+    "name": "candidate_education",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "candidate_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "institution",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "degree",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "start_year",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "end_year",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "candidate_experience",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "candidate_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "company",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "role",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "start_year",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "end_year",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "hire_requests",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "client_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "role_title",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "department",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "practice_area",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "schedule_needs",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "location",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "required_skills",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "key_responsibilities",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "priority",
+        "type": "priority_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "estimated_start_date",
+        "type": "DATE",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "contract_length",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "remote_work",
+        "type": "remote_work_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "travel_required",
+        "type": "travel_required_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "certifications",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "experience_level",
+        "type": "hire_experience_level_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "salary_min",
+        "type": "DECIMAL(10,2)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "salary_max",
+        "type": "DECIMAL(10,2)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "salary_currency",
+        "type": "VARCHAR(3)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "benefits",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "additional_notes",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "status",
+        "type": "hire_request_status_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "assigned_to",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "interview_panels",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "hire_request_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "status",
+        "type": "panel_status_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "time_limit",
+        "type": "BIGINT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "start_time",
+        "type": "BIGINT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "selected_winner_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "panel_candidates",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "panel_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "candidate_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "added_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  },
+  {
+    "name": "tickets",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "client_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "type",
+        "type": "ticket_type_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "subject",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "priority",
+        "type": "priority_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "status",
+        "type": "ticket_status_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "assigned_to",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "staff_name",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "candidate_name",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "department",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "location",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "requested_by",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "estimated_resolution",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "category",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "attachments",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      }
+    ]
+  },
+  {
+    "name": "staff",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "client_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "candidate_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "hire_request_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "hire_date",
+        "type": "DATE",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "contract_start_date",
+        "type": "DATE",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "contract_end_date",
+        "type": "DATE",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "salary",
+        "type": "DECIMAL(10,2)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "currency",
+        "type": "VARCHAR(3)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "status",
+        "type": "staff_status_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  },
+  {
+    "name": "admin_profiles",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "user_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "admin_role",
+        "type": "admin_role_enum",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "permissions",
+        "type": "JSONB",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "can_manage_users",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "can_manage_clients",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "can_view_analytics",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "can_manage_billing",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  },
+  {
+    "name": "client_profiles",
+    "columns": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "isPrimaryKey": true,
+        "isForeignKey": false,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "user_id",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isForeignKey": true,
+        "isUnique": true,
+        "notNull": true
+      },
+      {
+        "name": "job_title",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "company_size",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "billing_plan",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "next_billing",
+        "type": "DATE",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "payment_method",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "isPrimaryKey": false,
+        "isForeignKey": false,
+        "isUnique": false,
+        "notNull": true
+      }
+    ]
+  }
+] 

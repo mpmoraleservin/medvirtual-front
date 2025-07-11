@@ -1,0 +1,269 @@
+// DBML generado para MedVirtual/Regenta
+// Compatible con DrawDB y PostgreSQL
+
+// ENUMS
+Enum user_role_enum {
+  PROSPECT
+  PROSPECT_V2
+  ACTIVE_CLIENT
+  ADMIN
+}
+
+Enum user_status_enum {
+  Active
+  Inactive
+  Pending
+  Suspended
+}
+
+Enum client_role_enum {
+  Prospect
+  Client
+}
+
+Enum experience_level_enum {
+  Junior
+  Mid
+  Senior
+}
+
+Enum hire_experience_level_enum {
+  Entry
+  Mid
+  Senior
+  Lead
+}
+
+Enum priority_enum {
+  High
+  Medium
+  Low
+}
+
+Enum remote_work_enum {
+  Yes
+  No
+  Hybrid
+}
+
+Enum travel_required_enum {
+  Yes
+  No
+}
+
+Enum hire_request_status_enum {
+  Draft
+  Submitted
+  In_Review
+  Panel_Ready
+  Interviewing
+  Placement_Complete
+  Closed
+}
+
+Enum panel_status_enum {
+  Panel_Ready
+  Awaiting_Decision
+  Placement_Complete
+}
+
+Enum ticket_type_enum {
+  Bonus
+  Termination
+  Interview_Request
+  Support
+}
+
+Enum ticket_status_enum {
+  New
+  In_Progress
+  Resolved
+  Closed
+}
+
+Enum staff_status_enum {
+  Active
+  Inactive
+  Terminated
+}
+
+Enum admin_role_enum {
+  Super_Admin
+  Admin
+  Support_Admin
+}
+
+// TABLAS PRINCIPALES
+Table users {
+  id uuid [pk, unique, not null]
+  email varchar(255) [unique, not null]
+  password varchar(255) [not null]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  role user_role_enum [not null]
+  status user_status_enum [not null]
+  created_at timestamp [not null]
+  updated_at timestamp
+  last_login timestamp
+}
+
+Table clients {
+  id uuid [pk, unique, not null]
+  user_id uuid [ref: > users.id, not null]
+  company_name varchar(255) [not null]
+  industry varchar(100)
+  location varchar(255)
+  phone varchar(20)
+  website varchar(255)
+  description text
+  employees integer
+  founded integer
+  specialties jsonb
+  services jsonb
+  client_role client_role_enum [not null]
+  created_at timestamp [not null]
+}
+
+Table candidates {
+  id uuid [pk, unique, not null]
+  name varchar(255) [not null]
+  email varchar(255)
+  phone varchar(20)
+  avatar_url varchar(500)
+  role varchar(255) [not null]
+  price_per_month decimal(10,2) [not null]
+  currency varchar(3) [not null]
+  languages jsonb
+  specializations jsonb
+  skills jsonb
+  about text
+  experience_level experience_level_enum [not null]
+  certifications jsonb
+  availability varchar(255)
+  notes text
+  created_at timestamp [not null]
+}
+
+Table candidate_education {
+  id uuid [pk, unique, not null]
+  candidate_id uuid [ref: > candidates.id, not null]
+  institution varchar(255) [not null]
+  degree varchar(255) [not null]
+  start_year integer [not null]
+  end_year integer
+  description text
+}
+
+Table candidate_experience {
+  id uuid [pk, unique, not null]
+  candidate_id uuid [ref: > candidates.id, not null]
+  company varchar(255) [not null]
+  role varchar(255) [not null]
+  start_year integer [not null]
+  end_year integer
+  description text
+}
+
+Table hire_requests {
+  id uuid [pk, unique, not null]
+  client_id uuid [ref: > clients.id, not null]
+  role_title varchar(255) [not null]
+  department varchar(255)
+  practice_area varchar(255) [not null]
+  schedule_needs varchar(255)
+  location varchar(255)
+  required_skills jsonb
+  key_responsibilities text [not null]
+  priority priority_enum [not null]
+  estimated_start_date date
+  contract_length varchar(255)
+  remote_work remote_work_enum
+  travel_required travel_required_enum
+  certifications jsonb
+  experience_level hire_experience_level_enum
+  salary_min decimal(10,2)
+  salary_max decimal(10,2)
+  salary_currency varchar(3)
+  benefits jsonb
+  additional_notes text
+  status hire_request_status_enum [not null]
+  assigned_to uuid [ref: > users.id]
+  created_at timestamp [not null]
+  updated_at timestamp
+}
+
+Table interview_panels {
+  id uuid [pk, unique, not null]
+  hire_request_id uuid [ref: > hire_requests.id, not null]
+  status panel_status_enum [not null]
+  time_limit bigint
+  start_time bigint
+  selected_winner_id uuid [ref: > candidates.id]
+  created_at timestamp [not null]
+  updated_at timestamp
+}
+
+Table panel_candidates {
+  id uuid [pk, unique, not null]
+  panel_id uuid [ref: > interview_panels.id, not null]
+  candidate_id uuid [ref: > candidates.id, not null]
+  added_at timestamp [not null]
+}
+
+Table tickets {
+  id uuid [pk, unique, not null]
+  client_id uuid [ref: > clients.id, not null]
+  type ticket_type_enum [not null]
+  subject varchar(255) [not null]
+  description text
+  priority priority_enum [not null]
+  status ticket_status_enum [not null]
+  assigned_to uuid [ref: > users.id]
+  staff_name varchar(255)
+  candidate_name varchar(255)
+  department varchar(255)
+  location varchar(255)
+  requested_by varchar(255)
+  estimated_resolution timestamp
+  category varchar(255)
+  attachments jsonb
+  created_at timestamp [not null]
+  updated_at timestamp
+}
+
+Table staff {
+  id uuid [pk, unique, not null]
+  client_id uuid [ref: > clients.id, not null]
+  candidate_id uuid [ref: > candidates.id, not null]
+  hire_request_id uuid [ref: > hire_requests.id, not null]
+  hire_date date [not null]
+  contract_start_date date
+  contract_end_date date
+  salary decimal(10,2)
+  currency varchar(3)
+  status staff_status_enum [not null]
+  created_at timestamp [not null]
+}
+
+Table admin_profiles {
+  id uuid [pk, unique, not null]
+  user_id uuid [ref: > users.id, unique, not null]
+  admin_role admin_role_enum [not null]
+  permissions jsonb
+  can_manage_users boolean [not null]
+  can_manage_clients boolean [not null]
+  can_view_analytics boolean [not null]
+  can_manage_billing boolean [not null]
+  created_at timestamp [not null]
+}
+
+Table client_profiles {
+  id uuid [pk, unique, not null]
+  user_id uuid [ref: > users.id, unique, not null]
+  job_title varchar(255)
+  company_size varchar(100)
+  billing_plan varchar(100)
+  next_billing date
+  payment_method varchar(255)
+  created_at timestamp [not null]
+} 
