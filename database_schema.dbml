@@ -7,6 +7,7 @@ Enum user_role_enum {
   PROSPECT_V2
   ACTIVE_CLIENT
   ADMIN
+  SUPER_ADMIN
 }
 
 Enum user_status_enum {
@@ -23,7 +24,7 @@ Enum client_role_enum {
 
 Enum experience_level_enum {
   Junior
-  Mid
+  Semi_Senior
   Senior
 }
 
@@ -118,8 +119,8 @@ Table clients {
   description text
   employees integer
   founded integer
-  specialties jsonb
-  services jsonb
+  specialties text[]
+  services text[]
   client_role client_role_enum [not null]
   created_at timestamp [not null]
 }
@@ -133,12 +134,12 @@ Table candidates {
   role varchar(255) [not null]
   price_per_month decimal(10,2) [not null]
   currency varchar(3) [not null]
-  languages jsonb
-  specializations jsonb
-  skills jsonb
+  languages text[]
+  specializations text[]
+  skills text[]
   about text
   experience_level experience_level_enum [not null]
-  certifications jsonb
+  certifications text[]
   availability varchar(255)
   notes text
   created_at timestamp [not null]
@@ -172,19 +173,19 @@ Table hire_requests {
   practice_area varchar(255) [not null]
   schedule_needs varchar(255)
   location varchar(255)
-  required_skills jsonb
+  required_skills text[]
   key_responsibilities text [not null]
   priority priority_enum [not null]
   estimated_start_date date
   contract_length varchar(255)
   remote_work remote_work_enum
   travel_required travel_required_enum
-  certifications jsonb
+  certifications text[]
   experience_level hire_experience_level_enum
   salary_min decimal(10,2)
   salary_max decimal(10,2)
   salary_currency varchar(3)
-  benefits jsonb
+  benefits text[]
   additional_notes text
   status hire_request_status_enum [not null]
   assigned_to uuid [ref: > users.id]
@@ -203,11 +204,18 @@ Table interview_panels {
   updated_at timestamp
 }
 
-Table panel_candidates {
+Table candidates_panel {
   id uuid [pk, unique, not null]
   panel_id uuid [ref: > interview_panels.id, not null]
   candidate_id uuid [ref: > candidates.id, not null]
   added_at timestamp [not null]
+}
+
+Table ticket_categories {
+  id uuid [pk, unique, not null]
+  name varchar(255) [not null]
+  description text
+  created_at timestamp [not null]
 }
 
 Table tickets {
@@ -223,10 +231,9 @@ Table tickets {
   candidate_name varchar(255)
   department varchar(255)
   location varchar(255)
-  requested_by varchar(255)
+  requested_by uuid [ref: > users.id]
+  category_id uuid [ref: > ticket_categories.id]
   estimated_resolution timestamp
-  category varchar(255)
-  attachments jsonb
   created_at timestamp [not null]
   updated_at timestamp
 }
@@ -249,7 +256,6 @@ Table admin_profiles {
   id uuid [pk, unique, not null]
   user_id uuid [ref: > users.id, unique, not null]
   admin_role admin_role_enum [not null]
-  permissions jsonb
   can_manage_users boolean [not null]
   can_manage_clients boolean [not null]
   can_view_analytics boolean [not null]
